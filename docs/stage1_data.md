@@ -8,8 +8,8 @@ Install `python -m pip install -r requirements-data.txt`. Set PHASE1_ROOT explic
 Run from the checkout, with the actual code commit:
 
 ```powershell
-python scripts/stage1/prepare_dataset.py --code-commit <commit> --storage-scope local-development
-python scripts/stage1/validate_data.py --code-commit <commit> --dataset-manifest <printed-_COMPLETE.json> --storage-scope local-development
+python -m src.stage1.prepare_dataset --code-commit <commit> --storage-scope local-development
+python -m src.stage1.validate_data --code-commit <commit> --dataset-manifest <printed-_COMPLETE.json> --storage-scope local-development
 python -m unittest discover -s tests -p "test_stage1_*.py"
 ```
 
@@ -40,3 +40,6 @@ The separate full-data validator passed, including two deterministic reloads, at
 
 
 Integration note: the coordinator replaced hard-link cache publication with streamed copies in unique, completion-verified cache artifacts. Existing pinned sources and dataset identities are preserved; legacy cache files are checksum-verified and copied without overwriting. Source helper fetch_sources now accepts protocol/code_commit/scope; the frozen load_dataset API is unchanged. Actual Drive persistence still requires runtime verification.
+
+
+Notebook entry points (user-requested conversion): `scripts/stage1/stage1_cpu.ipynb` runs preparation then validation; `configure_l4.ipynb`, `validate_model.ipynb` and `run_validity_smoke.ipynb` run in that order per MODEL. The five former scripts/stage1 Python entry files are removed. Their shared implementations now live in src/stage1; scientific rules, artifacts and completion gates are unchanged. Notebook syntax and CPU fixture checks do not establish actual Colab/L4/Drive completion.

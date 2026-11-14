@@ -24,7 +24,7 @@ The configured module paths were checked against the publisher's tagged [Qwen im
 
 Gemma is gated. The current unauthenticated metadata request returned HTTP 401 for its config, processor and tokenizer files. The user must have appropriate Hugging Face access and complete any required license/access steps themselves. Use a normal Hugging Face login or a runtime secret; never put a token in Git, configuration files, reports or chat. No gated metadata was guessed or bypassed. Accordingly the repository's Gemma template hash/image-token fields remain null until authorized resolution.
 
-`scripts/stage1/configure_l4.py` checks the actual GPU and package versions, fetches pinned processor/tokenizer/config metadata, resolves template hash and image tokens, and publishes a per-model configuration artifact. It does **not** download model weights or run inference. A passed configuration report establishes configuration readiness only. Both validators must still pass afterward. Keep generated runtime configuration outside Git and pass its printed `models.json` path to subsequent commands.
+`src/stage1/configure_l4.py` checks the actual GPU and package versions, fetches pinned processor/tokenizer/config metadata, resolves template hash and image tokens, and publishes a per-model configuration artifact. It does **not** download model weights or run inference. A passed configuration report establishes configuration readiness only. Both validators must still pass afterward. Keep generated runtime configuration outside Git and pass its printed `models.json` path to subsequent commands.
 
 ## Persistent storage check
 
@@ -59,18 +59,18 @@ TMPDIR="$PHASE1_ROOT/cache/storage-tests" python -m unittest discover -s tests -
 
 ```bash
 cd /content/Research
-python scripts/stage1/prepare_dataset.py --phase1-root "$PHASE1_ROOT" --code-commit "$(git rev-parse HEAD)" --storage-scope persistent-drive
+python -m src.stage1.prepare_dataset --phase1-root "$PHASE1_ROOT" --code-commit "$(git rev-parse HEAD)" --storage-scope persistent-drive
 # Set DATASET_MANIFEST to the printed absolute _COMPLETE.json path.
-python scripts/stage1/validate_data.py --phase1-root "$PHASE1_ROOT" --dataset-manifest "$DATASET_MANIFEST" --code-commit "$(git rev-parse HEAD)" --storage-scope persistent-drive
+python -m src.stage1.validate_data --phase1-root "$PHASE1_ROOT" --dataset-manifest "$DATASET_MANIFEST" --code-commit "$(git rev-parse HEAD)" --storage-scope persistent-drive
 ```
 
 4. For **one model at a time**, set MODEL=qwen, then repeat with MODEL=gemma. Configuration resolution needs authorized model access, the passed dataset artifact and the actual L4. Set MODEL_CONFIG to that command's printed models_config path; do not accidentally use the other model's unconfigured registry.
 
 ```bash
-python scripts/stage1/configure_l4.py --model "$MODEL" --phase1-root "$PHASE1_ROOT" --dataset-manifest "$DATASET_MANIFEST" --code-commit "$(git rev-parse HEAD)" --storage-scope persistent-drive
+python -m src.stage1.configure_l4 --model "$MODEL" --phase1-root "$PHASE1_ROOT" --dataset-manifest "$DATASET_MANIFEST" --code-commit "$(git rev-parse HEAD)" --storage-scope persistent-drive
 # Set MODEL_CONFIG to the printed absolute models.json path.
-python scripts/stage1/validate_model.py --model "$MODEL" --phase1-root "$PHASE1_ROOT" --dataset-manifest "$DATASET_MANIFEST" --models-config "$MODEL_CONFIG" --storage-scope persistent-drive
-python scripts/stage1/run_validity_smoke.py --model "$MODEL" --phase1-root "$PHASE1_ROOT" --dataset-manifest "$DATASET_MANIFEST" --models-config "$MODEL_CONFIG" --code-commit "$(git rev-parse HEAD)" --storage-scope persistent-drive --batch-size 1
+python -m src.stage1.validate_model --model "$MODEL" --phase1-root "$PHASE1_ROOT" --dataset-manifest "$DATASET_MANIFEST" --models-config "$MODEL_CONFIG" --storage-scope persistent-drive
+python -m src.stage1.run_validity_smoke --model "$MODEL" --phase1-root "$PHASE1_ROOT" --dataset-manifest "$DATASET_MANIFEST" --models-config "$MODEL_CONFIG" --code-commit "$(git rev-parse HEAD)" --storage-scope persistent-drive --batch-size 1
 ```
 
 Run from a clean checkout. Model validation now rejects dirty/unknown Git provenance before accepting an actual pass and records hashes of adapter/shared source files. Do not run the later commands after a blocked/failed prior command. Report token alignment, visibility, site availability, actual device/precision, memory failures and repeated-feature checks honestly. Stage 1 only completes after real data/Drive/model checks for both models pass and the coordinator reviews the evidence. Full G0 controls and scientific experiments remain later stages.
@@ -81,3 +81,6 @@ Run from a clean checkout. Model validation now rejects dirty/unknown Git proven
 At merge commit 4030434c90183abd3c2b8416bbd0dec22b632335, the real-data prepare/resume command passed using the available local CPU environment, migrating the legacy pinned sources to the new completion-verified cache and returning the same dataset identity. Model/runtime requirements were not installed in this CPU environment. A runtime-configuration preflight exposed a Windows MAX_PATH failure when writing nested hash directories; configuration artifacts now use the shorter `cache/runtime-configurations/<model>/<run_id>` namespace, retaining full dataset/protocol/model fingerprints in their completion manifest. This is a configuration cache, not a fitted-model checkpoint. A regression test checks persistence of a blocked report under a long development root.
 
 The combined software suite now has 29 passing tests. CUDA availability and bfloat16 support fail before processor/weight downloads when the selected device is absent. Model validators/smoke reports record observed GPU peak allocation/reservation only when actual CUDA information is available; these metrics are not invented from parameter counts.
+
+
+Notebook entry points (user-requested conversion): `scripts/stage1/stage1_cpu.ipynb` runs preparation then validation; `configure_l4.ipynb`, `validate_model.ipynb` and `run_validity_smoke.ipynb` run in that order per MODEL. The five former scripts/stage1 Python entry files are removed. Their shared implementations now live in src/stage1; scientific rules, artifacts and completion gates are unchanged. Notebook syntax and CPU fixture checks do not establish actual Colab/L4/Drive completion.

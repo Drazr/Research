@@ -79,9 +79,9 @@ From this checkout:
 
 ```shell
 python -m unittest discover -s tests -v
-python -m compileall -q src/models scripts/stage1/validate_model.py
-python scripts/stage1/validate_model.py --model qwen --phase1-root /explicit/phase1 --storage-scope local-development
-python scripts/stage1/validate_model.py --model gemma --phase1-root /explicit/phase1 --storage-scope local-development
+python -m compileall -q src/models src/stage1/validate_model.py
+python -m src.stage1.validate_model --model qwen --phase1-root /explicit/phase1 --storage-scope local-development
+python -m src.stage1.validate_model --model gemma --phase1-root /explicit/phase1 --storage-scope local-development
 ```
 
 For real validation, add `--dataset-manifest` pointing to the passed dataset
@@ -128,3 +128,6 @@ These references informed the configurable loader; they do not pin a runtime.
 
 
 Integration note: the coordinator selected/pinned the compact L4 starting pair and direct runtime dependencies in configs/models.json and requirements-l4.txt; see stage1_l4.md. This supersedes the earlier unselected-registry state in the historical handoff. Gemma processor metadata still requires authorized gated access. Source-configured visual paths remain untested until real validation. Model loading explicitly requires safetensors; actual model validation rejects dirty/unknown Git provenance. No checkpoint inference/GPU check has been performed by these updates.
+
+
+Notebook entry points (user-requested conversion): `scripts/stage1/stage1_cpu.ipynb` runs preparation then validation; `configure_l4.ipynb`, `validate_model.ipynb` and `run_validity_smoke.ipynb` run in that order per MODEL. The five former scripts/stage1 Python entry files are removed. Their shared implementations now live in src/stage1; scientific rules, artifacts and completion gates are unchanged. Notebook syntax and CPU fixture checks do not establish actual Colab/L4/Drive completion.

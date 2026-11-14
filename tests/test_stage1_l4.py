@@ -14,7 +14,7 @@ from src.common.contracts import fingerprint
 from src.common.storage import publish, verify
 from src.models.hf import validate_device
 
-spec=importlib.util.spec_from_file_location('configure_l4',Path(__file__).resolve().parents[1]/'scripts/stage1/configure_l4.py')
+spec=importlib.util.spec_from_file_location('configure_l4',Path(__file__).resolve().parents[1]/'src/stage1/configure_l4.py')
 module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
 
 class L4Tests(unittest.TestCase):

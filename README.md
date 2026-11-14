@@ -48,3 +48,6 @@ For explicit local-development preflight, run the smoke entry point with --model
 ## Integrated L4 preparation
 
 The two Stage 1 worker implementations are integrated on phase1. The selected Qwen 3B/Gemma 4B profile, source-cache portability fix, actual remaining blockers and Colab/L4 commands are in [docs/stage1_l4.md](docs/stage1_l4.md). Selection/configuration is not actual model validation. Use the intended Drive account and run one model process at a time on a single L4.
+
+
+Notebook entry points (user-requested conversion): `scripts/stage1/stage1_cpu.ipynb` runs preparation then validation; `configure_l4.ipynb`, `validate_model.ipynb` and `run_validity_smoke.ipynb` run in that order per MODEL. The five former scripts/stage1 Python entry files are removed. Their shared implementations now live in src/stage1; scientific rules, artifacts and completion gates are unchanged. Notebook syntax and CPU fixture checks do not establish actual Colab/L4/Drive completion.

@@ -159,10 +159,10 @@ Agree the common manifest/config interface first. Then parallelize the following
 
 | Work item | Proposed script or area | Dependencies and execution |
 |---|---|---|
-| S1-A: dataset preparation | `scripts/stage1/prepare_dataset.py`, data-reader module | Model-independent; builds the common manifest, original caption views, selections, labels/masks and versioned split metadata once |
-| S1-B: automatic data validation | `scripts/stage1/validate_data.py` | Depends on S1-A outputs; verifies joins, support, partition disjointness, masks, checksums and deterministic reload |
-| S1-C: model registry and adapters | `configs/`, `src/models/`, `scripts/stage1/validate_model.py` | Can be implemented alongside S1-A after the shared contract is fixed; execute separately with each model selector after its configuration and FIT smoke inputs are ready |
-| S1-D: end-to-end smoke check | `scripts/stage1/run_validity_smoke.py` | Depends on validated data/adapter interfaces; small FIT-only extraction and readout-optimizer/label-permutation plumbing checks, model-namespaced outputs |
+| S1-A: dataset preparation | `src/stage1/prepare_dataset.py`, data-reader module | Model-independent; builds the common manifest, original caption views, selections, labels/masks and versioned split metadata once |
+| S1-B: automatic data validation | `src/stage1/validate_data.py` | Depends on S1-A outputs; verifies joins, support, partition disjointness, masks, checksums and deterministic reload |
+| S1-C: model registry and adapters | `configs/`, `src/models/`, `src/stage1/validate_model.py` | Can be implemented alongside S1-A after the shared contract is fixed; execute separately with each model selector after its configuration and FIT smoke inputs are ready |
+| S1-D: end-to-end smoke check | `src/stage1/run_validity_smoke.py` | Depends on validated data/adapter interfaces; small FIT-only extraction and readout-optimizer/label-permutation plumbing checks, model-namespaced outputs |
 | S1-E: integration/handoff review | Stage 1 report plus owned updates to `plan.md` | Verifies both model smoke reports and the shared artifact/config identities before bulk extraction is enabled |
 
 These names are implementation proposals, not existing scripts. Keep a single owner for shared helpers, registry schemas and `plan.md`; model-adapter files can have separate owners. Every chat must read the common constraints before modifying its owned part. Use unique run outputs even if two chats run the same entry point with different model variables.
@@ -199,3 +199,6 @@ Updated 15 November 2026 during coordinator integration.
 - Use docs/stage1_l4.md for actual storage/configuration/model-validation commands. Detailed Stage 2-5 planning remains pending. Stage 1 and full G0 are not complete.
 
 The design-review extraction-condition/split and cache-key gaps are addressed by the additive extraction.v2 request interface and layered execution/feature/readout/analysis identities; see docs/stage1_contracts.md. Legacy smoke calls stay FIT-only. The validator now requires repeatable caption-only and single-per-image visual extraction as well as image-plus-caption, and records actual backend/site identities when executed successfully. No new model outcome was inspected to choose these rules. No scientific question, split, data identity or confirmed model/GPU pass is changed by this implementation.
+
+
+Notebook entry points (user-requested conversion): `scripts/stage1/stage1_cpu.ipynb` runs preparation then validation; `configure_l4.ipynb`, `validate_model.ipynb` and `run_validity_smoke.ipynb` run in that order per MODEL. The five former scripts/stage1 Python entry files are removed. Their shared implementations now live in src/stage1; scientific rules, artifacts and completion gates are unchanged. Notebook syntax and CPU fixture checks do not establish actual Colab/L4/Drive completion.

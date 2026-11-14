@@ -19,3 +19,5 @@ The current implementation scope is Stage 1 of G9-Q6. Stages 2-5 have overview d
 - G0 is staged: initial data/adapter smoke checks precede bulk work; full shuffled-label controls finish after real feature caches exist, before scientific interpretation. Smoke outputs are not scientific evidence or final checkpoints.
 
 If current instructions conflict with a historical note, follow the user's current instructions and the frozen current protocol. Make necessary changes explicit, preserve unrelated work, and report actual validation and remaining gaps honestly.
+
+User-requested Stage 1 entry points are now notebooks in scripts/stage1. Keep reusable implementations in src/stage1 and preserve reproducibility, model selection, provenance and validity rules. Do not recreate removed Stage 1 CLI entry files without a new need.

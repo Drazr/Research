@@ -67,3 +67,8 @@ Added layered cache-key helpers with execution/view/site identities independent 
 Validation: **38 CPU tests passed** using the bundled Python 3.12 runtime, including nine new contract/routing/key tests, actual image-only input construction with a fake processor, existing hook/pooling fixtures and prior data/storage/runtime regressions. No weights were loaded; no actual L4 or positive model/smoke run was available. The five Stage 1 entry scripts are in scripts/stage1. Runtime artifacts remain outside Git.
 
 The connected Drive profile was checked for the user's request: it is still the previously connected Shaurya account, not the requested Tapas/Drazr account. No Drive writes were performed. Correct Drive connection plus mounted-folder persistence and real Qwen/Gemma L4 validation remain prerequisites; Stage 1 remains incomplete.
+
+
+### Notebook entry-point conversion
+
+At the user's request, the five Python entry files in scripts/stage1 are replaced with four notebooks: stage1_cpu (preparation then validation), configure_l4, validate_model and run_validity_smoke. Shared implementations moved unchanged to src/stage1, with the L4 fixture import updated. This retains independent processes for model memory cleanup and exact code provenance. Each model notebook has a MODEL selector; configuration/passed dataset artifacts remain prerequisites. All 38 CPU regressions passed, all notebook code cells compile, all five shared module CLIs load, and notebook runner argument routing passed fixture checks. No actual Colab/L4/Drive run occurred and Stage 1 remains incomplete.
