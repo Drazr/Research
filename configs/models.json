@@ -14,7 +14,16 @@
       "tokenizer_revision": null,
       "chat_template_sha256": null,
       "max_input_tokens": null,
-      "software_versions": {}
+      "software_versions": {},
+      "model_class": null,
+      "decoder_path": null,
+      "image_token_ids": null,
+      "processor_kwargs": null,
+      "device": null,
+      "attention_backend": null,
+      "repeat_atol": null,
+      "repeat_rtol": null,
+      "visual_paths": {}
     },
     "gemma": {
       "checkpoint_id": null,
@@ -28,7 +37,16 @@
       "tokenizer_revision": null,
       "chat_template_sha256": null,
       "max_input_tokens": null,
-      "software_versions": {}
+      "software_versions": {},
+      "model_class": null,
+      "decoder_path": null,
+      "image_token_ids": null,
+      "processor_kwargs": null,
+      "device": null,
+      "attention_backend": null,
+      "repeat_atol": null,
+      "repeat_rtol": null,
+      "visual_paths": {}
     }
   }
 }
