@@ -12,7 +12,7 @@ Research context and the execution plan for frozen Qwen/Gemma VLM category probe
 
 ## Current status
 
-The scheduled starting block is G0 plus E01/E02/E03/E04/E19/E25. Experiment scripts and model runs are not implemented/completed by uploading these files. The existing label-only split/support audit is included. Exact checkpoints, native-caption acquisition/selection and the common image population still require Stage 1 resolution. configs/models.json is explicitly a skeleton.
+The scheduled starting block is G0 plus E01/E02/E03/E04/E19/E25. Experiment scripts and model runs are not implemented/completed by uploading these files. The existing label-only split/support audit is included. Original native-caption acquisition/selection and the common image population were validated locally. Compact checkpoint candidates and a pinned L4 runtime are selected in configs/models.json and requirements-l4.txt; actual authorized metadata resolution, model/GPU and persistent Drive validation remain pending.
 
 Use one model selector for model-specific work, and model/configuration fingerprints for output compatibility. Keep shared preparation/extraction reusable; run E19/E25 from saved E01 predictions. All instructions apply to both model families and all four languages where technically supported.
 
@@ -43,3 +43,8 @@ python -m unittest discover -s tests -p test_stage1_foundation.py -v
 ```
 
 For explicit local-development preflight, run the smoke entry point with --model qwen (or gemma), --phase1-root .local/phase1 and --storage-scope local-development. Expected exit code is 2 while configurations are unresolved. Actual smoke execution additionally needs --dataset-manifest pointing to a passed dataset artifact's _COMPLETE.json and --code-commit identifying the code used. Use the actual persistent Drive root and persistent-drive scope only when that storage is available and verified. No default root is guessed.
+
+
+## Integrated L4 preparation
+
+The two Stage 1 worker implementations are integrated on phase1. The selected Qwen 3B/Gemma 4B profile, source-cache portability fix, actual remaining blockers and Colab/L4 commands are in [docs/stage1_l4.md](docs/stage1_l4.md). Selection/configuration is not actual model validation. Use the intended Drive account and run one model process at a time on a single L4.

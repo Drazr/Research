@@ -1,4 +1,4 @@
-# Stage 1 foundation review — 15 November 2026
+# Stage 1 foundation review â€” 15 November 2026
 
 **Stage 1 is not complete.** This report covers the coordinator foundation before the data/model branches have been implemented or integrated. No experiment result, real-model feature extraction or GPU validation is claimed.
 
@@ -37,3 +37,14 @@ The smoke runner can report blocked/failed prerequisites and, after integration,
 ## Next handoff
 
 The user receives the foundation commit SHA on phase1. Both worker chats branch from that exact SHA, follow their owned paths and preserve the shared interfaces. The coordinator reviews their changes and actual artifacts before merging and running real FIT-only end-to-end checks. Resolve any remaining data, model access, checkpoint selection or runtime gaps explicitly. Only update Stage 1 completion after the relevant real checks have passed.
+
+
+## Worker integration and L4 preparation — 15 November 2026
+
+Integrated data head 2f42b4a81c404b18ff5a3f451f618593d56eec1a and model head 2f374d2c171c8b4d27099c00fe1214a476c13707, both based on ea06d93. File ownership/scientific-document boundaries were verified. The prior independent review reloaded and validated all 3,600 real images/14,400 selected records, preserving category order, split assignment, 14-category primary cohort and one unknown cell. This is local data evidence, not model or Drive evidence.
+
+Integration fixes: removed hard-link source-cache publication; added streamed source-Path payloads and incremental verification; added cache tests for missing hard-link support, reuse, partial artifacts, corruption and legacy cache migration. Selected immutable Qwen2.5-VL-3B/Gemma-3-4B revisions and a direct-pinned L4 runtime. Added metadata-only L4 configuration resolution with explicit gated-access handling, hardware/version guard fixtures, safetensors-only model loading and dirty/unknown-checkout validation guards.
+
+The combined suite has 27 passing CPU tests (11 foundation, 4 data, 7 model, 3 source-cache, 2 L4 guard tests). No real L4, weight load, metadata resolution through authorized Gemma access, or positive actual-model validation was executed here. The local environment lacks a mounted Drive root and nvidia-smi on PATH; this does not prove the user's L4 host lacks a GPU. Model pin files were obtained from the publisher's public APIs; Gemma metadata files returned HTTP 401 and its template/token fields remain unresolved. The user has chosen to reconnect a different Google Drive; no writes were made to the old account.
+
+Stage 1 remains incomplete pending intended Drive access/mount, real filesystem/cache readbacks, runtime setup and actual FIT-only validation/smoke checks for both models. Full G0 and the scientific first-set experiments remain pending later stages. See docs/stage1_l4.md for the handoff commands and exact selected profile.

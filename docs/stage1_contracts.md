@@ -1,4 +1,4 @@
-# Stage 1 shared interfaces — stage1.v1
+# Stage 1 shared interfaces â€” stage1.v1
 
 Frozen for the initial data/model worker branches on 15 November 2026. Read alongside AGENTS.md, plan.md and prelim.md. This freezes implementation interfaces, not unchosen checkpoint identities or later-stage tensor formats. Coordinator owns changes to this contract and src/common/contracts.py/storage.py.
 
@@ -44,3 +44,10 @@ Consumers call storage.verify and recheck payload hashes after synchronization. 
 The smoke CLI consumes real validated data and adapters, uses FIT-only images with image-group inner train/validation division, checks extraction/repeats and a tiny pooled-view optimizer fit. Its toy fitting is software plumbing, not E01 transfer or G9 calibration. Three image-vector permutation wiring checks do not complete full Stage 3 G0 controls. Exit codes: 0 smoke passed, 2 blocked, 1 failed. Overall Stage 1 readiness requires the integration review as well as passed real data/model/smoke reports.
 
 Detailed Stage 2 cache tensor formats, E01 numerical implementation and later-stage prediction serialization remain future planning. Do not expand them independently within Stage 1.
+
+
+## Integration addendum — 15 November 2026
+
+The frozen public data/model APIs remain compatible. storage.publish now additionally accepts a source Path as a payload value and streams it; byte payload behavior is unchanged. Verification also hashes files incrementally. Source downloads use unique completion-verified content-addressed cache directories without hard links or rename requirements. This is an additive helper extension, not a dataset/feature schema change.
+
+The selected L4 candidate/runtime profile and instructions are in stage1_l4.md. Actual GPU inference and Drive-mount durability remain unverified until execution in the user's runtime. Generated runtime configuration uses a passed real dataset artifact for provenance, so its completion report does not fabricate a dataset fingerprint. Runtime-configuration readiness is distinct from model/Stage 1 readiness.

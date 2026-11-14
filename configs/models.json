@@ -1,34 +1,83 @@
 {
-  "status": "Configuration skeleton; neither checkpoint is selected and this is not an inference-ready configuration.",
+  "status": "Selected pinned L4 candidates. Run configure_l4.py on the actual L4; Gemma template/token metadata requires authorized gated-repository access. No real model/GPU validation passed.",
   "selector": "--model",
   "models": {
     "qwen": {
-      "checkpoint_id": null,
-      "revision": null,
-      "processor_revision": null,
+      "checkpoint_id": "Qwen/Qwen2.5-VL-3B-Instruct",
+      "revision": "66285546d2b821cf421d4f5eb2576359d3770cd3",
+      "processor_revision": "66285546d2b821cf421d4f5eb2576359d3770cd3",
       "adapter": "qwen",
-      "precision": null,
+      "precision": "bfloat16",
       "quantization": null,
-      "image_policy": null,
+      "image_policy": "pinned_processor_with_explicit_kwargs",
       "config_fingerprint": null,
-      "tokenizer_revision": null,
-      "chat_template_sha256": null,
-      "max_input_tokens": null,
-      "software_versions": {}
+      "tokenizer_revision": "66285546d2b821cf421d4f5eb2576359d3770cd3",
+      "chat_template_sha256": "a0bc6f6fc7a29a80017a433e8f03a1cc1236e838a944a2d034295a60c4f2fddb",
+      "max_input_tokens": 1024,
+      "software_versions": {
+        "torch": "2.9.1",
+        "transformers": "4.57.6",
+        "numpy": "2.1.3",
+        "Pillow": "11.3.0",
+        "scikit-learn": "1.6.1",
+        "huggingface-hub": "0.36.0",
+        "tokenizers": "0.22.1",
+        "safetensors": "0.6.2"
+      },
+      "model_class": "Qwen2_5_VLForConditionalGeneration",
+      "decoder_path": "model.language_model.layers",
+      "image_token_ids": [
+        151655
+      ],
+      "processor_kwargs": {
+        "min_pixels": 3136,
+        "max_pixels": 200704
+      },
+      "device": "cuda:0",
+      "attention_backend": "eager",
+      "repeat_atol": 0.0,
+      "repeat_rtol": 0.0,
+      "visual_paths": {
+        "encoder": "model.visual.blocks.31",
+        "projector": "model.visual.merger"
+      }
     },
     "gemma": {
-      "checkpoint_id": null,
-      "revision": null,
-      "processor_revision": null,
+      "checkpoint_id": "google/gemma-3-4b-it",
+      "revision": "093f9f388b31de276ce2de164bdc2081324b9767",
+      "processor_revision": "093f9f388b31de276ce2de164bdc2081324b9767",
       "adapter": "gemma",
-      "precision": null,
+      "precision": "bfloat16",
       "quantization": null,
-      "image_policy": null,
+      "image_policy": "pinned_processor_with_explicit_kwargs",
       "config_fingerprint": null,
-      "tokenizer_revision": null,
+      "tokenizer_revision": "093f9f388b31de276ce2de164bdc2081324b9767",
       "chat_template_sha256": null,
-      "max_input_tokens": null,
-      "software_versions": {}
+      "max_input_tokens": 1024,
+      "software_versions": {
+        "torch": "2.9.1",
+        "transformers": "4.57.6",
+        "numpy": "2.1.3",
+        "Pillow": "11.3.0",
+        "scikit-learn": "1.6.1",
+        "huggingface-hub": "0.36.0",
+        "tokenizers": "0.22.1",
+        "safetensors": "0.6.2"
+      },
+      "model_class": "Gemma3ForConditionalGeneration",
+      "decoder_path": "model.language_model.layers",
+      "image_token_ids": null,
+      "processor_kwargs": {
+        "do_pan_and_scan": false
+      },
+      "device": "cuda:0",
+      "attention_backend": "eager",
+      "repeat_atol": 0.0,
+      "repeat_rtol": 0.0,
+      "visual_paths": {
+        "encoder": "model.vision_tower",
+        "projector": "model.multi_modal_projector"
+      }
     }
   }
 }

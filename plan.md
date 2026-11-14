@@ -42,7 +42,7 @@ Each registry entry records at least:
 - The four fixed decoder depths and midpoint resolved from that checkpoint's actual decoder block count.
 - A model-configuration fingerprint. The aliases `qwen` and `gemma` alone are not enough to identify cached results.
 
-Exact Qwen/Gemma checkpoints have not yet been selected in this plan. Register and pin them during Stage 1 before their model checks or bulk inference. Different revisions/configurations produce different fingerprints and new output namespaces; they must not overwrite an earlier run under the same alias.
+The selected starting pair is Qwen/Qwen2.5-VL-3B-Instruct and google/gemma-3-4b-it, with immutable revisions in configs/models.json. See docs/stage1_l4.md for the selected L4 runtime profile. Authorized processor-metadata resolution and actual model checks remain prerequisites before bulk inference. Different revisions/configurations produce different fingerprints and new output namespaces; they must not overwrite an earlier run under the same alias.
 
 Use one generic experiment entry point with model adapters for architecture-specific loading, token spans and hooks. Model-independent preparation/E03 should not be repeated separately for each model. If a genuinely different model-specific script is necessary, a name such as `e04_positions_gemma.py` is acceptable, but it must use the same data/scoring contracts and document the reason. Prefer adapters over copying a whole experiment pipeline.
 
@@ -188,11 +188,12 @@ Only then specify the detailed Stage 2 extraction and E03 implementation plan. T
 
 ## Current status
 
-Updated 15 November 2026 by the Stage 1 coordinator.
+Updated 15 November 2026 during coordinator integration.
 
-- Five-stage overview: documented. Stage 2-5 detail remains pending.
-- Stage 1 interfaces: frozen as `stage1.v1`; see [shared contracts](docs/stage1_contracts.md) and [file ownership](docs/stage1_ownership.md).
-- Shared contracts/storage helpers and smoke entry point: implemented at the foundation stage. These do not complete data preparation, real adapters or real VLM validation.
-- Data and model implementation branches: not integrated. Exact checkpoint choices and original four-language dataset preparation remain pending.
-- Local development root: `.local/phase1`, explicitly local and Git-ignored. Colab persistent root, after mounting Drive: `/content/drive/MyDrive/phase1`. A Windows synced Drive path and actual persistent Drive access are not verified here.
-- Integration evidence and blockers: [Stage 1 integration report](reports/stage1_integration.md). Full G0 controls remain pending Stage 3; Stage 1 is not marked complete.
+- Data branch 2f42b4a and model branch 2f374d2 are integrated into this phase1 snapshot with their histories preserved. Main remains unchanged.
+- Original data independently revalidated locally: 3,600 images, 14,400 selected four-language records, 14 primary categories and one preserved unknown cell. No scientific results were produced.
+- Shared stage1.v1 public APIs remain compatible; source-cache/storage helpers gained streaming, completion-verified publication without hard links. Cache corruption/partial-publication checks passed locally.
+- Combined CPU foundation/data/model/cache/L4-guard suite: 27 tests passed. Tests using fake devices/modules are software checks, not actual GPU/model evidence.
+- Selected L4 starting pair: Qwen2.5-VL-3B-Instruct and Gemma 3 4B IT, sequential dense bfloat16, batch one. Immutable revisions and the direct runtime pins are recorded; actual L4 execution/memory fit remains untested. Gemma gated processor metadata remains unresolved pending authorized access.
+- The user chose a different Google Drive account. No folder/artifact was created in the previously connected account. PHASE1_ROOT and actual Drive-mounted read/write/sync checks remain pending in the intended runtime.
+- Use docs/stage1_l4.md for actual storage/configuration/model-validation commands. Detailed Stage 2-5 planning remains pending. Stage 1 and full G0 are not complete.

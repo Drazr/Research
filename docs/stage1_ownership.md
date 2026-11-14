@@ -13,3 +13,6 @@ configs/models.json contains the shared skeleton now; the model chat owns popula
 Each branch reports its base commit, changed files, tests run, exact commands/configuration, actual dataset/model artifacts generated, and missing prerequisites. Use --model selectors and separate model/run artifact namespaces. Do not claim actual model tests passed merely because a fake adapter or software fixture passed. Do not alter scientific documents or mark the whole stage complete.
 
 Integration sequence: review both task diffs and compatibility tests; integrate into phase1 preserving unrelated work; run CPU data validation and real FIT-only adapter/smoke checks for both configured models when data/access/hardware permit; record passed/blocked/failed checks and only then update the Stage 1 checklist. Full G0 shuffled-label confirmation remains Stage 3 work. Main is not changed by this foundation commit.
+
+
+Integration ownership: after the worker handoff, the coordinator also owns the merge fixes for source-cache publication, streaming storage, validator provenance, the selected L4 registry/profile, configure_l4.py, requirements-l4.txt and the cache/L4 regression tests. Data/model task branches retain their original history. Future changes should be based on the integrated phase1 head, not the old frozen foundation SHA.

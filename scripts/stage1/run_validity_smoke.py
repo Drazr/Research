@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import platform
 import re
+import subprocess
 import sys
 
 REPO = Path(__file__).resolve().parents[2]
@@ -35,6 +36,13 @@ def execute(args):
         metadata['model_fingerprint'] = namespace_model = config['config_fingerprint']
         if not args.code_commit or not re.fullmatch('[0-9a-f]{40}', args.code_commit):
             raise ContractError('A real code commit must be supplied through --code-commit')
+        try:
+            actual_commit = subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True,stderr=subprocess.DEVNULL).strip()
+            dirty = bool(subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True,stderr=subprocess.DEVNULL).strip())
+        except (OSError,subprocess.CalledProcessError) as exc:
+            raise ContractError('Run real smoke checks from a clean Git checkout') from exc
+        if dirty or actual_commit != args.code_commit:
+            raise ContractError('Dirty checkout or --code-commit differs from the actual checkout')
         if not args.dataset_manifest:
             raise ContractError('Provide the completed dataset artifact using --dataset-manifest')
         data_module = importlib.import_module('src.common.data')
@@ -133,6 +141,13 @@ def execute(args):
         report['status'] = 'failed'
         report['blockers'].append(type(exc).__name__ + ': ' + str(exc))
     metadata['status'] = report['status']
+    runtime_torch = sys.modules.get('torch')
+    if runtime_torch is not None and runtime_torch.cuda.is_available():
+        report['observed_gpu_memory'] = {
+            'device':runtime_torch.cuda.get_device_name(0),
+            'peak_allocated_bytes':runtime_torch.cuda.max_memory_allocated(0),
+            'peak_reserved_bytes':runtime_torch.cuda.max_memory_reserved(0),
+            'scope':'this smoke process, including weight loading; no fit guarantee for later workloads'}
     metadata['script_sha256'] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     location = publish(root, f'smoke/{namespace_model}/{run_id}', metadata,
                        {'report.json': canonical_bytes(report) + b'\n'})

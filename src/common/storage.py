@@ -10,6 +10,13 @@ from .contracts import SCHEMA_VERSION, ContractError, canonical_bytes, relative_
 
 MARKER = '_COMPLETE.json'
 
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
 def phase1_root(value=None) -> Path:
     value = value or os.environ.get('PHASE1_ROOT')
     if not value:
@@ -47,18 +54,28 @@ def publish(root: Path, namespace: str, manifest: dict, files: dict) -> Path:
         raise ContractError('Nonempty payload required; completion marker is reserved')
     for name, data in files.items():
         relative_path(name)
-        if not isinstance(data, bytes):
-            raise ContractError('Artifact payloads must be bytes')
+        if not isinstance(data, (bytes, Path)):
+            raise ContractError('Artifact payloads must be bytes or source Paths')
+        if isinstance(data, Path) and not data.is_file():
+            raise ContractError('Source payload is not a file')
     target = within(root, namespace)
     target.mkdir(parents=True, exist_ok=False)
     checksums = {}
     for name, data in files.items():
         p = within(target, name)
         p.parent.mkdir(parents=True, exist_ok=True)
+        digest = hashlib.sha256()
         with p.open('xb') as f:
-            f.write(data)
-        checksums[name] = hashlib.sha256(data).hexdigest()
-        if hashlib.sha256(p.read_bytes()).hexdigest() != checksums[name]:
+            if isinstance(data, bytes):
+                f.write(data)
+                digest.update(data)
+            else:
+                with data.open('rb') as source:
+                    for block in iter(lambda: source.read(1024 * 1024), b''):
+                        f.write(block)
+                        digest.update(block)
+        checksums[name] = digest.hexdigest()
+        if file_sha256(p) != checksums[name]:
             raise ContractError('Written artifact failed verification')
     complete = dict(manifest, schema_version=SCHEMA_VERSION, files=checksums)
     with (target / MARKER).open('xb') as f:
@@ -81,6 +98,6 @@ def verify(path: Path, required_status='passed', expected=None) -> dict:
     for name, digest in manifest['files'].items():
         require_sha256(digest)
         p = within(path, name)
-        if not p.is_file() or hashlib.sha256(p.read_bytes()).hexdigest() != digest:
+        if not p.is_file() or file_sha256(p) != digest:
             raise ContractError('Missing, partially synced or corrupt artifact: ' + name)
     return manifest
