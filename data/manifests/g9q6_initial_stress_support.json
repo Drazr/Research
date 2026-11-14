@@ -1,0 +1,94 @@
+{
+  "kind": "Label-only design eligibility audit; no model outcomes used.",
+  "eligible_pair_count": 72,
+  "selection_rule": "Descending minimum SCREEN positive-stratum count; lexical ties; first three distinct target categories.",
+  "selected": [
+    {
+      "target": "plant.n.02",
+      "context": "building.n.01",
+      "positive_training_count_per_arm": 548,
+      "counts": {
+        "FIT": {
+          "00": 728,
+          "01": 323,
+          "10": 548,
+          "11": 561,
+          "unknown": 0
+        },
+        "DEV-S": {
+          "00": 56,
+          "01": 27,
+          "10": 41,
+          "11": 56,
+          "unknown": 0
+        },
+        "SCREEN": {
+          "00": 122,
+          "01": 55,
+          "10": 91,
+          "11": 91,
+          "unknown": 1
+        }
+      },
+      "screen_min_positive_stratum": 91
+    },
+    {
+      "target": "building.n.01",
+      "context": "person.n.01",
+      "positive_training_count_per_arm": 420,
+      "counts": {
+        "FIT": {
+          "00": 829,
+          "01": 447,
+          "10": 420,
+          "11": 464,
+          "unknown": 0
+        },
+        "DEV-S": {
+          "00": 60,
+          "01": 37,
+          "10": 43,
+          "11": 40,
+          "unknown": 0
+        },
+        "SCREEN": {
+          "00": 149,
+          "01": 64,
+          "10": 76,
+          "11": 71,
+          "unknown": 0
+        }
+      },
+      "screen_min_positive_stratum": 71
+    },
+    {
+      "target": "body_part.n.01",
+      "context": "plant.n.02",
+      "positive_training_count_per_arm": 464,
+      "counts": {
+        "FIT": {
+          "00": 527,
+          "01": 645,
+          "10": 524,
+          "11": 464,
+          "unknown": 0
+        },
+        "DEV-S": {
+          "00": 46,
+          "01": 63,
+          "10": 37,
+          "11": 34,
+          "unknown": 0
+        },
+        "SCREEN": {
+          "00": 99,
+          "01": 114,
+          "10": 78,
+          "11": 68,
+          "unknown": 1
+        }
+      },
+      "screen_min_positive_stratum": 68
+    }
+  ]
+}

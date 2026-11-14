@@ -1,0 +1,27 @@
+{
+  "prepared_date": "2026-11-15",
+  "target_repository": "https://github.com/Drazr/Research",
+  "annotation": {
+    "git_blob_sha": "6b99def06a621c570edf074c26741868a4df7353",
+    "source": "https://api.github.com/repos/uriberger/cross_lingual_diff_in_descs/git/blobs/6b99def06a621c570edf074c26741868a4df7353",
+    "sha256": "acb83d20b8930e52865c673d715a55484c5a528290dd2e8296dfd7cd725e2a09",
+    "rows": 3600,
+    "category_columns": 25
+  },
+  "source_document_sha256_before_repository_link_and_storage_edits": {
+    "research.md": "99c4306ca0d45fd4c53a9ecdad9117d756096c8c4f528f267a167e93be3210c7",
+    "prelim.md": "364984697d7ec28bce977c792d222cf515f4afab5830f691db251fd22c11ca40",
+    "M1.md": "cd07cc18c0d26f8386c3a5ee60d07c180199f6b5e671120a16d3703914a9bda9",
+    "M2.md": "ed96c2186d94fbe387470e9ffae17beadba56b582ca3550b7f7e692c85582549",
+    "paper.md": "4245b47335216ba0a847f6954b9e761917ead405af8d279bd095dc74f97965c8",
+    "analysis.md": "6f6132d07bd9b0062bde5715e307808becb0f4b30229848f1aa966cd5acc63d7",
+    "plan.md": "76ee13a49a829421fb3477c80436ffa553d86d42b9b8d1f8b0b456f30570f070"
+  },
+  "native_caption_release": {
+    "status": "Must be selected, pinned and validated during Stage 1; no fabricated revision/hash."
+  },
+  "model_checkpoints": {
+    "status": "Not yet selected; Stage 1 must pin both model configurations."
+  },
+  "note": "Hashes identify inputs; they do not certify human annotation correctness or publication novelty."
+}

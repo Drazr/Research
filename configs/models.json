@@ -1,0 +1,26 @@
+{
+  "status": "Configuration skeleton; neither checkpoint is selected and this is not an inference-ready configuration.",
+  "selector": "--model",
+  "models": {
+    "qwen": {
+      "checkpoint_id": null,
+      "revision": null,
+      "processor_revision": null,
+      "adapter": "qwen",
+      "precision": null,
+      "quantization": null,
+      "image_policy": null,
+      "config_fingerprint": null
+    },
+    "gemma": {
+      "checkpoint_id": null,
+      "revision": null,
+      "processor_revision": null,
+      "adapter": "gemma",
+      "precision": null,
+      "quantization": null,
+      "image_policy": null,
+      "config_fingerprint": null
+    }
+  }
+}

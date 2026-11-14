@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-14",
+  "strict_initial_ids": [
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05",
+    "E14",
+    "E19",
+    "E24",
+    "E25",
+    "E26",
+    "E27",
+    "E28"
+  ],
+  "new_initial_ids": [
+    "E24",
+    "E25",
+    "E26",
+    "E27",
+    "E28"
+  ],
+  "reclassified_existing_ids": [
+    "E05",
+    "E14",
+    "E19"
+  ],
+  "later_preliminary_ids": [
+    "E06",
+    "E07",
+    "E08",
+    "E09",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E15",
+    "E17",
+    "E18",
+    "E20",
+    "E21",
+    "E22",
+    "E23"
+  ],
+  "uncounted_reporting_guard_ids": [
+    "E16"
+  ],
+  "model_outcomes_consulted": false,
+  "model_experiments_executed": false,
+  "novelty_established": false,
+  "original_23_ids_retained": true,
+  "extra_human_validation_required": false,
+  "stress_support_audit": "g9q6_initial_stress_support.json"
+}

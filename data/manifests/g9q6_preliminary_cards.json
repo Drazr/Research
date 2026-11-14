@@ -1,0 +1,725 @@
+[
+  {
+    "id": "E01",
+    "name": "Within-context accessibility and the complete transfer grid",
+    "group": "A. Reference measurements",
+    "kind": "Anchor",
+    "depends": [],
+    "run_when": "Entry experiment after G0 passes.",
+    "question": "Does a source-language head fail on another caption context even when that target context supports a useful category readout?",
+    "comparison": "For each model and fixed decoder depth, fit one multilabel linear readout per language on the same FIT images. Apply every fitted readout unchanged to all four languages' SCREEN features: four matched-context cells and twelve transfer cells. Use the identical category IDs, cohort and default caption draw.",
+    "measure": "Per-category and supported-category macro AUROC/AP; Brier/NLL; fixed-threshold outcomes. Plot complete grids and depth profiles. For a route s→t, compare D(t,t) and D(s,t) on exactly the same target images and report both absolute values.",
+    "fit": "Source-only regularization/layer selection uses that source's DEV-S. Target-trained heads are explicitly supervised comparators, not knowledge oracles. No target refitting of the transferred head.",
+    "decision": "A stable transfer deficit with useful target-context decoding motivates compatibility-related branches. Weak diagonal and transferred scores motivate estimation/capacity/context checks. Strong transfer can still motivate confidence or category-specific questions.",
+    "limit": "A diagonal-minus-transfer gap does not uniquely identify coordinates or absent information. A target-trained head can be worse than a source head. Native caption content is not controlled; this reference measurement is not itself a novel contribution.",
+    "refs": [
+      "S01",
+      "S31",
+      "S39",
+      "T27"
+    ],
+    "phase": "initial",
+    "origin": "original initial test",
+    "initial_justification": "Directly measures Q6's accessibility-versus-portability distinction and G9's score relationships."
+  },
+  {
+    "id": "E02",
+    "name": "Image, caption and combined information sources",
+    "group": "A. Reference measurements",
+    "kind": "Diagnostic contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial reference block; do not wait for a large language gap.",
+    "question": "How much category predictability is already available without the image, and does adding the image change accessibility or transfer?",
+    "comparison": "Compare frozen VLM features from image-plus-original-caption and caption-only inputs at the same caption-defined readout position. Add a single image-only reference using encoder/projector features; any decoder image-only carrier text is fixed and has no four-language interpretation. Fit separate, matched-capacity heads for each feature source.",
+    "measure": "Absolute discrimination and proper scores, combined-minus-caption-only paired differences, and source-target grid changes. Keep architecture stages separate.",
+    "fit": "All heads and scaling are fitted on FIT; source-only selection uses DEV-S. Image identity determines all partitions. A stage that never attends to trailing caption tokens is not four language-specific observations.",
+    "decision": "Strong caption-only predictability makes text/context explanations worth retaining. Reproducible combined-input gains motivate image-related analysis. Similar visual-only scores with different combined-context scores locate an observational contrast to investigate.",
+    "limit": "Removing a modality changes the input distribution; combined-minus-text performance is not a causal decomposition. Label predictability from text is not a caption-mention annotation. No new captions, blank synthetic images or semantic judgments are needed.",
+    "refs": [
+      "S24",
+      "S47",
+      "S16",
+      "S25",
+      "T21"
+    ],
+    "phase": "initial",
+    "origin": "original initial test",
+    "initial_justification": "Basic evidence-source comparison is meaningful with strong, weak or absent language differences."
+  },
+  {
+    "id": "E03",
+    "name": "Shallow caption predictability reference",
+    "group": "A. Reference measurements",
+    "kind": "Diagnostic contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial reference block; complements E02 rather than replacing it.",
+    "question": "Are category decisions or apparent language differences predictable from simple surface features of the released captions?",
+    "comparison": "Fit a word/character TF-IDF linear classifier and a length-only classifier against image-presence labels, using untouched native captions. Fit a pooled character-feature classifier as a separately named multilingual baseline; do not equate separate vocabularies' dimensions for direct coefficient comparison.",
+    "measure": "Held-out within-context discrimination/proper scores and differences from caption-only neural readouts. Report whether strong category patterns recur in both shallow and neural features.",
+    "fit": "Vocabularies, IDF weights, length normalization and classifiers use FIT only. The paired image population and caption draw match E01. No translated vocabulary or category-name mapping is constructed.",
+    "decision": "A shallow baseline matching a proposed deep effect motivates a stronger lexical/context account. Deep improvement beyond these baselines can justify retaining representation-level analysis, subject to image-source checks.",
+    "limit": "Correlated words can predict unmentioned categories through scene associations. This experiment does not identify true native mentions, linguistic understanding or pretraining memorization. Language-specific baseline accuracy is not an intrinsic ranking of languages.",
+    "refs": [
+      "S02",
+      "S15",
+      "S16",
+      "T11"
+    ],
+    "phase": "initial",
+    "origin": "original initial test",
+    "initial_justification": "Shallow caption predictability is a necessary independent reference before interpreting deep category signal."
+  },
+  {
+    "id": "E04",
+    "name": "Readout position and pooling sensitivity",
+    "group": "A. Reference measurements",
+    "kind": "Diagnostic contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial extraction block; use only positions exposed reliably by the checkpoint.",
+    "question": "Is an apparent accessibility/transfer gap stable across positions, or specific to a narrow readout location?",
+    "comparison": "At the same fixed depths compare the last caption token, mean caption-token state and a fixed common post-caption end-of-turn/assistant-boundary position. Separately inspect decoder visual-token pooling where available. Document which tokens can attend to which modalities and positions under the actual attention mask.",
+    "measure": "Same-context and transferred discrimination/proper-score profiles at each site; compare the complete prespecified route grid, whether or not E01 contains a gap.",
+    "fit": "Independent heads have matched capacity and FIT/DEV-S support. Do not select a site from SCREEN peaks. Pool caption tokens separately from image and role tokens; otherwise sequence length changes mixture weights.",
+    "decision": "A site-specific gap motivates information-distribution or measurement-route follow-ups. A persistent gap across sites motivates broader compatibility analysis. A language difference in an ostensibly identical prefix state triggers an extraction audit.",
+    "limit": "Many causal decoders' image-prefix states cannot see later captions; inspect the architecture rather than assuming language conditioning. Better pooled decoding does not prove that the model routes or uses that information during answering.",
+    "refs": [
+      "S05",
+      "S47",
+      "S24",
+      "S29",
+      "T40"
+    ],
+    "phase": "initial",
+    "origin": "original initial test",
+    "initial_justification": "Measurement-site dependence must be known before treating one token as the representation."
+  },
+  {
+    "id": "E05",
+    "name": "Accessibility under different probe capacities",
+    "group": "B. Estimation and context dependence",
+    "kind": "Diagnostic contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial capacity reference after G0; no weak linear result or language gap is required.",
+    "question": "How dependent are within-context accessibility and portability on the diagnostic readout family?",
+    "comparison": "At the fixed midpoint depth ceil(L/2), compare a linear head with independent per-category one-hidden-layer MLPs. For the primary capacity comparison both receive the same 64-dimensional source-FIT PCA features (clipped to valid rank), the same source scaler, and the same known cells. Also retain E01's full-feature linear reference so PCA-induced loss is visible. Transfer each whole source system unchanged; target-context comparators are fitted on target FIT at this identical depth.",
+    "measure": "Within-context and transferred AUROC/AP and proper scores; train/evaluation gaps, parameter counts and fitting variation. Apply the same automatic shuffled-label controls to both families. Show reduced-linear versus full-linear results before attributing any change to nonlinearity.",
+    "fit": "Freeze the fitting recipe before scores: linear C grid from the shared protocol; MLP widths {16,64}, L2 coefficients {0.001,0.1} on mean loss, ReLU activation, Adam learning rate 0.001, maximum 200 epochs, and earliest minimum-DEV-S-log-loss checkpoint, with fixed seeds {0,1,2}. Select width/L2 by source DEV-S macro AUROC averaged across seeds; report all seeds, not a winning seed. The MLP grid has four configurations, but more parameters and checkpoint selection than the linear family; these are explicit differences. Each category has its own nonlinear head, avoiding an unannounced category-sharing change. No VLM weights are updated.",
+    "decision": "A nonlinear gain can open a readout-family-dependent accessibility direction; similar estimates can support using the simpler family. A large PCA penalty or unstable nonlinear fitting leaves the comparison unresolved. No outcome is assumed in order to run this initial contrast.",
+    "limit": "Capacity families have unequal parameterization and optimization; a finite comparison does not establish the best possible decoder. Nonlinear success does not show causal use by the VLM, and failure does not prove information absence. Later E06 can address finite-sample estimation if it becomes consequential.",
+    "refs": [
+      "S01",
+      "S44",
+      "S02",
+      "S10",
+      "S16"
+    ],
+    "phase": "initial",
+    "origin": "revised existing card",
+    "initial_justification": "Readout-family dependence is inherent in a claim about accessible information, before observing failure."
+  },
+  {
+    "id": "E06",
+    "name": "Learning efficiency and independent-image support",
+    "group": "B. Estimation and context dependence",
+    "kind": "Discovery contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "For stable above-prior categories; particularly before interpreting weak target-trained comparators.",
+    "question": "Is the apparent gap mainly associated with finite-sample readout estimation, or does it persist as training support increases?",
+    "comparison": "Fit the same linear head on nested 25%, 50% and 100% subsets of FIT image IDs, shared across languages. Preserve the head family and the source's full-FIT-selected regularization for the primary curve; a separately labeled re-tuned curve can assess sensitivity if necessary.",
+    "measure": "Within-context and transfer learning curves with actual positive/negative image counts, train/evaluation differences and uncertainty. Prequential codelength is an optional summary within this family, not an additional experiment.",
+    "fit": "Subsets are generated before scores are observed and every caption view stays with its image. Any optional online code respects image blocks, prefix-only fitting and an explicit prior code. The optional prequential code must not inherit a C chosen using the full FIT sequence: choose hyperparameters using only the current prefix and its internal image-group development split, or fix them externally before coding. A fixed-C learning curve and a valid prequential code are different protocols.",
+    "decision": "Gaps shrinking with support motivate an estimation-limited direction or parking premature missing-information claims. Persistent differences at the available support justify more focused compatibility work, not extrapolation beyond the data.",
+    "limit": "A short curve cannot establish asymptotic performance or sufficient power. Rare categories may be unestimable at smaller subsets. Repeated captions cannot be counted as new independent visual examples.",
+    "refs": [
+      "S11",
+      "S12",
+      "S44",
+      "T11"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E07",
+    "name": "Dependence on which existing caption is selected",
+    "group": "B. Estimation and context dependence",
+    "kind": "Discovery contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "For any promising language or route pattern before promoting it as a research direction.",
+    "question": "Is the observed pattern robust to the released collection's existing caption variation?",
+    "comparison": "Repeat the reference analysis under three prespecified deterministic draws of one original caption per image/language. Select independently within each language's released captions; caption index is not a translation alignment. Report duplicate selections for images with too few unique captions.",
+    "measure": "Image-paired changes in language gaps, route rankings, category effects and calibration. Distinguish caption-draw variation from fitting-seed variation.",
+    "fit": "Keep image partitions, primary category cohort and model/preprocessing settings fixed. Refit source heads on the drawn FIT captions; selection remains within that source's development data.",
+    "decision": "Stable effects remain candidate directions. Effects dominated by a particular caption draw motivate a context-selection/measurement question, or a narrower claim rather than blanket rejection.",
+    "limit": "The small released writer pool is not a population sample of a language community. Caption resampling does not create independent images or prove that meanings are matched. No caption is translated, repaired or manually checked.",
+    "refs": [
+      "S15",
+      "S29",
+      "S46",
+      "T45"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E08",
+    "name": "Length and surface-form sensitivity on unchanged captions",
+    "group": "B. Estimation and context dependence",
+    "kind": "Paired analysis",
+    "depends": [
+      "E01",
+      "E03"
+    ],
+    "run_when": "When a gap correlates with caption/token lengths or differs by pooling site.",
+    "question": "Does the pattern persist on automatically defined image subsets with comparable caption lengths, and after accounting for simple surface features?",
+    "comparison": "Record character length, model-token length and Unicode-script composition from original text. Define pairwise common-image length-ratio bands from FIT, then report the existing frozen heads on the corresponding SCREEN strata. A nuisance-only error predictor is a separately fitted reference, not a semantic matching device.",
+    "measure": "Gap stability across length bands, support/prevalence changes, and predictability of errors from the surface features alone. Use the same image subset for both members of a language comparison.",
+    "fit": "Band boundaries/nuisance models use FIT and DEV-S, not SCREEN performance. No truncation, transliteration, translation or newly written equivalent caption is introduced. If a nuisance-only model predicts classifier errors, its FIT error targets must come from image-group out-of-fold category decisions with fold-local preprocessing, not in-sample mistakes; evaluate it on the final frozen head's held-out decisions.",
+    "decision": "Length-dependent patterns motivate a more specific input-processing or measurement direction. Persistence limits a simple length-only account but does not remove content confounds.",
+    "limit": "Matching length is not matching meaning, token difficulty or information content. Stratum selection changes the evaluated population. Observational script statistics cannot establish a causal script/tokenizer failure.",
+    "refs": [
+      "S15",
+      "S29",
+      "S46",
+      "T10",
+      "T16"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E09",
+    "name": "Category co-occurrence and scene-load heterogeneity",
+    "group": "B. Estimation and context dependence",
+    "kind": "Paired analysis",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "When an aggregate effect could conceal a small category/scene subset.",
+    "question": "Are gaps widespread, or concentrated in particular category associations or images containing more annotated categories?",
+    "comparison": "Use only the released binary vector to define category multiplicity and training-estimated co-occurrence. For supported categories, choose the strongest FIT co-occurring root by a fixed association rule, then stratify existing SCREEN outcomes by that root and by multiplicity bands.",
+    "measure": "Per-category route gaps and proper scores within supported strata; compare the full result with leave-one-category-out macro summaries. Report all designated strata, not only the largest gap.",
+    "fit": "Association choices and multiplicity boundaries use FIT labels only. Test labels define evaluation strata but are never model input or cue guidance. Unknown cells do not count as absent categories.",
+    "decision": "Concentrated effects motivate a specific category/context direction; broad effects support a more general question. Aggregate findings disappearing after removing one root require a narrower claim.",
+    "limit": "Category multiplicity is not object count, crowding, salience or spatial complexity. Co-occurrence can legitimately help recognition; correlation does not prove a shortcut. Unsupported strata stay unestimated.",
+    "refs": [
+      "S24",
+      "S16",
+      "S33",
+      "T27"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E10",
+    "name": "Geometric agreement versus actual transfer",
+    "group": "C. Compatibility and representation structure",
+    "kind": "Discovery contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "After useful category signal is established; weak/unstable probes cannot support a strong geometry claim.",
+    "question": "Do similar category directions or representation geometries imply useful cross-context readout transfer in this setting?",
+    "comparison": "Compute signed present-positive cosine between independently fitted category-head directions in the common raw basis, and linear CKA on image-aligned SCREEN context rows. Add FIT split-half direction stability as a reference. Compare these quantities with E01 transfer scores and gaps.",
+    "measure": "Full category/route scatterplots and paired uncertainty for geometry-versus-function relationships; show absolute diagonal discrimination. Do not select examples from a best-looking plot.",
+    "fit": "Undo feature standardization in coefficients before comparing directions. Directions are fitted without SCREEN labels; CKA uses paired image IDs, not assumed sentence equivalence. Do not compare raw Qwen and Gemma coordinate vectors.",
+    "decision": "High geometric agreement with poor useful transfer motivates measurement/decision-specific explanations. Apparent disagreement below within-context estimator stability motivates better estimation first.",
+    "limit": "This can characterize dissociation, not prove shared semantic computation or causal use. Geometry/transfer dissociation already exists in the literature; a dataset-specific observation alone needs further contribution checking.",
+    "refs": [
+      "S39",
+      "S17",
+      "S46",
+      "T40"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E11",
+    "name": "Mean and scale adjustment before unchanged-head transfer",
+    "group": "C. Compatibility and representation structure",
+    "kind": "Discovery contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "When a useful source/target signal coexists with a transfer deficit or score shift.",
+    "question": "How much of the operational transfer deficit is sensitive to simple input-distribution statistics?",
+    "comparison": "For each route compare unchanged source preprocessing, mean-shift correction h_t−mu_t+mu_s, and diagonal mean/scale correction mu_s+sigma_s*(h_t−mu_t)/sigma_t. Apply the same source-fitted head/scaler after each raw-space map; protect zero-variance coordinates with a fixed numerical floor.",
+    "measure": "Changes in category AUROC/AP, Brier/NLL, thresholded outcomes and logit distributions. Report all three variants together.",
+    "fit": "mu/sigma use corresponding source/target FIT inputs only, with equal weight per image. No target labels are used to fit the corrections; target-input access makes this input-informed adaptation, not unchanged-source transfer.",
+    "decision": "Large consistent gains motivate an offset/scale-sensitive compatibility direction. Calibration-only gains motivate the confidence branch. No gain parks these particular corrections, not all coordinate accounts.",
+    "limit": "Context means may reflect different caption content or pooling, not a pure language component. Scaling can change useful information and margins; correction success is not a unique causal explanation.",
+    "refs": [
+      "T14",
+      "T04",
+      "T06",
+      "S39",
+      "S33"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E12",
+    "name": "Image-anchored constrained versus flexible feature maps",
+    "group": "C. Compatibility and representation structure",
+    "kind": "Conditional extension",
+    "depends": [
+      "E01",
+      "E11"
+    ],
+    "run_when": "Only if there is useful absolute signal and a stable unresolved transfer deficit.",
+    "question": "Can a map estimated from existing same-image contexts improve portability, and does its constraint matter?",
+    "comparison": "At a source-DEV-S-selected depth, fit a source-FIT PCA basis with r=min(64, source rank). In that shared reduced basis compare identity/centering-only transfer, a target-to-source orthogonal Procrustes map and a regularized unconstrained linear map, using FIT image pairs. Fit the source category head in that same basis for every map.",
+    "measure": "Held-out category transfer and proper scores alongside paired feature-reconstruction error. Report map rank/support and whether gains extend beyond reconstruction.",
+    "fit": "Select ridge strength using paired DEV-S reconstruction without target semantic labels; fixed r avoids target test selection. Map fitting is paired-image adaptation. Full-space reference scores are separate from reduced-space comparisons.",
+    "decision": "Constraint-sensitive functional improvement motivates a precise mapping question. Better reconstruction without useful transfer limits feature-matching accounts. Unstable maps motivate rank/sample analysis rather than a missing-information conclusion.",
+    "limit": "Image pairing is weak semantic correspondence; captions may differ legitimately. A flexible fitted map can learn context structure rather than merely rotate coordinates. No patching or base-model updates occur.",
+    "refs": [
+      "T02",
+      "T04",
+      "T14",
+      "S34",
+      "S44"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E13",
+    "name": "Category-score imitation versus full-feature matching",
+    "group": "C. Compatibility and representation structure",
+    "kind": "Conditional extension",
+    "depends": [
+      "E01",
+      "E12"
+    ],
+    "run_when": "When feature-map results raise the question of what information alignment should preserve.",
+    "question": "Does transferring a category-defined decision target behave differently from matching a source context's entire feature representation?",
+    "comparison": "Keep each source head fixed. On paired FIT images train a target-context linear student to imitate its 25 source category probabilities, then compare with the hard-label target head from E01 and the image-anchored feature-map route from E12. Use the same reduced input dimension for matched comparisons where applicable.",
+    "measure": "True-label AUROC/AP and proper scores, teacher agreement, and teacher/student error agreement. Agreement is never substituted for category correctness.",
+    "fit": "Use out-of-fold source teacher scores on FIT image groups so soft targets do not contain the teacher's in-sample memorization. No new captions or translations are generated. Select student regularization on declared development data and label that supervision.",
+    "decision": "Divergent true-label outcomes motivate a task-sufficient-versus-whole-feature alignment direction. Teacher agreement without correctness gain motivates a reference-bias concern or parking that imitation method.",
+    "limit": "This is a new readout-level adaptation of distillation, not a reproduction of sentence distillation. Source scores can be wrong or miscalibrated; no preserved native meaning or universal English reference is established.",
+    "refs": [
+      "T18",
+      "T55",
+      "T47",
+      "S33",
+      "S34"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E14",
+    "name": "Shared, context-offset and context-specific category heads",
+    "group": "C. Compatibility and representation structure",
+    "kind": "Discovery contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial common-rule reference; the shared image targets justify the comparison before any transfer result.",
+    "question": "How much category information supports a shared decision rule across the four observed contexts?",
+    "comparison": "Compare a pooled shared linear head, jointly fitted shared slopes with language-specific intercepts, and separate language heads at the fixed midpoint depth. Every FIT image contributes total weight one across its four views in pooled fits. Include a frozen-shared-slope intercept-only control to distinguish changing an offset from refitting slopes. Add the four fixed leave-one-language-out shared heads as source-only pooled-context comparators; do not search source subsets.",
+    "measure": "Per-context discrimination and Brier/NLL, parameter counts and FIT-to-SCREEN differences. An intercept change at fixed slopes cannot change within-category AUROC/AP; joint refitting can. Keep those two comparisons separate. Separate target-seen pooled fits from leave-one-language-out transfer.",
+    "fit": "Seen-context pooled models choose C on the equal-language DEV-S macro objective; a leave-one-language-out model uses only its three included languages for all fitting/selection. Intercept-only controls hold pooled slopes fixed and fit offsets on FIT. Separate heads follow their source-only DEV-S protocol. These target-seen models are supervised diagnostics, not zero-shot systems; image weighting and loss/regularization normalization remain explicit.",
+    "decision": "Shared success can open a common-rule direction; useful context-specific slopes can open a context-dependent readout question. Fixed-slope offsets changing only probability quality can open a score-scale question. Weak or unstable fits remain informative about this reference family, without assuming a pre-existing gap.",
+    "limit": "Extra parameters and heterogeneous caption content can account for differences. A shared fitted head does not prove a shared causal representation. This is not an independent source-portfolio study or reactivation of Q11.",
+    "refs": [
+      "S39",
+      "S34",
+      "S44",
+      "T23",
+      "T47"
+    ],
+    "phase": "initial",
+    "origin": "revised existing card",
+    "initial_justification": "Shared visual gold makes a common decision rule versus context-specific rules an a-priori question."
+  },
+  {
+    "id": "E15",
+    "name": "Source-only PCA bottlenecks and transfer retention",
+    "group": "C. Compatibility and representation structure",
+    "kind": "Discovery contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "When high-dimensional estimation or source-specific features remain plausible concerns.",
+    "question": "Do dimensions useful for source-context prediction help or hurt transfer as representation bandwidth increases?",
+    "comparison": "Fit source-FIT PCA once; compare linear heads on the first 16, 64 and 256 components, clipped to valid rank, plus the full feature reference. Regularization uses source DEV-S only. Apply each fitted system unchanged to target SCREEN features.",
+    "measure": "Source and transfer discrimination/proper-score retention relative to full features, explained variance and fitting stability. Keep all dimensionality results rather than a target-selected winner.",
+    "fit": "No target-guided component subset or semantic interpretation is used. A language-specific PCA basis remains part of that source system, including when applied to another context.",
+    "decision": "Source gains accompanied by transfer deterioration motivate a specificity/estimation direction. Parallel improvements motivate insufficient bandwidth. Unstable low-rank results do not establish an intrinsically low-dimensional shared concept.",
+    "limit": "High variance is not semantic relevance. Projection onto the existing head's own weight span cannot change that unchanged head's scores and is not proposed as a separate improvement experiment. No LLM-judged component selection is required.",
+    "refs": [
+      "S30",
+      "S17",
+      "S44",
+      "T04"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E16",
+    "name": "Dependence on the layer-selection rule",
+    "group": "C. Compatibility and representation structure",
+    "kind": "Uncounted selection/reporting guard",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Always accompany any selected-depth summary; this is a reporting guard, not an independent initial or later experiment.",
+    "question": "Does the conclusion depend on choosing a layer with information from the target context?",
+    "comparison": "Using E01's fixed depth grid, compare a prespecified midpoint, source-DEV-S-selected depth, and target-DEV-S-selected depth for each unchanged source head. Also show the full unselected profiles. The last choice is explicitly target-supervised selection.",
+    "measure": "Differences in transfer gap, category discrimination and confidence reliability under the three declared policies. Report selection variability across the existing caption draws when available.",
+    "fit": "Depth choice never uses SCREEN or CONFIRM labels. The same per-source heads and target SCREEN cohort are reused, so this is an analysis of selection, not another independent model family.",
+    "decision": "A selection-dependent result must carry the corresponding supervision claim. This audit can identify a pipeline/reporting issue but is not counted as a separate research direction or extra experiment.",
+    "limit": "A target-development-selected peak is not an upper bound on all knowledge and is not zero-shot selection. This audit prevents an interpretive artifact; it is not a novel contribution merely because performance changes.",
+    "refs": [
+      "S31",
+      "S46",
+      "T27",
+      "S29"
+    ],
+    "phase": "guard",
+    "origin": "uncounted reporting guard",
+    "initial_justification": ""
+  },
+  {
+    "id": "E17",
+    "name": "Source-only versus target-context probability recalibration",
+    "group": "D. Confidence and reliability",
+    "kind": "Discovery contrast",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "When discrimination and proper-score/decision outcomes do not move together.",
+    "question": "Can a probability-scale adjustment account for poor reliability while leaving category ranking unchanged?",
+    "comparison": "For a frozen head compare raw logits, positive-temperature scaling, and positive-temperature-plus-intercept scaling. Fit each global calibration form on source DEV-C, then separately fit the target-DEV-C comparator. Use supported categories with equal category contribution and natural within-category prevalence.",
+    "measure": "Brier/NLL, reliability curves, ECE as descriptive support, and fixed-threshold outcomes. Keep per-category AUROC/AP as invariant checks for the monotone transforms.",
+    "fit": "The base head/depth were selected independently using FIT/DEV-S. Target calibration uses existing labels but is target-supervised adaptation. Neither calibration form is selected using SCREEN performance.",
+    "decision": "Substantial proper-score improvement with preserved ranking motivates a calibration-sensitive direction. Residual ranking deficits require another account. Source calibration failing where target calibration helps motivates a portability question about probability scales.",
+    "limit": "Positive temperature/intercept transforms cannot fix per-category ranking; temperature alone cannot change a 0.5 decision. Calibrated scores do not prove accessible information is used by the VLM. Global calibration may hide category-specific residuals.",
+    "refs": [
+      "S33",
+      "S39",
+      "T14",
+      "T19"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E18",
+    "name": "Conditional reliability beyond aggregate calibration",
+    "group": "D. Confidence and reliability",
+    "kind": "Paired analysis",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "When aggregate calibration appears good or masks category-specific behavior.",
+    "question": "Can an apparently reliable aggregate score coexist with concentrated errors or miscalibration in specific released-data groups?",
+    "comparison": "Reuse frozen E01 scores and optionally E17 calibrators. Evaluate per-category reliability and automatically defined caption-length/category-multiplicity strata, using boundaries fixed from FIT. Include constant-prior and always-absent decision references.",
+    "measure": "Per-category Brier/NLL, positive/negative error rates and reliability summaries; show both macro and micro aggregates and actual group support. Do not equate low error on negatives with successful positive-category recognition.",
+    "fit": "No new model or semantic labels are needed. The primary group list is fixed before SCREEN inspection; later interesting groups are labeled exploratory and cannot replace the full report.",
+    "decision": "Hidden group failures motivate a conditional-reliability direction. Uniform stability makes a group-specific narrative less promising at this resolution. Unsupported groups remain unresolved rather than counted as passing.",
+    "limit": "Sparse bins and correlated category bits limit precision. These groups do not label object salience, culture or semantic caption content. Aggregate reliability cannot be converted into an individual-image guarantee.",
+    "refs": [
+      "S33",
+      "S39",
+      "S15",
+      "T27"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E19",
+    "name": "Unadapted source confidence as a selective decision policy",
+    "group": "D. Confidence and reliability",
+    "kind": "Decision-use analysis",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial G9 reference after source heads exist; no calibration result, transfer deficit or E17 run is required.",
+    "question": "Does unadapted source confidence identify reliable target-context category decisions, beyond aggregate category ranking?",
+    "comparison": "Freeze each E01 source head at the fixed midpoint depth and its 0.5 decisions. For each category, obtain source-DEV-C quantile cutoffs on raw correctness confidence c=max(p,1-p) targeting 50%, 75% and 90% coverage. Apply those identical cutoffs to each target context, with deterministic include-ties handling and actual source/target coverage reported. All policies retain the same underlying binary classifier. Target risk/coverage curves are descriptive evaluations, never a source of policy cutoffs. Recalibrated policies belong only to a later E17 extension.",
+    "measure": "Actual coverage and retained error rate; P(retained | y=1), retained-positive sensitivity and overall P(retained and d=1 | y=1); corresponding negative-case results; macro category summaries and prior/always-absent references. Include a score-blind retention reference at matched actual coverage, whose expected risk is the unselected base error rate. Show category AUROC/AP, base error and error prevalence alongside selective results.",
+    "fit": "Cutoffs use only source DEV-C confidence values; no target labels, target score quantiles or target calibrator select them. Decisions are never re-fitted for an easier retained set. All four diagonal-context and twelve cross-context policies are reported; unsupported error subgroups remain unresolved.",
+    "decision": "Useful discrimination with weak error triage can open a G9 reliability direction immediately. Stable confidence triage can support a portability question even when aggregate scores look similar. Low risk obtained mainly by retaining absent-category cases limits the practical claim.",
+    "limit": "This studies diagnostic-head decisions, not natural-language abstention or VLM self-awareness. Coverage changes the population. Positive-temperature-only scaling preserves each category's confidence ordering and 0.5 decisions, so it is not a new ranking method; later calibration comparisons must not imply otherwise.",
+    "refs": [
+      "S33",
+      "S47",
+      "T27"
+    ],
+    "phase": "initial",
+    "origin": "revised existing card",
+    "initial_justification": "G9 requires an operational confidence reference even if discrimination and transfer are strong."
+  },
+  {
+    "id": "E20",
+    "name": "Learned correctness readouts versus margin-based confidence",
+    "group": "D. Confidence and reliability",
+    "kind": "Conditional extension",
+    "depends": [
+      "E01",
+      "E17"
+    ],
+    "run_when": "Only for categories with enough correct and incorrect out-of-fold decisions to estimate a second target.",
+    "question": "Do frozen representations contain transferable decision-correctness information beyond the category head's own confidence?",
+    "comparison": "Generate source-FIT out-of-fold category decisions using image-group cross-fitting; label each decision correct/incorrect from the existing CSV. Fit a regularized correctness head from the same pre-answer features and compare with a margin-only head and c=max(p,1−p). Apply the systems to held-out target decisions from the final source classifier.",
+    "measure": "Correctness AUROC/AP, proper scores and selective error/coverage, with error prevalence and absolute base classification performance. Show cross-fitted source behavior alongside target transfer.",
+    "fit": "Correctness labels never come from in-sample predictions of their underlying classifier. Keep all tuning within FIT/DEV-S and calibration within DEV-C. Cross-fit versus full-fit decision-distribution differences must be reported.",
+    "decision": "A stable extra correctness signal motivates a confidence-readout branch. No gain favors simpler confidence measurement or leaves the issue unresolved if errors are scarce.",
+    "limit": "The second head can learn category associations or error patterns; it is not evidence of VLM metacognition. This adapts correctness probing to diagnostic classifier decisions, not the source papers' free-text answer correctness. If error counts are insufficient, mark the correctness target unestimable; never manufacture errors or obtain manual labels to enable the study.",
+    "refs": [
+      "S33",
+      "S47",
+      "S16",
+      "T18"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E21",
+    "name": "Source-trained layer mixtures versus a selected single layer",
+    "group": "D. Confidence and reliability",
+    "kind": "Conditional extension",
+    "depends": [
+      "E01",
+      "E16"
+    ],
+    "run_when": "When source accessibility, transfer or reliability peak at different fixed depths.",
+    "question": "Is useful information distributed across depths in a way a simple source-trained mixture can retain?",
+    "comparison": "Fit a softmax-weighted mixture over the fixed same-dimensional decoder depths plus a linear category head, using source FIT only. Compare with the source-DEV-S-selected single-layer head and an equal-weight mixture. Use predeclared per-layer scaling from source FIT; do not add encoder/projector vectors of incompatible dimension.",
+    "measure": "Within-context/transfer discrimination and proper scores, mixture weights and stability. If extending to correctness mixtures, use E20's derived out-of-fold labels and report it within this family.",
+    "fit": "Regularization and stopping use source DEV-S. Target-specific mixture weights are a different supervised comparator, not the main transfer system. Extra mixture parameters and training flexibility must be explicit.",
+    "decision": "Consistent source-trained gains motivate a distributed-accessibility direction. Source-only gains without transfer benefit motivate depth-specific source specialization. Unstable learned weights favor the simpler reference or further preliminary checks.",
+    "limit": "Mixture success does not identify a causal processing stage; layer coordinates/scales can be incompatible. Learned weights from one context are not universal language-neutral components.",
+    "refs": [
+      "S33",
+      "S31",
+      "S44",
+      "T40"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E22",
+    "name": "Category-anchor alignment versus image-context alignment",
+    "group": "E. Bounded alternative anchors and input sensitivity",
+    "kind": "Conditional extension",
+    "depends": [
+      "E01",
+      "E12"
+    ],
+    "run_when": "When independent-caption feature matching is ambiguous and sufficiently supported categories exist.",
+    "question": "Does constraining alignment to the shared category target behave differently from matching complete same-image caption contexts?",
+    "comparison": "Using FIT labels, compute source/target present-minus-absent feature means for the primary categories. Fit an orthogonal target-to-source map from those category-direction anchors in a common source PCA basis with r=min(16, primary-category count−1, source rank), which is at most 13 under the audited cohort. Refit the identity, image-anchored and direct target-supervised comparators at this same r; do not compare only against E12’s larger basis.",
+    "measure": "Held-out category discrimination/proper scores, direction-anchor stability and reconstruction versus transfer. Include a category-identity-permuted training-anchor null as a fitting control, never as semantic truth.",
+    "fit": "This uses target FIT labels and is explicitly target-supervised diagnostic adaptation. Prototype support, dimension and regularization are fixed from training/development data; all SCREEN labels remain scoring-only.",
+    "decision": "A stable contrast with full-context alignment motivates target-granularity as a research direction. Similarity to a direct supervised head may show that the map simply learned the category task. Unstable prototypes leave the direction unresolved.",
+    "limit": "Co-occurring categories affect prototypes, which are not isolated concept vectors. Sparse anchors underdetermine maps; supervised alignment cannot prove pre-existing language-independent coordinates or solve missing sentence equivalence.",
+    "refs": [
+      "S20",
+      "S34",
+      "S17",
+      "T18",
+      "T47",
+      "T49"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E23",
+    "name": "Image sensitivity with the caption held fixed",
+    "group": "E. Bounded alternative anchors and input sensitivity",
+    "kind": "Conditional input contrast",
+    "depends": [
+      "E01",
+      "E02"
+    ],
+    "run_when": "When a promising result still leaves the contribution of the image unclear.",
+    "question": "Do category scores respond to changing the image when the actual caption text is unchanged?",
+    "comparison": "Freeze a source-trained head. For each supported category, automatically pair distinct SCREEN images with opposite known category labels, using a rule fixed from label/metadata before reading model scores. For each original caption language of the anchor image, compare h(I_anchor,c_anchor) with h(I_partner,c_anchor), retaining the real labels of the image actually shown. Reuse the same image pairs across languages.",
+    "measure": "Signed score change toward the positive image, decision changes and relation to the original E01 gap. Report unpaired leftover images, category/multiplicity imbalance and image-pair uncertainty. Pairings from different categories can share images; do not pool their pairs as independent replicates. Keep primary uncertainty category-wise, or use a valid joint dependency-cluster procedure if an aggregate is later needed.",
+    "fit": "No new image is generated or edited. Caption text is copied unchanged; original category annotations supply all outcome labels. All members stay in SCREEN and never enter fitting; pair allocation is disjoint for the primary category analysis.",
+    "decision": "Consistent image-sensitive scores support investigating input-image dependence. Weak sensitivity despite useful caption-only prediction motivates a context-dominance account or measurement refinement.",
+    "limit": "The moved caption can be off-distribution. It is not a verified false or misleading caption: its original image label does not tell us what it mentions. Many image properties change, so a response cannot be attributed uniquely to the chosen category or a pure language effect.",
+    "refs": [
+      "S16",
+      "S25",
+      "S24",
+      "S06",
+      "T49"
+    ],
+    "phase": "later",
+    "origin": "retained later-preliminary candidate",
+    "initial_justification": ""
+  },
+  {
+    "id": "E24",
+    "name": "Modality order at a readout that sees both inputs",
+    "group": "F. Additional initial discovery tests",
+    "kind": "Diagnostic input contrast",
+    "depends": [
+      "E01",
+      "E04"
+    ],
+    "run_when": "Initial extraction comparison if the checkpoint genuinely supports both native serializations. Technical support, not an E01-E04 outcome, determines availability.",
+    "question": "Are accessibility and portability sensitive to where the image occurs relative to the unchanged native caption?",
+    "comparison": "For exactly the same image-caption pair, compare image-then-caption with caption-then-image inside the same user turn. In both arms read the identical native terminal boundary AFTER BOTH modalities, at all four fixed depths. Fit own-order heads and transfer them unchanged across order within each language; show within-order four-language transfer grids separately. Keep image pixels/crops, caption bytes and all other template tokens identical except the necessary modality placement. The last caption token is NOT a valid common site for the caption-first arm of a causal model.",
+    "measure": "Own-order accessibility, same-language cross-order portability, cross-context grids at each order, and proper scores. Report actual processed token order, spans, attention visibility and any unavoidable sequence-position differences. Compare with E04's fixed-input site contrast rather than combining the two into a single winner.",
+    "fit": "Each order uses the same FIT image IDs and matched linear-head recipe; source-order preprocessing/head stay frozen on cross-order application. Select only on the appropriate source-order DEV-S. G0 must verify that the processor preserved the requested order and the terminal state can see both inputs. If a model rewrites both orders identically or cannot serialize an order, report unavailable/no distinct manipulation; do not force it using activation edits.",
+    "decision": "Order-sensitive accessibility or portability opens a concrete input-layout/measurement direction. Stability narrows that particular concern. Both outcomes are interpretable before knowing whether language transfer succeeds.",
+    "limit": "Order changes positions and attention opportunities together; this is not a pure causal test of language or one attention mechanism. A syntactically valid reordered input can be atypical of training. The contrast establishes operational robustness, not information loss or task use.",
+    "refs": [
+      "S05",
+      "S06",
+      "S24",
+      "S47",
+      "T40"
+    ],
+    "phase": "initial",
+    "origin": "new initial test",
+    "initial_justification": "Modality placement is a distinct input-layout factor; E04 changes location while holding the input fixed."
+  },
+  {
+    "id": "E25",
+    "name": "Image-level agreement of cross-context errors",
+    "group": "F. Additional initial discovery tests",
+    "kind": "Paired outcome analysis; reuses predictions",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial paired analysis of E01 scores at the fixed midpoint; no aggregate gap, calibration failure or selected hard-example list is needed.",
+    "question": "Do caption contexts fail on the same images, or can similar aggregate scores conceal different error sets?",
+    "comparison": "For each fixed source head, compare its four context-conditioned 0.5 decisions on identical SCREEN image-category cells. For all six unordered language pairs report decision disagreement and common-wrong events. Separately compare the four diagonal heads, clearly labeling that this also changes the fitted head. Define e_t=1[d_t!=y]; within y=0 and y=1 compare observed common-error frequency with the product of marginal error frequencies. A fixed label-stratified permutation of one context's error indicators provides an image-association null while preserving both error prevalences.",
+    "measure": "Per-category base errors, disagreement, P(e_s=1,e_t=1 | y), excess over the conditional-independence reference, and P(e_t=1 | e_s=1,y) when its denominator is supported. Use 1,000 fixed-seed within-label permutations and paired image bootstrap intervals. Show constant/prior references and positive/negative strata; high agreement from both predicting absence is not recognition success.",
+    "fit": "No new head, selected direction or semantic correctness judgments are fitted. The fixed source head ensures that the main contrast changes context rather than classifier. Diagonal comparisons are secondary. Masks and common cells match E01. Sparse error-conditionals are reported as unresolved with counts, not zero or evidence of independence.",
+    "decision": "Shared difficult images can open a common-difficulty question; excess disagreement can open a context-specific accessibility/reliability question even with similar averages. The analysis does not need one language to perform worse and does not select a preferred language or ensemble.",
+    "limit": "Error agreement cannot establish the underlying cause. Image difficulty, independent caption content and annotation noise all remain possible. This is a distinct scientific analysis of reused predictions, not an extra independent VLM run or an oracle context-selection experiment.",
+    "refs": [
+      "S33",
+      "S39",
+      "S16",
+      "T27"
+    ],
+    "phase": "initial",
+    "origin": "new initial test",
+    "initial_justification": "Aggregate scores cannot reveal whether identical images fail across contexts; no aggregate deficit is assumed."
+  },
+  {
+    "id": "E26",
+    "name": "Same-input portability across decoder depths",
+    "group": "F. Additional initial discovery tests",
+    "kind": "Readout portability reference",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial structural reference wherever the four decoder-depth features share a coordinate dimension and consistent residual-stream hook. No language gap is required.",
+    "question": "How unusual is cross-context readout incompatibility compared with moving a readout across depth while keeping the entire input unchanged?",
+    "comparison": "Within each language and model, take a head fitted at one fixed depth and apply its unchanged scaler/head to each adjacent depth's features for the exact same image-caption input and site. Use both directions for all adjacent pairs (six directed routes when four depths exist). Compare with an independently fitted head at the receiving depth and with E01's same-depth cross-language routes. Do not fit a cross-depth map or expand into every layer-language combination.",
+    "measure": "Receiving-depth own-fit versus transferred AUROC/AP, Brier/NLL, thresholded outcomes and raw feature/logit scale shifts; full route profiles. Report useful absolute own-depth signal before interpreting a transfer penalty.",
+    "fit": "Only source-depth FIT fits and source-depth DEV-S selection define the transferred system; receiving-depth labels are not used to repair it. Use the same block-output residual-stream interface at all depths, without silently mixing final-normalized and unnormalized states. If dimensions/hooks differ, mark unsupported rather than invent a bridge. The own-receiving-depth head remains a supervised comparator.",
+    "decision": "Same-input cross-depth failure can show that operational incompatibility is not unique to changing a caption language. Stability across depth with context-sensitive transfer can motivate a more specific contrast. Either result refines which portability phenomena deserve later explanation.",
+    "limit": "Depth also changes processing, feature scale and coordinates; this is an operational reference, not a nuisance-matched causal control for language. It cannot assign a language gap to rotation, information absence or an abstract processing stage. E01 already varies the training depth; this card uniquely tests a head at a DIFFERENT receiving depth.",
+    "refs": [
+      "S01",
+      "S29",
+      "S31",
+      "S33",
+      "T40"
+    ],
+    "phase": "initial",
+    "origin": "new initial test",
+    "initial_justification": "Same-input cross-depth application provides a distinct operational portability reference."
+  },
+  {
+    "id": "E27",
+    "name": "Existing-caption diversity in readout training",
+    "group": "F. Additional initial discovery tests",
+    "kind": "Training-view comparison",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial comparison once released native-caption multiplicity is checked automatically. No caption-sensitivity result from E07 is required.",
+    "question": "Does exposure to more of each training image's existing caption contexts improve within-context accessibility or portability without adding independent images?",
+    "comparison": "At the fixed midpoint depth within each source language, compare training on canonical draw-0 caption features against training on every distinct released native caption of the same FIT images. Give image i total loss weight one: each of its m_i captions receives weight 1/m_i. Hold the canonical source-FIT scaler fixed across arms and preserve the total image-weight/L2 convention. Evaluate each fitted system separately on fixed held-out caption draws 0, 1 and 2; do not average test predictions into an ensemble. Repeat existing caption rows with split weights as an uncounted objective-equivalence check, not a third treatment.",
+    "measure": "Per-draw within-context and cross-context AUROC/AP and proper scores, image-paired gains, caption counts/duplicate rates and fitting stability. Display absolute canonical-arm performance. Report variation across evaluation draws separately from image bootstrap uncertainty.",
+    "fit": "Image partitions and independent training-image count are identical. Both arms use the same four-value C grid and the same canonical source DEV-S selection objective; richer-view fitting does not get a larger tuning budget. Source-only preprocessing and trained heads remain fixed at transfer. All four languages are sources and targets. If only one distinct caption exists for an image, that image contributes the same single view in both arms.",
+    "decision": "Consistent gains can open a training-context coverage direction; source-only gains can open a context-specialization question. No gain can justify retaining the simpler readout protocol. None assumes that canonical-caption transfer first failed.",
+    "limit": "Additional captions add observations of the same images, not independent visual support or verified sentence equivalence. Content diversity and wording cannot be separated using these records alone. Unlike E07, which changes which single captions train and test the reference analysis together, this card changes TRAINING-view diversity while holding each evaluation draw fixed.",
+    "refs": [
+      "S02",
+      "S11",
+      "S15",
+      "S44",
+      "T45",
+      "T47",
+      "T49"
+    ],
+    "phase": "initial",
+    "origin": "new initial test",
+    "initial_justification": "Available training-caption diversity can be varied at fixed images and fixed test views."
+  },
+  {
+    "id": "E28",
+    "name": "Category co-occurrence support shift at readout fitting",
+    "group": "F. Additional initial discovery tests",
+    "kind": "Matched training-support stress test",
+    "depends": [
+      "E01"
+    ],
+    "run_when": "Initial label-defined generalization question. Pairs and support rules are selected before model outputs; no E01 gap or E09 heterogeneity result is required.",
+    "question": "Can a diagnostic category head generalize to a released category combination absent from its own fitting positives, and does that behavior differ by caption context?",
+    "comparison": "For a target root A and context root B, train a binary A head in two matched arms at the fixed midpoint. The withheld-combination arm uses m FIT positives from A=1,B=0; the mixed-support control uses m/2 positives from that cell and m/2 from A=1,B=1. Its familiar m/2 positives are the same core images used in the withheld arm. Both use the exact same m FIT negatives with A=0, so independent image count and A prevalence match. Let m=2*floor(min(n_FIT(10),n_FIT(11))/2). Fit both arms for each source language and apply each whole system unchanged to all four SCREEN caption contexts. Use common SCREEN A=0 negatives to evaluate A=1,B=0 and A=1,B=1 positives separately. Report both arm differences within each positive stratum and their difference, rather than only a pooled winning score. Use three fixed hash-ranked FIT allocations {0,1,2}, sharing each allocation's image lists across languages and arms where applicable.",
+    "measure": "Primary within-stratum AUROC and paired arm differences, each absolute baseline, AP with actual stratum prevalence, positive sensitivity/negative specificity, and training-allocation variation. This deliberately balanced training task does not supply naturally calibrated presence probabilities; its raw Brier/NLL is not G9 calibration evidence.",
+    "fit": "Freeze a common scaler using withheld-arm FIT inputs only and apply it to both arms, avoiding hidden exposure to A=1,B=1 positives through preprocessing. Use the shared C grid selected only on source DEV-S familiar positives A=1,B=0 and A=0 negatives; unfamiliar positive combinations never select a head. The same deterministic image masks are used for En/Hi/Bn/Te. All support masks come from the released category CSV. A pair is eligible only if m>=60, enough FIT negatives exist, DEV-S has >=10 familiar positives and >=10 negatives, and SCREEN has >=20 positives in EACH stratum plus >=40 common negatives. The label-only rule ranks eligible pairs by descending minimum SCREEN positive-stratum count, lexical ties, then takes the first three distinct target roots. It accesses no model scores and no CONFIRM features or outputs.",
+    "decision": "A co-occurrence-sensitive loss of generalization can open a precise readout-support/context question. Stable generalization can narrow concerns about these particular category associations. Differences across native caption contexts motivate follow-up without assuming a pure language effect or requiring object-mention gold.",
+    "limit": "Only the diagnostic head lacks the held-out positive combination; the frozen VLM may have seen it in pretraining. The fixed positive-image budget trades familiar-combination examples for new-combination examples, so it cannot isolate exposure from per-cell sample allocation. Both scene distribution and caption content can change with co-occurrence. This does not certify a spurious shortcut, compositional reasoning, object counts or relations. E09 only stratifies an unchanged training distribution; this card changes training support with an explicit matched control. All three category pairs remain one family.",
+    "refs": [
+      "S02",
+      "S16",
+      "S30",
+      "S44",
+      "T27",
+      "T42"
+    ],
+    "phase": "initial",
+    "origin": "new initial test",
+    "initial_justification": "Shared category vectors support a priori readout generalization to held-out co-occurrence cells."
+  }
+]

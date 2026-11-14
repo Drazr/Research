@@ -1,0 +1,21 @@
+# Instructions for all Research chats
+
+Read plan.md, research.md and the relevant prelim.md cards before coding. Use M1.md/M2.md for methodological inspiration. The historical references/analysis.md does not override the current questions or data constraints.
+
+The current implementation scope is Stage 1 of G9-Q6. Stages 2-5 have overview descriptions only. Do not claim later stages, experiments, remote Drive setup or model runs are complete because files/directories exist. This repository starts with context and metadata, not an implemented experiment suite.
+
+- Every model-dependent entry point accepts one model selector (planned --model qwen / --model gemma). Resolve exact pinned configuration through a shared registry. Use adapters for architecture-specific code. Do not invent a default checkpoint/revision or silently change model precision/template/processor policy.
+- Model-independent preparation runs once. Preserve the common image IDs, caption selections, 25-category order, known-cell masks and image-group partitions across models/languages. All caption views of an image stay in one partition.
+- Use original English/Hindi/Bengali/Telugu captions and shared image-presence labels. Captions are independently written, not verified translations. Do not use Bengali/Telugu mention proxies or interpret presence as caption mention, object count, relation, OCR or cultural gold.
+- No new human semantic annotation/verification, dataset enrichment, base-model updates, activation patching, steering or free-caption judging. Automatic preparation, model execution and diagnostic readout fitting are allowed.
+- Keep CONFIRM out of preliminary model preprocessing, features, scores and outcome inspection. Released-ID completeness/support metadata may be checked. Never reroll a split for an appealing model result.
+- Respect FIT / DEV-S / DEV-C / SCREEN roles in prelim.md. Never fit source scalers, select layers or tune models using SCREEN; never describe target-supervised fitting as unchanged-source transfer.
+- Preserve the invalid plant.n.02 cell for image 6a20677eee04fd08 as unknown. Keep all 25 targets; use the fixed 14-category primary cohort only when the actual audited population/support matches. Unsupported metrics stay undefined, not zero.
+- Store persistent caches, shards, features, checkpoints, predictions and logs under configurable PHASE1_ROOT, pointing to Drive's phase1 folder. Separate shared data artifacts from model/configuration/run namespaces. Never overwrite another job's shard or append concurrently to a shared file. Verify upstream completion/hashes before consumption.
+- Share extraction where inputs/masks/sites really permit it and reuse E01 predictions for E19/E25. A shared filename or model-family alias alone does not prove cache compatibility.
+- Use Python scripts for reproducible execution, resolved configs/seeds and resumable outputs; notebooks can import them for inspection. Do not duplicate shared logic per experiment/model without a substantive reason.
+- Keep datasets, weights and runtime arrays out of ordinary Git history. Commit reproducibility metadata, source hashes, small manifests, code and documentation. Never commit credentials, access tokens or local secret configuration.
+- Each chat owns specified files. Use phase1 as integration branch and distinct task branches/worktrees for parallel changes. Coordinate changes to shared contracts, registry, helpers and plan.md with their owner; review integration before marking a whole stage done. Routine authorized work does not require an extra approval checkpoint.
+- G0 is staged: initial data/adapter smoke checks precede bulk work; full shuffled-label controls finish after real feature caches exist, before scientific interpretation. Smoke outputs are not scientific evidence or final checkpoints.
+
+If current instructions conflict with a historical note, follow the user's current instructions and the frozen current protocol. Make necessary changes explicit, preserve unrelated work, and report actual validation and remaining gaps honestly.

@@ -1,0 +1,30 @@
+# Local secrets/settings
+.env
+.env.*
+!.env.example
+configs/local.*
+# Python and notebooks
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+# Large/local runtime artifacts (small data/manifests stays tracked)
+/phase1/
+/datasets/
+/cache/
+/model_cache/
+/features/
+/shards/
+/checkpoints/
+/predictions/
+/results/
+/logs/
+/tmp/
+/work/
+*.pt
+*.pth
+*.safetensors
+*.npy
+*.npz
+*.parquet

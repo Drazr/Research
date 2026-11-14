@@ -1,0 +1,119 @@
+{
+  "status": "Recorded design baseline; complete Stage 1 validation before model work.",
+  "scope": [
+    "G9",
+    "Q6"
+  ],
+  "languages": [
+    "en",
+    "hi",
+    "bn",
+    "te"
+  ],
+  "scheduled_tasks": [
+    "G0",
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E19",
+    "E25"
+  ],
+  "split_seed": "G9Q6-first-set-20261114-v1",
+  "split_sizes": {
+    "FIT": 2160,
+    "DEV-S": 180,
+    "DEV-C": 180,
+    "SCREEN": 360,
+    "CONFIRM": 720
+  },
+  "category_order": [
+    "vehicle.n.01",
+    "timepiece.n.01",
+    "electronic_equipment.n.01",
+    "plaything.n.01",
+    "building.n.01",
+    "clothing.n.01",
+    "animal.n.01",
+    "writing_implement.n.01",
+    "kitchen_utensil.n.01",
+    "furniture.n.01",
+    "food.n.01",
+    "musical_instrument.n.01",
+    "weapon.n.01",
+    "sun.n.01",
+    "jewelry.n.01",
+    "body_of_water.n.01",
+    "plant.n.02",
+    "hand_tool.n.01",
+    "sky.n.01",
+    "tableware.n.01",
+    "bag.n.01",
+    "home_appliance.n.01",
+    "mountain.n.01",
+    "body_part.n.01",
+    "person.n.01"
+  ],
+  "primary_categories": [
+    "vehicle.n.01",
+    "building.n.01",
+    "clothing.n.01",
+    "animal.n.01",
+    "furniture.n.01",
+    "food.n.01",
+    "body_of_water.n.01",
+    "plant.n.02",
+    "sky.n.01",
+    "tableware.n.01",
+    "bag.n.01",
+    "mountain.n.01",
+    "body_part.n.01",
+    "person.n.01"
+  ],
+  "minimum_positive_and_negative": {
+    "FIT": 20,
+    "DEV-S": 10,
+    "DEV-C": 10,
+    "SCREEN": 20
+  },
+  "invalid_cells": [
+    {
+      "partition": "SCREEN",
+      "image_id": "6a20677eee04fd08",
+      "category": "plant.n.02",
+      "value": "4"
+    }
+  ],
+  "caption_draw_key": 0,
+  "caption_selection_status": "Finalize exact deterministic selection and source caption IDs in Stage 1.",
+  "readout": {
+    "type": "independent_binary_logistic_heads",
+    "C_grid": [
+      0.01,
+      0.1,
+      1,
+      10
+    ],
+    "class_weighting": null,
+    "threshold": 0.5,
+    "selection_split": "DEV-S",
+    "scaler_fit_split": "source FIT"
+  },
+  "decoder_depths": [
+    "ceil(L/4)",
+    "ceil(L/2)",
+    "ceil(3*L/4)",
+    "L"
+  ],
+  "single_depth_primary": "ceil(L/2)",
+  "image_bootstrap_draws": 2000,
+  "confidence_policy_source_split": "DEV-C",
+  "exploratory_evaluation_split": "SCREEN",
+  "exclude_from_preliminary_model_processing": [
+    "CONFIRM"
+  ],
+  "base_model_updates": false,
+  "new_human_annotation_or_validation": false,
+  "persistent_artifact_root_variable": "PHASE1_ROOT",
+  "scientific_authority": "prelim.md; record any protocol change before affected outcomes."
+}
