@@ -73,7 +73,7 @@ inspection checks its token spans/visibility; later caption-only feature caching
 needs a coordinator-approved condition interface rather than hidden changes to
 the current FeatureSite contract.
 
-## Commands and actual validation â€” 15 November 2026
+## Commands and actual validation — 15 November 2026
 
 From this checkout:
 

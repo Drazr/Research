@@ -193,7 +193,7 @@ Updated 15 November 2026 during coordinator integration.
 - Data branch 2f42b4a and model branch 2f374d2 are integrated into this phase1 snapshot with their histories preserved. Main remains unchanged.
 - Original data independently revalidated locally: 3,600 images, 14,400 selected four-language records, 14 primary categories and one preserved unknown cell. No scientific results were produced.
 - Shared stage1.v1 public APIs remain compatible; source-cache/storage helpers gained streaming, completion-verified publication without hard links. Cache corruption/partial-publication checks passed locally.
-- Combined CPU foundation/data/model/cache/L4-guard suite: 27 tests passed. Tests using fake devices/modules are software checks, not actual GPU/model evidence.
+- Combined CPU foundation/data/model/cache/L4-guard suite: 29 tests passed. Tests using fake devices/modules are software checks, not actual GPU/model evidence.
 - Selected L4 starting pair: Qwen2.5-VL-3B-Instruct and Gemma 3 4B IT, sequential dense bfloat16, batch one. Immutable revisions and the direct runtime pins are recorded; actual L4 execution/memory fit remains untested. Gemma gated processor metadata remains unresolved pending authorized access.
 - The user chose a different Google Drive account. No folder/artifact was created in the previously connected account. PHASE1_ROOT and actual Drive-mounted read/write/sync checks remain pending in the intended runtime.
 - Use docs/stage1_l4.md for actual storage/configuration/model-validation commands. Detailed Stage 2-5 planning remains pending. Stage 1 and full G0 are not complete.

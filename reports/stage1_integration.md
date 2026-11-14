@@ -1,4 +1,4 @@
-# Stage 1 foundation review â€” 15 November 2026
+# Stage 1 foundation review — 15 November 2026
 
 **Stage 1 is not complete.** This report covers the coordinator foundation before the data/model branches have been implemented or integrated. No experiment result, real-model feature extraction or GPU validation is claimed.
 
@@ -48,3 +48,12 @@ Integration fixes: removed hard-link source-cache publication; added streamed so
 The combined suite has 27 passing CPU tests (11 foundation, 4 data, 7 model, 3 source-cache, 2 L4 guard tests). No real L4, weight load, metadata resolution through authorized Gemma access, or positive actual-model validation was executed here. The local environment lacks a mounted Drive root and nvidia-smi on PATH; this does not prove the user's L4 host lacks a GPU. Model pin files were obtained from the publisher's public APIs; Gemma metadata files returned HTTP 401 and its template/token fields remain unresolved. The user has chosen to reconnect a different Google Drive; no writes were made to the old account.
 
 Stage 1 remains incomplete pending intended Drive access/mount, real filesystem/cache readbacks, runtime setup and actual FIT-only validation/smoke checks for both models. Full G0 and the scientific first-set experiments remain pending later stages. See docs/stage1_l4.md for the handoff commands and exact selected profile.
+
+
+### Committed-code local continuation
+
+Worker integration merge: 4030434c90183abd3c2b8416bbd0dec22b632335, preserving both worker heads as parents. The real data prepare/resume command passed on that committed source using the existing explicit local root. All four legacy source files were verified and migrated into completion-verified cache artifacts, preserving dataset fingerprint 54825d236efcd88cc5252918ebce6d1dad6109ef10a244281f262204bc6cc5bd. This is local-development evidence, not Drive durability evidence.
+
+A runtime-configuration preflight initially failed to save its blocked report because nested hash directories exceeded the Windows path limit. Its configuration-cache namespace is now compact and covered by an end-to-end blocked-report regression. Early CUDA/bfloat16 guards prevent weight downloads when the requested device is absent. Slow/PIL image processing is explicit, matching torch/torchvision versions are pinned, all selected package versions are checked, and actual processor class is recorded/checked.
+
+The combined software suite now has **29 passing CPU tests**, including early-device and blocked-report persistence regressions. The checked Python 3.12 environment contains numpy 2.3.5/Pillow 13.0.0 but lacks torch, transformers and scikit-learn; it is not the selected L4 runtime. Real configuration/model checks remain blocked here. The intended Google Drive account/mount and actual L4 execution are still pending. No Stage 1 completion is claimed.

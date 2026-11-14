@@ -22,7 +22,8 @@
         "scikit-learn": "1.6.1",
         "huggingface-hub": "0.36.0",
         "tokenizers": "0.22.1",
-        "safetensors": "0.6.2"
+        "safetensors": "0.6.2",
+        "torchvision": "0.24.1"
       },
       "model_class": "Qwen2_5_VLForConditionalGeneration",
       "decoder_path": "model.language_model.layers",
@@ -40,7 +41,8 @@
       "visual_paths": {
         "encoder": "model.visual.blocks.31",
         "projector": "model.visual.merger"
-      }
+      },
+      "image_processor_use_fast": false
     },
     "gemma": {
       "checkpoint_id": "google/gemma-3-4b-it",
@@ -62,7 +64,8 @@
         "scikit-learn": "1.6.1",
         "huggingface-hub": "0.36.0",
         "tokenizers": "0.22.1",
-        "safetensors": "0.6.2"
+        "safetensors": "0.6.2",
+        "torchvision": "0.24.1"
       },
       "model_class": "Gemma3ForConditionalGeneration",
       "decoder_path": "model.language_model.layers",
@@ -77,7 +80,8 @@
       "visual_paths": {
         "encoder": "model.vision_tower",
         "projector": "model.multi_modal_projector"
-      }
+      },
+      "image_processor_use_fast": false
     }
   }
 }

@@ -12,12 +12,20 @@ from src.common.contracts import (ContractError, FeatureBatch, FeatureSite,
 from src.common.storage import within
 from .spans import caption_positions, validate_attention
 
+def validate_device(torch, config):
+    """Fail before processor/weight downloads when the requested GPU is absent."""
+    if str(config['device']).startswith('cuda'):
+        if not torch.cuda.is_available():
+            raise ContractError('Configured CUDA device is unavailable; no CPU fallback')
+        if config['precision'] == 'bfloat16' and not torch.cuda.is_bf16_supported():
+            raise ContractError('Configured CUDA device does not support bfloat16')
+
 
 class HFAdapter:
     def __init__(self, key, config, root):
         self.key, self.config, self.root = key, config, Path(root).resolve()
         required = ('model_class', 'decoder_path', 'image_token_ids', 'processor_kwargs',
-                    'device', 'attention_backend', 'repeat_atol', 'repeat_rtol')
+                    'device', 'attention_backend', 'repeat_atol', 'repeat_rtol','image_processor_use_fast')
         missing = [name for name in required if config.get(name) is None]
         if missing:
             raise ContractError('Unresolved adapter configuration: ' + ', '.join(missing))
@@ -29,12 +37,15 @@ class HFAdapter:
             raise ContractError('Only quantization=null (no quantization) is currently supported')
         if config.get('attention_backend') != 'eager':
             raise ContractError('Stage 1 visibility validation requires explicit eager attention')
-        for name in ('torch', 'transformers', 'numpy', 'Pillow'):
-            if config['software_versions'].get(name) != version(name):
+        if type(config['image_processor_use_fast']) is not bool:
+            raise ContractError('Image processor fast/slow policy must be explicit')
+        for name, expected in config['software_versions'].items():
+            if expected != version(name):
                 raise ContractError('Runtime version mismatch: ' + name)
         import torch
         import transformers
         self.torch = torch
+        validate_device(torch,config)
         classes = {'qwen': ('Qwen2VLForConditionalGeneration', 'Qwen2_5_VLForConditionalGeneration'),
                    'gemma': ('Gemma3ForConditionalGeneration',)}
         if config['model_class'] not in classes[key]:
@@ -49,10 +60,12 @@ class HFAdapter:
         cache.mkdir(parents=True, exist_ok=True)
         self.processor = transformers.AutoProcessor.from_pretrained(
             config['checkpoint_id'], revision=config['processor_revision'],
-            cache_dir=str(cache), trust_remote_code=False)
+            cache_dir=str(cache), trust_remote_code=False,use_fast=config['image_processor_use_fast'])
         self.processor.tokenizer = transformers.AutoTokenizer.from_pretrained(
             config['checkpoint_id'], revision=config['tokenizer_revision'],
             cache_dir=str(cache), trust_remote_code=False, use_fast=True)
+        if config.get('image_processor_class') and type(self.processor.image_processor).__name__ != config['image_processor_class']:
+            raise ContractError('Loaded image processor class differs from resolved configuration')
         template = self.processor.chat_template
         if not isinstance(template, str) or hashlib.sha256(template.encode('utf-8')).hexdigest() != config['chat_template_sha256']:
             raise ContractError('Loaded chat template hash mismatch')

@@ -1,4 +1,4 @@
-# Stage 1 shared interfaces â€” stage1.v1
+# Stage 1 shared interfaces — stage1.v1
 
 Frozen for the initial data/model worker branches on 15 November 2026. Read alongside AGENTS.md, plan.md and prelim.md. This freezes implementation interfaces, not unchosen checkpoint identities or later-stage tensor formats. Coordinator owns changes to this contract and src/common/contracts.py/storage.py.
 

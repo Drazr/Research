@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from src.common.contracts import ContractError, canonical_bytes, fingerprint, resolve_model
 from src.common.storage import new_run_id, phase1_root, publish, verify, within
 
-PACKAGES = ('torch','transformers','numpy','Pillow','scikit-learn',
+PACKAGES = ('torch','torchvision','transformers','numpy','Pillow','scikit-learn',
             'huggingface-hub','tokenizers','safetensors')
 
 def check_versions(config):
@@ -56,7 +56,7 @@ def main():
         upstream_artifacts=[],storage_scope=args.storage_scope)
     report={'status':'blocked','blockers':[],'weights_loaded':False,'model_inference_ran':False,
             'storage_scope':args.storage_scope,'note':'Configuration readiness only; not VLM validation.'}
-    files={};namespace_fingerprint=fingerprint(config)
+    files={}
     try:
         if not re.fullmatch('[0-9a-f]{40}',args.code_commit):
             raise ContractError('Provide the actual code commit SHA')
@@ -77,7 +77,8 @@ def main():
         # Hugging Face resolves the user's existing login/HF_TOKEN if needed.
         cache=str(within(root,'model_cache'))
         processor=AutoProcessor.from_pretrained(config['checkpoint_id'],
-            revision=config['processor_revision'],cache_dir=cache,trust_remote_code=False)
+            revision=config['processor_revision'],cache_dir=cache,trust_remote_code=False,
+            use_fast=config['image_processor_use_fast'])
         tokenizer=AutoTokenizer.from_pretrained(config['checkpoint_id'],
             revision=config['tokenizer_revision'],cache_dir=cache,trust_remote_code=False,use_fast=True)
         if not tokenizer.is_fast:
@@ -101,11 +102,12 @@ def main():
         if config.get('image_token_ids') not in (None,[token_id]):
             raise ContractError('Pinned image-token metadata mismatch')
         config.update(chat_template_sha256=template_hash,image_token_ids=[token_id],
-                      software_versions=actual,config_fingerprint=None)
+                      software_versions=actual,config_fingerprint=None,
+                      image_processor_class=type(processor.image_processor).__name__)
         resolved=resolve_model({'models':{args.model:config}},args.model)
         registry['models'][args.model]=resolved
-        namespace_fingerprint=metadata['model_fingerprint']=resolved['config_fingerprint']
-        report.update(status='passed',configuration_resolved=True,model_fingerprint=namespace_fingerprint,
+        metadata['model_fingerprint']=resolved['config_fingerprint']
+        report.update(status='passed',configuration_resolved=True,model_fingerprint=resolved['config_fingerprint'],
                       checkpoint_id=resolved['checkpoint_id'],revision=resolved['revision'])
         files['models.json']=canonical_bytes(registry)+b'\n'
     except (ContractError,ImportError,PackageNotFoundError,FileNotFoundError) as exc:
@@ -115,7 +117,10 @@ def main():
         report['action']='Check pinned runtime and authorized Hugging Face access; Gemma is gated.'
     metadata['status']=report['status']
     files['configuration_report.json']=canonical_bytes(report)+b'\n'
-    output=publish(root,f'checkpoints/{namespace_fingerprint}/{fingerprint(protocol)}/{run_id}',metadata,files)
+    # This is a generated configuration cache, not a fitted-model checkpoint.
+    # Unique runs and manifest fingerprints protect identity without overlong
+    # nested hash paths on Windows development roots.
+    output=publish(root,f'cache/runtime-configurations/{args.model}/{run_id}',metadata,files)
     print(json.dumps({'status':report['status'],'artifact':str(output),
                       'models_config':str(output/'models.json') if 'models.json' in files else None,
                       'blockers':report['blockers']}))
