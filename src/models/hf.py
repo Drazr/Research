@@ -7,8 +7,8 @@ import hashlib
 from importlib.metadata import version
 from pathlib import Path
 
-from src.common.contracts import (ContractError, FeatureBatch, FeatureSite,
-                                  decoder_depths)
+from src.common.contracts import (ContractError, ExtractionRequest, FeatureBatch, FeatureSite,
+                                  decoder_depths, require_extraction_split)
 from src.common.storage import within
 from .spans import caption_positions, validate_attention
 
@@ -96,20 +96,21 @@ class HFAdapter:
                     **{s: 'No explicit exposed module path configured' for s in ('encoder', 'projector') if s not in self.visual_paths}},
                 'hook_convention': 'forward hook on actual 1-based decoder block output, before final decoder norm'}
 
-    def _prepare(self, row, condition='image_caption'):
-        row.require_fit()  # Guard before image reads, template rendering or tokenization.
-        if condition not in ('image_caption', 'caption_only'):
+    def _prepare(self, row, condition='image_caption', purpose='stage1_smoke'):
+        require_extraction_split(row, purpose)  # Before IO, rendering or tokenization.
+        if condition not in ('image_caption', 'caption_only', 'image_only'):
             raise ContractError('Unsupported input condition')
         from PIL import Image
         content, images = [], []
-        if condition == 'image_caption':
+        if condition != 'caption_only':
             path = within(self.root, row.image_path)
             if hashlib.sha256(path.read_bytes()).hexdigest() != row.image_sha256:
                 raise ContractError('Image checksum mismatch')
             with Image.open(path) as image:
                 images = [image.convert('RGB')]
             content.append({'type': 'image'})
-        content.append({'type': 'text', 'text': 'Caption:\n' + row.caption_text})
+        if condition != 'image_only':
+            content.append({'type': 'text', 'text': 'Caption:\n' + row.caption_text})
         text = self.processor.apply_chat_template([{'role': 'user', 'content': content}],
                                                   tokenize=False, add_generation_prompt=False)
         kwargs = dict(self.config['processor_kwargs'])
@@ -130,8 +131,9 @@ class HFAdapter:
         if bool(image_positions) != bool(images):
             raise ContractError('Configured image tokens disagree with input condition')
         special = [token in tok.all_special_ids for token in ids]
-        caption = caption_positions(decoded, row.caption_text, aligned['offset_mapping'], special, image_positions)
-        if image_positions and max(image_positions) >= min(caption):
+        caption = ([] if condition == 'image_only' else
+                   caption_positions(decoded, row.caption_text, aligned['offset_mapping'], special, image_positions))
+        if image_positions and caption and max(image_positions) >= min(caption):
             raise ContractError('Processor did not preserve image-before-caption order')
         if 'labels' in processed:
             raise ContractError('Unexpected labels in processor output')
@@ -139,7 +141,7 @@ class HFAdapter:
                     'native_serialization': text, 'decoded_processor_sequence': decoded,
                     'processor_attention_mask': processed['attention_mask'][0].tolist(),
                     'input_ids_sha256': hashlib.sha256(str(ids).encode()).hexdigest(),
-                    'caption_positions': caption, 'last_caption': caption[-1],
+                    'caption_positions': caption, 'last_caption': caption[-1] if caption else None,
                     'image_positions': image_positions, 'role_and_other_positions':
                     [i for i in range(len(ids)) if i not in caption and i not in image_positions]}
         return processed.to(self.config['device']), evidence
@@ -152,10 +154,10 @@ class HFAdapter:
             return output[0]
         return output
 
-    def _forward(self, row, sites, condition='image_caption', attention=False):
+    def _forward(self, row, sites, condition='image_caption', attention=False, purpose='stage1_smoke'):
         if self.model.training or any(p.requires_grad for p in self.model.parameters()):
             raise ContractError('Frozen evaluation mode required')
-        inputs, evidence = self._prepare(row, condition)
+        inputs, evidence = self._prepare(row, condition, purpose)
         captured, handles = {}, []
         def hook(name):
             def collect(module, args, output):
@@ -218,11 +220,51 @@ class HFAdapter:
                 'input_policy_respected': True}, 'records': evidence}
 
     def extract(self, inputs, sites):
-        vectors = {s.key: [] for s in sites}
-        for row in inputs:
-            values, _ = self._forward(row, sites)
+        return self.extract_request(ExtractionRequest(inputs, sites))
+
+    def extract_request(self, request):
+        request.validate()
+        if any(s.key not in self.describe()['supported_sites'] for s in request.sites):
+            raise ContractError('Unsupported requested extraction site')
+        vectors = {s.key: [] for s in request.sites}
+        for row in request.inputs:
+            values, _ = self._forward(row, request.sites, request.condition, purpose=request.purpose)
             for key, vector in values.items():
                 vectors[key].append(vector)
-        batch = FeatureBatch([r.row_key for r in inputs], vectors)
-        batch.validate(inputs, sites)
+        batch = FeatureBatch([r.row_key for r in request.inputs], vectors,
+                             request.view_ids, request.condition)
+        batch.validate_request(request)
         return batch
+
+    def describe_execution(self):
+        """Actual numerical backend plus per-site physical extraction identity."""
+        from src.common.cache_keys import execution_fingerprint
+        torch = self.torch
+        cuda = str(self.config['device']).startswith('cuda')
+        backend = {'device_type': 'cuda' if cuda else 'cpu', 'batch_size': 1,
+                   'padding': False, 'truncation': False, 'eval': True,
+                   'cuda_version': torch.version.cuda,
+                   'deterministic_algorithms': torch.are_deterministic_algorithms_enabled(),
+                   'float32_matmul_precision': torch.get_float32_matmul_precision(),
+                   'cudnn_version': torch.backends.cudnn.version(),
+                   'cudnn_benchmark': torch.backends.cudnn.benchmark,
+                   'cudnn_deterministic': torch.backends.cudnn.deterministic,
+                   'matmul_allow_tf32': torch.backends.cuda.matmul.allow_tf32,
+                   'cudnn_allow_tf32': torch.backends.cudnn.allow_tf32,
+                   'image_processor_class': type(self.processor.image_processor).__name__,
+                   'tokenizer_class': type(self.processor.tokenizer).__name__}
+        if cuda:
+            backend.update(device_name=torch.cuda.get_device_name(self.config['device']),
+                           capability=list(torch.cuda.get_device_capability(self.config['device'])))
+        source = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                  for p in (Path(__file__), Path(__file__).with_name('spans.py'))}
+        specs = {}
+        for key in self.describe()['supported_sites']:
+            stage, depth, pooling = key.split(':')
+            path = (self.config['decoder_path'] + '.' + str(int(depth)-1)
+                    if stage == 'decoder' else self.visual_paths[stage])
+            specs[key] = {'module_path': path, 'pooling': pooling,
+                          'output': 'forward module output; before final decoder norm' if stage == 'decoder'
+                                    else 'exposed visual module output; mean over all non-channel axes'}
+        return {'execution_fingerprint': execution_fingerprint(self.config, backend, source),
+                'backend': backend, 'source_sha256': source, 'site_specs': specs}

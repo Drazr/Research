@@ -10,7 +10,7 @@ import sys
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from src.common.contracts import (ContractError, FeatureSite, INSPECTION_CHECKS,
+from src.common.contracts import (ContractError, ExtractionRequest, FeatureSite, INSPECTION_CHECKS,
                                   canonical_bytes, fingerprint, resolve_model)
 from src.common.storage import new_run_id, phase1_root, publish
 
@@ -90,6 +90,43 @@ def execute(args):
             for a, b in zip(first.vectors[key], second.vectors[key]):
                 if len(a) != len(b) or any(abs(x-y) > atol + rtol*abs(x) for x, y in zip(a, b)):
                     raise ContractError('Repeat extraction mismatch: ' + key)
+        decoder_sites = [s for s in sites if s.stage == 'decoder']
+        visual_sites = [s for s in sites if s.stage in ('encoder', 'projector')]
+        expected_decoder = {FeatureSite('decoder', d, p).key for d in info['decoder_depths']
+                            for p in ('last_caption', 'caption_mean')}
+        if not visual_sites or {s.key for s in decoder_sites} != expected_decoder:
+            raise ContractError('Scheduled E01/E02/E04 minimum site inventory unavailable')
+        text_request = ExtractionRequest(inputs, decoder_sites, condition='caption_only')
+        text_first = adapter.extract_request(text_request)
+        text_second = adapter.extract_request(text_request)
+        for batch in (text_first, text_second):
+            batch.validate_request(text_request)
+        image_inputs = list({r.image_id: r for r in inputs}.values())
+        image_request = ExtractionRequest(image_inputs, visual_sites, condition='image_only')
+        image_first = adapter.extract_request(image_request)
+        image_second = adapter.extract_request(image_request)
+        for batch in (image_first, image_second):
+            batch.validate_request(image_request)
+        for a_batch, b_batch in ((text_first, text_second), (image_first, image_second)):
+            for key in a_batch.vectors:
+                for a, b in zip(a_batch.vectors[key], b_batch.vectors[key]):
+                    if len(a) != len(b) or any(abs(x-y) > atol + rtol*abs(x) for x, y in zip(a, b)):
+                        raise ContractError('Condition repeat extraction mismatch: ' + key)
+        # Reuse is permitted only after actual visual invariance across contexts.
+        image_index = {r.image_id: i for i, r in enumerate(image_inputs)}
+        for i, row in enumerate(inputs):
+            for site in visual_sites:
+                a = first.vectors[site.key][i]
+                b = image_first.vectors[site.key][image_index[row.image_id]]
+                if len(a) != len(b) or any(abs(x-y) > atol + rtol*abs(x) for x, y in zip(a, b)):
+                    raise ContractError('Visual site depends on caption context; audit before reuse: ' + site.key)
+        report['execution_identity'] = adapter.describe_execution()
+        report['conditions_validated'] = {
+            'image_caption': [s.key for s in sites],
+            'caption_only': [s.key for s in decoder_sites],
+            'image_only': [s.key for s in visual_sites]}
+        report['image_only_rows'] = len(image_inputs)
+        report['visual_context_invariance'] = True
         report.update(status='passed', repeat_extraction=True,
                       dimensions={k: len(v[0]) for k, v in first.vectors.items()},
                       gpu_checks_passed=str(config['device']).startswith('cuda'))

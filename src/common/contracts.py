@@ -144,6 +144,14 @@ class FeatureSite:
 class FeatureBatch:
     row_keys: Sequence[Tuple[str, str, str]]
     vectors: Mapping[str, Sequence[Sequence[float]]]
+    view_ids: Optional[Sequence[str]] = None
+    input_condition: Optional[str] = None
+
+    def validate_request(self, request: 'ExtractionRequest') -> None:
+        request.validate()
+        self.validate(request.inputs, request.sites)
+        if self.input_condition != request.condition or list(self.view_ids or []) != list(request.view_ids):
+            raise ContractError('Feature condition/view identity mismatch')
 
     def validate(self, inputs: Sequence[ModelInput], sites: Sequence[FeatureSite]) -> None:
         if list(self.row_keys) != [r.row_key for r in inputs]:
@@ -156,6 +164,53 @@ class FeatureBatch:
             width = len(rows[0])
             if any(len(row) != width or any(not math.isfinite(float(v)) for v in row) for row in rows):
                 raise ContractError('Ragged or nonfinite features')
+
+
+def require_extraction_split(row: ModelInput, purpose: str) -> None:
+    # Called before image IO, rendering, tokenization and cache consumption.
+    if purpose == 'stage1_smoke':
+        row.require_fit()
+    elif purpose == 'preliminary_features':
+        if row.split not in ('FIT', 'DEV-S', 'DEV-C', 'SCREEN'):
+            raise ContractError('CONFIRM is closed to preliminary model processing')
+    else:
+        raise ContractError('Unknown extraction purpose')
+
+
+@dataclass(frozen=True)
+class ExtractionRequest:
+    inputs: Sequence[ModelInput]
+    sites: Sequence[FeatureSite]
+    condition: str = 'image_caption'
+    purpose: str = 'stage1_smoke'
+    schema_version: str = 'extraction.v2'
+
+    def validate(self) -> None:
+        if self.schema_version != 'extraction.v2' or self.condition not in ('image_caption', 'caption_only', 'image_only'):
+            raise ContractError('Unknown extraction schema/condition')
+        if not self.inputs or not self.sites or len({s.key for s in self.sites}) != len(self.sites):
+            raise ContractError('Nonempty inputs and unique sites required')
+        images = {}
+        for row in self.inputs:
+            require_extraction_split(row, self.purpose)
+            identity = (row.image_sha256, row.split)
+            if row.image_id in images and images[row.image_id] != identity:
+                raise ContractError('Inconsistent image identity/split')
+            images[row.image_id] = identity
+        if len(set(self.view_ids)) != len(self.inputs):
+            raise ContractError('Duplicate extraction views; image-only is once per image')
+        for s in self.sites:
+            decoder = s.stage == 'decoder' and type(s.depth) is int and s.depth > 0 and s.pooling in ('last_caption', 'caption_mean')
+            visual = s.stage in ('encoder', 'projector') and s.depth is None and s.pooling == 'visual_mean'
+            if not (decoder or visual):
+                raise ContractError('Unsupported feature-site semantics')
+            if (self.condition == 'caption_only' and visual) or (self.condition == 'image_only' and decoder):
+                raise ContractError('Feature site incompatible with input condition')
+
+    @property
+    def view_ids(self) -> Tuple[str, ...]:
+        from src.common.cache_keys import input_view_fingerprint
+        return tuple(input_view_fingerprint(r, self.condition) for r in self.inputs)
 
 def decoder_depths(blocks: int) -> Tuple[int, ...]:
     if type(blocks) is not int or blocks < 1:
@@ -197,4 +252,8 @@ class ModelAdapter(Protocol):
 
     def extract(self, inputs: Sequence[ModelInput], sites: Sequence[FeatureSite]) -> FeatureBatch:
         """Frozen eval-mode forward pass; return CPU-convertible row vectors, no generation."""
+        ...
+
+    def extract_request(self, request: ExtractionRequest) -> FeatureBatch:
+        """Explicit condition/purpose; validate split before IO or cache reuse."""
         ...

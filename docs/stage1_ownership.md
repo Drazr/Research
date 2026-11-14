@@ -16,3 +16,5 @@ Integration sequence: review both task diffs and compatibility tests; integrate 
 
 
 Integration ownership: after the worker handoff, the coordinator also owns the merge fixes for source-cache publication, streaming storage, validator provenance, the selected L4 registry/profile, configure_l4.py, requirements-l4.txt and the cache/L4 regression tests. Data/model task branches retain their original history. Future changes should be based on the integrated phase1 head, not the old frozen foundation SHA.
+
+The coordinator also owns the condition-aware extraction/cache-key integration addendum, src/common/cache_keys.py, tests/test_stage1_extraction.py and its required adapter/validator changes. Stage 1 entry points remain under scripts/stage1; shared libraries stay under src/common and src/models. Future chats must use extraction.v2 for non-default conditions or non-FIT extraction instead of weakening the legacy smoke guard.

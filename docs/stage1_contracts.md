@@ -45,6 +45,26 @@ The smoke CLI consumes real validated data and adapters, uses FIT-only images wi
 
 Detailed Stage 2 cache tensor formats, E01 numerical implementation and later-stage prediction serialization remain future planning. Do not expand them independently within Stage 1.
 
+## Condition-aware extraction and reuse addendum — 15 November 2026
+
+The data wire schema stays stage1.v1; its source hashes, dataset/protocol fingerprints, splits and targets do not change. The additive `ExtractionRequest` schema is extraction.v2. `extract(inputs, sites)` remains a FIT-only image_caption compatibility wrapper. New callers use `adapter.extract_request(request)` and `FeatureBatch.validate_request(request)`.
+
+- `purpose=stage1_smoke` permits FIT only. `purpose=preliminary_features` permits FIT/DEV-S/DEV-C/SCREEN. CONFIRM and unknown purposes are rejected before image IO, rendering, tokenization or cache consumption. This is extraction permission, never permission to fit/select using SCREEN; the existing role-specific fitting rules remain mandatory.
+- `condition=image_caption` permits caption decoder and exposed visual sites. `caption_only` permits caption decoder sites with no image loading. `image_only` permits encoder/projector visual_mean sites, no caption text/prefix and no decoder caption pooling. Use one source record per image as provenance, not four language observations. FeatureBatch.row_keys retain the selected source record; view_ids are the semantic feature identity and exclude caption/language for image-only. Inconsistent image hashes/splits and duplicate semantic views are errors.
+- Supported caption sites are last_caption and caption_mean at the four deduplicated depths. post_caption and decoder visual-token pooling remain explicitly unvalidated extensions, not required fabricated outputs. At least one exposed encoder/projector reference plus both caption poolings at each depth is required for the scheduled minimum. Physical module paths and output/pooling conventions remain model-specific.
+- validate_model.py now checks both caption conditions and the single image-only reference, repeated extraction, finite dimensions and whether exposed visual vectors agree across the original caption contexts. If that invariance fails, audit the site before enabling reuse; never silently duplicate/relabel one vector as four independent language observations. Actual checkpoint validation is still required.
+
+`src.common.cache_keys` separates reuse identities from complete run provenance:
+
+1. **Execution:** pinned weights/tokenizer/processor/template, precision, input policy, actual numerical backend (device type/name/capability, library build/flags, batch=1), inference implementation hashes. Unclassified configuration fields fail closed. Repeat acceptance tolerances and scikit-learn version do not define raw inference values.
+2. **Raw feature:** execution fingerprint + input-view fingerprint + physical hook/pooling/output specification + stored float32 convention. Adding a readout C value, threshold, metric or bootstrap never changes this key. Changing weights, input text/image, processor, backend or relevant extraction semantics does. Image-only keys exclude language/caption; other conditions remain distinct. Inputs are serialized without split or category labels.
+3. **Readout:** ordered feature references + exact training/selection image IDs, target values/order, known masks/split hashes + scaler/fitting/selection recipe, seeds and fitting software. Any label/mask/partition or fitted-system change changes this identity. Calibration is a separately named downstream fit, with its DEV-C inputs recorded.
+4. **Analysis:** immutable prediction artifact references + metric/threshold/calibration-policy/bootstrap specification and software. E19/E25 can reference the same completed E01 predictions.
+
+Full model/protocol/data fingerprints, source commit, split/mask manifests and upstream completion checks remain required provenance. A matching mathematical feature key cannot bypass split restrictions, upstream verification or an incompatible cohort/condition. The helpers define interfaces; bulk feature/cache producers and tensor/shard formats remain Stage 2 work. No existing feature cache is migrated or declared compatible automatically. Publish new complete artifacts without mutating passed inputs.
+
+`adapter.describe_execution()` records actual backend identity and per-site physical specifications in successful model-validation reports. Code fixtures test these contracts; they do not establish actual model or Drive readiness.
+
 
 ## Integration addendum — 15 November 2026
 
