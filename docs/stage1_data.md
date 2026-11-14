@@ -18,3 +18,22 @@ Shared sources and decoded-image files are completion-verified under datasets/xm
 The loader independently reconstructs source text, stable caption IDs, draw-0 choices, labels/masks, all frozen partitions and support counts. It checks all image hashes and decodes all JPEGs with Pillow. Incomplete release intersections are rejected with a request for a coordinator-approved replacement protocol; no split is rerolled here. Every read verifies completion and hashes. This deliberately prioritizes validation over reader speed in Stage 1.
 
 Actual execution evidence is recorded below after validation. Local storage checks do not establish Drive synchronization or durability. Model adapters, inference, GPU checks and full Stage 3 G0 shuffled-label controls are outside S1-A/S1-B.
+
+
+## Execution on 15 November 2026
+
+The real original release was prepared under the user-approved local-development PHASE1_ROOT `C:\Users\APOORV\Documents\Codex\2026-11-12\ex\work\Research-stage1\.local\phase1`. No Drive mount or sync durability is claimed.
+
+All 3,600 images decoded, with zero exclusions. Original caption counts: en 7,200; hi 8,503; bn 3,600; te 7,200. Selected records: 14,400. One Hindi duplicate-text group (`05e7b12801b04f21`) retains both original indices. All 125 split/category support records and all image assignments matched the planning audit, retaining the 14-category primary cohort and the one unknown plant cell in SCREEN. Splits remain 2,160 / 180 / 180 / 360 / 720. No model processing occurred.
+
+Dataset fingerprint: `54825d236efcd88cc5252918ebce6d1dad6109ef10a244281f262204bc6cc5bd`.
+Protocol fingerprint: `8cf019d18a28a8bb18540f4ce2e26b17fc0af15a12c8d016138dc99c397c855a`.
+Dataset manifest relative to PHASE1_ROOT: `shared/8cf019d18a28a8bb18540f4ce2e26b17fc0af15a12c8d016138dc99c397c855a/manifests/54825d236efcd88cc5252918ebce6d1dad6109ef10a244281f262204bc6cc5bd/_COMPLETE.json`.
+
+15 unit tests passed (4 data tests plus 11 unchanged coordinator foundation tests). The Windows CSV fixture newline issue and the initial source-artifact fingerprint omission were fixed before the successful full preparation run.
+
+Git CLI push was unavailable because Windows credential storage was unavailable. The connected Drazr GitHub account published implementation commit `a5362c654e31d139d2a02bd12cb0af17f3bc275f`, directly based on the frozen commit. Its tree `02c639a107e5218e3bbdd3ae3c71e5c10ed0dffc` exactly matches local preparation commit `74ced8fe736a34d22ad6be903c0aab76c20ee629`, which remains recorded in the immutable preparation/source completion manifests. The separate validation run records the published GitHub commit. Local branch history was aligned to that identical published tree after verification.
+
+Untested: actual Drive synchronization/durability, Colab execution, network interruption recovery, model adapter/inference/GPU checks, and full Stage 3 G0 controls. Incomplete-population handling rejects the run; publishing a changed population requires the coordinator's replacement protocol. No scientific documents or shared interface code were modified, and no integration into phase1 was performed.
+
+The separate full-data validator passed, including two deterministic reloads, at published code commit a5362c654e31d139d2a02bd12cb0af17f3bc275f. Report relative to PHASE1_ROOT: `shared/8cf019d18a28a8bb18540f4ce2e26b17fc0af15a12c8d016138dc99c397c855a/validation/20261114T200847Z-acdacaf9aa334240a3564604a1a718a3/report.json`.
