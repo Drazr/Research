@@ -31,3 +31,15 @@ python tools/reproduce_split_audit.py --phase1-root /path/to/Drive/phase1
 ```
 
 For an already downloaded pinned CSV, also pass --annotation-csv /path/to/xm3600_annotation.csv. No Qwen/Gemma inference is run. The full four-language loader, pinned model environments and experimental entry points remain Stage 1/subsequent-stage work as described in plan.md.
+
+## Stage 1 coordinator foundation
+
+The shared implementation APIs are frozen as stage1.v1 in [docs/stage1_contracts.md](docs/stage1_contracts.md). Read [file ownership](docs/stage1_ownership.md) before starting parallel changes. The [integration report](reports/stage1_integration.md) distinguishes the 11 passed software tests from blocked actual-model smoke checks. Data/model worker implementation and Stage 1 completion remain pending.
+
+Run the standard-library foundation checks from the repository root:
+
+```shell
+python -m unittest discover -s tests -p test_stage1_foundation.py -v
+```
+
+For explicit local-development preflight, run the smoke entry point with --model qwen (or gemma), --phase1-root .local/phase1 and --storage-scope local-development. Expected exit code is 2 while configurations are unresolved. Actual smoke execution additionally needs --dataset-manifest pointing to a passed dataset artifact's _COMPLETE.json and --code-commit identifying the code used. Use the actual persistent Drive root and persistent-drive scope only when that storage is available and verified. No default root is guessed.

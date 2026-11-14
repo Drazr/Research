@@ -188,7 +188,11 @@ Only then specify the detailed Stage 2 extraction and E03 implementation plan. T
 
 ## Current status
 
-- Five-stage overview: documented.
-- Stage 1: specified; not implemented/executed by this document.
-- Stage 2-5: overview only; detailed planning pending in order.
-- Remote Drive folder creation, dataset transfer and Research repository/branch/worktree creation: not performed by creating this file.
+Updated 15 November 2026 by the Stage 1 coordinator.
+
+- Five-stage overview: documented. Stage 2-5 detail remains pending.
+- Stage 1 interfaces: frozen as `stage1.v1`; see [shared contracts](docs/stage1_contracts.md) and [file ownership](docs/stage1_ownership.md).
+- Shared contracts/storage helpers and smoke entry point: implemented at the foundation stage. These do not complete data preparation, real adapters or real VLM validation.
+- Data and model implementation branches: not integrated. Exact checkpoint choices and original four-language dataset preparation remain pending.
+- Local development root: `.local/phase1`, explicitly local and Git-ignored. Colab persistent root, after mounting Drive: `/content/drive/MyDrive/phase1`. A Windows synced Drive path and actual persistent Drive access are not verified here.
+- Integration evidence and blockers: [Stage 1 integration report](reports/stage1_integration.md). Full G0 controls remain pending Stage 3; Stage 1 is not marked complete.

@@ -85,7 +85,7 @@
     }
   ],
   "caption_draw_key": 0,
-  "caption_selection_status": "Finalize exact deterministic selection and source caption IDs in Stage 1.",
+  "caption_selection_status": "Algorithm frozen in src/common/contracts.py; original source IDs/selections pending data implementation.",
   "readout": {
     "type": "independent_binary_logistic_heads",
     "C_grid": [
@@ -115,5 +115,7 @@
   "base_model_updates": false,
   "new_human_annotation_or_validation": false,
   "persistent_artifact_root_variable": "PHASE1_ROOT",
-  "scientific_authority": "prelim.md; record any protocol change before affected outcomes."
+  "scientific_authority": "prelim.md; record any protocol change before affected outcomes.",
+  "interface_schema_version": "stage1.v1",
+  "caption_selection_algorithm": "caption-draw-v1"
 }

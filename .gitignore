@@ -28,3 +28,6 @@ venv/
 *.npy
 *.npz
 *.parquet
+
+# Explicitly local development checks
+/.local/

@@ -10,7 +10,11 @@
       "precision": null,
       "quantization": null,
       "image_policy": null,
-      "config_fingerprint": null
+      "config_fingerprint": null,
+      "tokenizer_revision": null,
+      "chat_template_sha256": null,
+      "max_input_tokens": null,
+      "software_versions": {}
     },
     "gemma": {
       "checkpoint_id": null,
@@ -20,7 +24,11 @@
       "precision": null,
       "quantization": null,
       "image_policy": null,
-      "config_fingerprint": null
+      "config_fingerprint": null,
+      "tokenizer_revision": null,
+      "chat_template_sha256": null,
+      "max_input_tokens": null,
+      "software_versions": {}
     }
   }
 }

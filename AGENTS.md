@@ -1,6 +1,6 @@
 # Instructions for all Research chats
 
-Read plan.md, research.md and the relevant prelim.md cards before coding. Use M1.md/M2.md for methodological inspiration. The historical references/analysis.md does not override the current questions or data constraints.
+Read plan.md, research.md and the relevant prelim.md cards before coding. Also read docs/stage1_contracts.md and docs/stage1_ownership.md before Stage 1 implementation; their frozen APIs and file ownership apply to both worker branches. Use M1.md/M2.md for methodological inspiration. The historical references/analysis.md does not override the current questions or data constraints.
 
 The current implementation scope is Stage 1 of G9-Q6. Stages 2-5 have overview descriptions only. Do not claim later stages, experiments, remote Drive setup or model runs are complete because files/directories exist. This repository starts with context and metadata, not an implemented experiment suite.
 
