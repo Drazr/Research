@@ -22,6 +22,25 @@ The scientific scope is category accessibility, cross-context readout compatibil
 
 These stages express artifact dependencies, not five global barriers. For example, a validated model's Stage 3 fitting can overlap another model's Stage 2 extraction. Do not wait for an unrelated experiment to finish. Do not consume a partially written or unvalidated artifact.
 
+### Stage 3-5 reuse requirement (user decision, 15 November 2026)
+
+This records a design requirement, not a finalized Stage 3 numerical plan or new code. Cache expensive reusable results once, with shared readers and immutable compatibility identities, so different scripts consume the same outputs. Store them under PHASE1_ROOT; do not duplicate artifacts merely to give each experiment a separate copy.
+
+| Artifact to retain | Purpose and reuse boundary |
+|---|---|
+| Stage 2 raw features and E03 fitted preprocessing | Already-produced inputs; reuse across heads, C candidates and relevant experiments without repeating VLM extraction or vocabulary/IDF fitting |
+| Source-FIT scalers/statistics | Share only when training rows, weighting and preprocessing recipe are identical; never estimate them from DEV/SCREEN |
+| Completed readout fits, convergence and DEV-S selection records | Resume fitting/search and reuse frozen systems across scoring scripts; checkpoint a meaningful fit block, not every optimizer iteration |
+| G0 image-vector permutations, traveling masks and completed controls | Keep fixed shared control identities across languages/methods and reuse completed expensive fits/results; control targets remain separate from true labels |
+| Canonical logits/probabilities and prediction row/system identities | Produce at the permitted later scoring stage once; E01/E19/E25 and other declared metrics consume them without refitting or repeated inference |
+| E19 source-DEV-C cutoffs/policy specification | Reuse exactly the frozen source policy; preserve source-only fitting, confidence event and deterministic tie handling |
+| Shared bootstrap membership/recipe and completed expensive metric summaries | Preserve paired image resampling and resume analysis blocks; reuse summaries across reports/plots when predictions/cohorts/analysis settings match |
+| Final report tables, support/undefined flags and provenance | Stage 5 assembles verified results without recomputing expensive fitting/scoring; cheap derivations need not create standalone caches |
+
+Raw-feature, fitted-system, prediction and analysis identities remain separate: changing a metric/bootstrap/plot must not invalidate raw features or unchanged heads. Additional calibrators/adaptation maps are retained only if a later declared experiment requires them. No such experiment is added here. Model outputs remain separated by MODEL and full identity; all known masks/splits/source supervision rules remain enforced on cache hits.
+
+Choose bounded checkpoint bundles and frequency during Stage 3 implementation planning, based on meaningful completed work and observed I/O/recovery cost. Keep producer/consumer/resume integrity checks and cheap role guards, while reducing repeated whole-dataset verification against the same immutable in-process inputs. Do not cache every temporary tensor, save frozen base weights repeatedly, or change an active Stage 2 run under this preference.
+
 ## Stage 1: detailed plan
 
 ### 1.1 Goal and completion boundary
