@@ -228,6 +228,8 @@ Implementation update: the coordinator executable shared interfaces, evidence br
 
 ## Current status
 
+Software integration update, 15 November 2026: the shared foundation and both Stage 2 workers are now integrated, with all four entry notebooks under scripts/stage2. The combined 78-test suite passed; read-only actual-data compilation confirmed the unchanged fingerprint, 92 chunks and exact three-condition population, excluding CONFIRM. Colab setup/import/dependency and development-branch defaults were corrected without changing scientific configurations, shared APIs or Stage 1 adapters. See docs/stage2_runbook.md and reports/stage2_integration.md. Actual mounted plan/receipt binding, first-FIT L4 checks, E03 production outputs, full feature releases and suite acceptance remain pending. Older planning-only statements below describe the earlier handoff, not a completed runtime stage.
+
 Updated 15 November 2026 during coordinator integration.
 
 - Data branch 2f42b4a and model branch 2f374d2 are integrated into this phase1 snapshot with their histories preserved. Main remains unchanged.

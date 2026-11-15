@@ -309,6 +309,19 @@ validate_stage2.ipynb takes an explicit inventory JSON: data_plan, model_plans,
 feature_releases (12 per model), resource_reports (one per model), text_families
 (13 complete). validate_suite verifies them and publishes a blocked diagnostic for
 missing coverage or a passed stage2_suite_index only when everything is accepted.
+
+Integration correction: the suite payload's feature_releases list contains only
+feature release references (24 in a complete two-model suite). Resource-report
+references are retained separately in resource_reports, keyed by qwen/gemma; both
+types remain explicit upstream artifacts. Do not feed a resource receipt into a
+feature reader based on its position in a mixed list. The new integration
+regression checks complete inventory orchestration and missing-input blocking.
+
 This foundation has no such completed suite. Full G0 and scientific interpretation
 remain later gates. Workers return base/head SHAs, owned files, exact versions,
 tests, actual runtime commands/evidence, completion paths/hashes and remaining gaps.
+
+The workers are now integrated on phase1, with coordinator notebook setup fixes.
+Use docs/stage2_runbook.md and reports/stage2_integration.md for current notebook
+entry instructions and available checks. The original immutable worker base and
+public callable signatures remain those documented above.

@@ -130,7 +130,7 @@ def validate_suite(root, protocol, inventory, producer):
     from .text import load_text_family
     data = load_job_plan(inventory['data_plan'], root, protocol)
     check(data['kind'] == 'stage2_data_plan', 'Suite requires shared data plan')
-    blockers, models, families = [], {}, {}
+    blockers, models, families, resources = [], {}, {}, {}
     accepted = []
     for model in ('qwen', 'gemma'):
         supplied = inventory.get('model_plans', {}).get(model)
@@ -144,7 +144,7 @@ def validate_suite(root, protocol, inventory, producer):
         resource = inventory.get('resource_reports',{}).get(model)
         if resource:
             verify_resource_report(reference(resource,root),root,protocol,plan)
-            accepted.append(reference(resource,root))
+            resources[model] = reference(resource,root)
         else:
             blockers.append(model+': measured first-chunk resource report missing')
         seen = set()
@@ -178,11 +178,13 @@ def validate_suite(root, protocol, inventory, producer):
         blockers.append(str(len(missing)) + ' E03 families missing')
     body = {'schema': 'stage2.suite.v1', 'status': 'blocked' if blockers else 'passed',
             'data_plan': plain(data['manifest_reference']), 'model_plans': models,
-            'feature_releases': accepted, 'text_families': families, 'blockers': blockers,
+            'feature_releases': accepted, 'resource_reports': resources,
+            'text_families': families, 'blockers': blockers,
             'scientific_results': False, 'full_G0_complete': False}
     meta = metadata('stage2_validation' if blockers else 'stage2_suite_index', protocol, data['dataset_fingerprint'], producer)
     meta['status'] = body['status']
-    meta['upstream_artifacts'] = [plain(data['manifest_reference'])] + list(models.values()) + accepted + list(families.values())
+    meta['upstream_artifacts'] = ([plain(data['manifest_reference'])] + list(models.values())
+                                + accepted + list(resources.values()) + list(families.values()))
     return publish_json(root, 'results/stage2-validation/' + meta['run_id'], meta, 'report.json', body)
 
 

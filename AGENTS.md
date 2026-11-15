@@ -1,10 +1,14 @@
 # Instructions for all Research chats
 
+## Latest software integration — 15 November 2026
+
+Shared Stage 2 base 986f812ac6e3811a035391738e295bf55043369a and worker heads 388579ff6b2020d5a6db6c23f162d956d536923a (E03) and ab446367df7caea902a5165ff2f90de01b3d154f (extraction) are integrated on phase1. All four notebook entry points now live under scripts/stage2, backed by src/stage2 modules. Read docs/stage2_runbook.md and reports/stage2_integration.md before execution. The combined 78-test suite passed locally, as did post-fix notebook checks and read-only real-data inventory compilation; no actual Stage 2 L4 extraction or production E03 preprocessing occurred here. Earlier planning/foundation statements that workers were not implemented are historical; production Stage 2 completion remains pending. Preserve frozen shared interfaces and scientific/Stage 1 configurations. Use integrated phase1 for Colab, not worker branch defaults.
+
 ## Coordinator foundation implementation update — 15 November 2026
 
 - The executable Stage 2 worker base is the phase1 commit first adding docs/stage2_interfaces.md, not the earlier planning commit. Recover its SHA with `git log --diff-filter=A --format=%H -- docs/stage2_interfaces.md`, or use the full SHA supplied in the coordinator handoff. Both extraction and E03 chats must branch from that immutable commit.
 - Import shared callables from src/stage2/interfaces.py. Coordinator-owned features.py/text.py are serializers/readers, not worker implementations. Workers own the distinct files listed in docs/stage2_interfaces.md and must report necessary shared changes before modifying stable interfaces.
-- The intended Drive connector was verified as Tapas Sahu / tps039@gmail.com. Both separate model-validation payloads and both final smoke payloads were read through that connection and matched their original completion checksums. All four passed at d73133ce51247f10dd6bc7af35ee9fe9b59ed517. Relevant inference/contract/validation sources remain byte-identical. This is stronger evidence than the prior user-log-only record; it is not new L4 execution or a mounted full readiness receipt.
+- The intended Drazr Drive connection was verified. Both separate model-validation payloads and both final smoke payloads were read through that connection and matched their original completion checksums. All four passed at d73133ce51247f10dd6bc7af35ee9fe9b59ed517. Relevant inference/contract/validation sources remain byte-identical. This is stronger evidence than the prior user-log-only record; it is not new L4 execution or a mounted full readiness receipt.
 - The missing separate Qwen validation pointer was located: smoke/280535919b08cad218a47706a293d398b3ee691200becc37d68eb9b6573ba16c/20261115T043216Z-65cc67f45eea4c98b731fc0db1d7cc43. Full hashes and original links are in reports/stage2_existing_evidence.json. Do not request an expensive rerun merely to recover this pointer.
 - Run prepare_stage2.ipynb against the actual mounted root to verify common data and generated configurations and publish typed plans/receipts. Shared E03 planning remains independent of GPU readiness. New worker runtimes must check actual execution identity and perform first-FIT bridge/public equality and storage readback. No Stage 2 arrays or completed suite were generated here. This current update supersedes older planning-only status below.
 
@@ -36,8 +40,8 @@ User-requested Stage 1 entry points are now notebooks in scripts/stage1. Keep re
 
 ### Repository and accounts
 
-- Repository: https://github.com/Drazr/Research. Use the Drazr GitHub connection for writes, not ShauryaVArdhanSinghKaintura-1. phase1 is the integration branch; main is not the target for routine Stage 1 updates.
-- Intended Drive owner is Tapas/Drazr. Google Drive and GitHub connections are independent. A screenshot showed both Drive accounts connected, while the last connector profile check still returned Shaurya. Do not infer current connector identity from that historical check or from the active GitHub account. Colab's authenticated Drive mount is also separate from the Codex Drive connector.
+- Repository: https://github.com/Drazr/Research. Use the Drazr GitHub connection for writes, not another connected account. phase1 is the integration branch; main is not the target for routine Stage 1 updates.
+- Use the intended Drazr Drive connection. Google Drive and GitHub connections are independent. Earlier connector checks returned another account despite the intended connection being present. Do not infer current connector identity from that historical check or from the active GitHub account. Colab's authenticated Drive mount is also separate from the Codex Drive connector.
 - The user runs notebooks in Colab. Actual model runs happen there; this local Windows checkout does not have the selected L4/model runtime. Report user-supplied execution evidence separately from checks performed locally.
 
 ### Persistent storage and the prepared data
