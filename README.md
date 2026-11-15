@@ -5,7 +5,7 @@ Research context and the execution plan for frozen Qwen/Gemma VLM category probe
 ## Start here
 
 1. [AGENTS.md](AGENTS.md): rules for every coding chat.
-2. [plan.md](plan.md): five execution stages; Stages 1 and 2 are detailed, with Stage 2 specified but not implemented.
+2. [plan.md](plan.md): five execution stages; Stages 1 and 2 are detailed. Stage 2 coordinator interfaces are implemented; workers/runtime acceptance remain pending.
 3. [research.md](research.md) and [prelim.md](prelim.md): current questions, designs and scientific protocol.
 4. [M1.md](M1.md), [M2.md](M2.md), [paper.md](paper.md): methods and bibliography.
 5. [Historical literature analysis](references/analysis.md): context, not permission to revive superseded proposals.
@@ -53,6 +53,11 @@ The two Stage 1 worker implementations are integrated on phase1. The selected Qw
 Notebook entry points (user-requested conversion): `scripts/stage1/stage1_cpu.ipynb` runs preparation then validation; `configure_l4.ipynb`, `validate_model.ipynb` and `run_validity_smoke.ipynb` run in that order per MODEL. The five former scripts/stage1 Python entry files are removed. Their shared implementations now live in src/stage1; scientific rules, artifacts and completion gates are unchanged. Notebook syntax and CPU fixture checks do not establish actual Colab/L4/Drive completion.
 
 ## Stage 2 planning handoff
+
+Current implementation: [executable interfaces and worker ownership](docs/stage2_interfaces.md),
+[implementation/evidence report](reports/stage2_implementation.md). Both workers
+must branch from the exact coordinator foundation SHA supplied after publication.
+The planning history below remains context, not the current implementation status.
 
 [Stage 2 contracts](docs/stage2_contracts.md) fix the shared feature inventory, split/condition guards, shard/storage/resume rules, E03 preprocessing and release checks. [Stage 2 ownership](docs/stage2_ownership.md) defines the future shared-interface, extraction and E03 workstreams. [Planning report](reports/stage2_planning.md) distinguishes finalized design from pending implementation and actual readiness evidence. No Stage 2 code or scientific results were produced by this planning task. Stage 2 execution remains gated on the applicable Stage 1 passes; Stages 3-5 remain overview only.
 

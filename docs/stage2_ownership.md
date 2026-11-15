@@ -1,5 +1,14 @@
 # Stage 2 ownership and implementation handoff
 
+Coordinator implementation update: the shared executable foundation now exists.
+Read [stage2_interfaces.md](stage2_interfaces.md) for exact callable types, payload
+fields, file ownership and the immutable-base recovery command. The coordinator
+handoff supplies the full pushed SHA; workers must branch from it. Extraction and
+E03 worker modules/runtime outputs remain pending. The reserved interface table
+below is implemented by src/stage2/interfaces.py; its semantics remain binding.
+features.py and text.py are coordinator serializers/readers, not worker files.
+Historical planning wording below does not supersede this implementation update.
+
 Dated 15 November 2026. Planning only: no chats, branches, worktrees, notebooks, modules or runtime artifacts are created by this document. Read AGENTS.md, plan.md, prelim.md and stage2_contracts.md. Stage 1 launch gates remain in force. The user requested specification without code in this turn.
 
 ## Shared base and ownership
@@ -63,4 +72,4 @@ Every worker handoff includes base/head commit, owned/changed files, exact depen
 - [ ] Both model feature inventories, E03 family inventories and role-specific release indexes accepted.
 - [ ] Integration report records actual evidence and explicit optional-site limits; plan/AGENTS updated without completing later stages.
 
-All items are currently uncompleted. No executable interfaces, Stage 2 outputs or measured scientific results are implied by finalized planning.
+The coordinator foundation is implemented and software-tested; its publication SHA is supplied in the implementation handoff. All worker/runtime/completion items remain uncompleted. No Stage 2 arrays or measured scientific results are implied by the foundation.

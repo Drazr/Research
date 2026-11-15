@@ -1,0 +1,647 @@
+{
+  "verified_account": "Tapas Sahu / Drazr (tps039@gmail.com)",
+  "verified_date": "2026-11-15",
+  "artifacts": [
+    {
+      "label": "qwen-model",
+      "url": "https://drive.google.com/file/d/1u3DAYiNhEYLRMdl-N6SLnT6C558m-HW_/view",
+      "manifest_url": "https://drive.google.com/file/d/1NbA1A_STLrZb9hA0K1uXFsHPr_QJP7fw/view",
+      "bytes": 181327,
+      "sha256": "3b52856568a648c522fbabeffedf71d6d2e3ec4ea42241e5a8879dd11a01ed2a",
+      "checksum_matches": true,
+      "kind": "stage1_model_validation",
+      "code_commit": "d73133ce51247f10dd6bc7af35ee9fe9b59ed517",
+      "dataset_fingerprint": "54825d236efcd88cc5252918ebce6d1dad6109ef10a244281f262204bc6cc5bd",
+      "model_fingerprint": "280535919b08cad218a47706a293d398b3ee691200becc37d68eb9b6573ba16c",
+      "status": "passed",
+      "blockers": [],
+      "conditions_validated": {
+        "caption_only": [
+          "decoder:9:last_caption",
+          "decoder:9:caption_mean",
+          "decoder:18:last_caption",
+          "decoder:18:caption_mean",
+          "decoder:27:last_caption",
+          "decoder:27:caption_mean",
+          "decoder:36:last_caption",
+          "decoder:36:caption_mean"
+        ],
+        "image_caption": [
+          "decoder:9:last_caption",
+          "decoder:9:caption_mean",
+          "decoder:18:last_caption",
+          "decoder:18:caption_mean",
+          "decoder:27:last_caption",
+          "decoder:27:caption_mean",
+          "decoder:36:last_caption",
+          "decoder:36:caption_mean",
+          "encoder:None:visual_mean",
+          "projector:None:visual_mean"
+        ],
+        "image_only": [
+          "encoder:None:visual_mean",
+          "projector:None:visual_mean"
+        ]
+      },
+      "dimensions": {
+        "decoder:18:caption_mean": 2048,
+        "decoder:18:last_caption": 2048,
+        "decoder:27:caption_mean": 2048,
+        "decoder:27:last_caption": 2048,
+        "decoder:36:caption_mean": 2048,
+        "decoder:36:last_caption": 2048,
+        "decoder:9:caption_mean": 2048,
+        "decoder:9:last_caption": 2048,
+        "encoder:None:visual_mean": 1280,
+        "projector:None:visual_mean": 2048
+      },
+      "execution_identity": {
+        "backend": {
+          "batch_size": 1,
+          "capability": [
+            8,
+            9
+          ],
+          "cuda_version": "12.8",
+          "cudnn_allow_tf32": true,
+          "cudnn_benchmark": false,
+          "cudnn_deterministic": false,
+          "cudnn_version": 91002,
+          "deterministic_algorithms": false,
+          "device_name": "NVIDIA L4",
+          "device_type": "cuda",
+          "eval": true,
+          "float32_matmul_precision": "highest",
+          "image_processor_class": "Qwen2VLImageProcessor",
+          "matmul_allow_tf32": false,
+          "padding": false,
+          "tokenizer_class": "Qwen2TokenizerFast",
+          "truncation": false
+        },
+        "execution_fingerprint": "d2209f85a72cfe2e6d7781059b23caf5b895c18619a7bae7b673a52aa194569e",
+        "site_specs": {
+          "decoder:18:caption_mean": {
+            "module_path": "model.language_model.layers.17",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "caption_mean"
+          },
+          "decoder:18:last_caption": {
+            "module_path": "model.language_model.layers.17",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "last_caption"
+          },
+          "decoder:27:caption_mean": {
+            "module_path": "model.language_model.layers.26",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "caption_mean"
+          },
+          "decoder:27:last_caption": {
+            "module_path": "model.language_model.layers.26",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "last_caption"
+          },
+          "decoder:36:caption_mean": {
+            "module_path": "model.language_model.layers.35",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "caption_mean"
+          },
+          "decoder:36:last_caption": {
+            "module_path": "model.language_model.layers.35",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "last_caption"
+          },
+          "decoder:9:caption_mean": {
+            "module_path": "model.language_model.layers.8",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "caption_mean"
+          },
+          "decoder:9:last_caption": {
+            "module_path": "model.language_model.layers.8",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "last_caption"
+          },
+          "encoder:None:visual_mean": {
+            "module_path": "model.visual.blocks.31",
+            "output": "exposed visual module output; mean over all non-channel axes",
+            "pooling": "visual_mean"
+          },
+          "projector:None:visual_mean": {
+            "module_path": "model.visual.merger",
+            "output": "exposed visual module output; mean over all non-channel axes",
+            "pooling": "visual_mean"
+          }
+        },
+        "source_sha256": {
+          "hf.py": "a3a13bbb331b0361bcd7471eb92cc86c782a6ec61c9d18593785cb0265a1edcd",
+          "spans.py": "7d8458a8c119a578a0823172721822bf220c2d61144b0f44bd43086bac0a0c46"
+        }
+      },
+      "inspection_checks": {
+        "attention_visibility_documented": true,
+        "caption_spans_valid": true,
+        "eval_mode": true,
+        "frozen_parameters": true,
+        "input_policy_respected": true,
+        "native_text_preserved": true,
+        "no_gold_in_model_input": true,
+        "residual_hooks_consistent": true
+      },
+      "inspection_record_count": 8,
+      "adapter": {
+        "decoder_blocks": 36,
+        "decoder_depths": [
+          9,
+          18,
+          27,
+          36
+        ],
+        "hook_convention": "forward hook on actual 1-based decoder block output, before final decoder norm",
+        "midpoint": 18,
+        "model_fingerprint": "280535919b08cad218a47706a293d398b3ee691200becc37d68eb9b6573ba16c",
+        "repeat_atol": 0,
+        "repeat_rtol": 0,
+        "supported_sites": [
+          "decoder:9:last_caption",
+          "decoder:9:caption_mean",
+          "decoder:18:last_caption",
+          "decoder:18:caption_mean",
+          "decoder:27:last_caption",
+          "decoder:27:caption_mean",
+          "decoder:36:last_caption",
+          "decoder:36:caption_mean",
+          "encoder:None:visual_mean",
+          "projector:None:visual_mean"
+        ],
+        "unsupported_sites": {
+          "post_caption": "Boundary semantics not yet validated"
+        }
+      },
+      "resolved_config": {
+        "adapter": "qwen",
+        "attention_backend": "eager",
+        "chat_template_sha256": "a0bc6f6fc7a29a80017a433e8f03a1cc1236e838a944a2d034295a60c4f2fddb",
+        "checkpoint_id": "Qwen/Qwen2.5-VL-3B-Instruct",
+        "config_fingerprint": "280535919b08cad218a47706a293d398b3ee691200becc37d68eb9b6573ba16c",
+        "decoder_path": "model.language_model.layers",
+        "device": "cuda:0",
+        "image_policy": "pinned_processor_with_explicit_kwargs",
+        "image_processor_class": "Qwen2VLImageProcessor",
+        "image_processor_use_fast": false,
+        "image_token_ids": [
+          151655
+        ],
+        "max_input_tokens": 1024,
+        "model_class": "Qwen2_5_VLForConditionalGeneration",
+        "precision": "bfloat16",
+        "processor_kwargs": {
+          "max_pixels": 200704,
+          "min_pixels": 3136
+        },
+        "processor_revision": "66285546d2b821cf421d4f5eb2576359d3770cd3",
+        "quantization": null,
+        "repeat_atol": 0,
+        "repeat_rtol": 0,
+        "revision": "66285546d2b821cf421d4f5eb2576359d3770cd3",
+        "software_versions": {
+          "Pillow": "11.3.0",
+          "huggingface-hub": "0.36.0",
+          "numpy": "2.1.3",
+          "safetensors": "0.6.2",
+          "scikit-learn": "1.6.1",
+          "tokenizers": "0.22.1",
+          "torch": "2.9.1",
+          "torchvision": "0.24.1",
+          "transformers": "4.57.6"
+        },
+        "tokenizer_revision": "66285546d2b821cf421d4f5eb2576359d3770cd3",
+        "visual_paths": {
+          "encoder": "model.visual.blocks.31",
+          "projector": "model.visual.merger"
+        }
+      },
+      "source_files_sha256": {
+        "src/common/__init__.py": "982f7dc97d4c6592e0c759e2b7012a4cf5d026be76861c4a62eac11b9ad60550",
+        "src/common/cache_keys.py": "7257a733d7eaf122f56f9f49138bd4b5bd0c13b4a007be75b4c62356bb437f39",
+        "src/common/contracts.py": "2d80593963a19d192753debfed59b23c796f1777464bcc72cf6a76318f6b799d",
+        "src/common/data.py": "6eb919d938aeab0735e5b34609a1c771babdd756d540ce91d9cf676375cb69b7",
+        "src/common/storage.py": "7597000f565c35941e821c63c2265d1df21854ba6019abbfb4c6b1f966cf902f",
+        "src/models/__init__.py": "72c0859830140d4eefaf73a7d09775014813d8bd9124f398d414acbc8269dfa3",
+        "src/models/hf.py": "a3a13bbb331b0361bcd7471eb92cc86c782a6ec61c9d18593785cb0265a1edcd",
+        "src/models/registry.py": "8812b9264376e7bb24008a981948231eb7b389d0aa016d51eed388ef4a345952",
+        "src/models/spans.py": "7d8458a8c119a578a0823172721822bf220c2d61144b0f44bd43086bac0a0c46"
+      },
+      "entry_hash": "07dcdaee49d610f6760be5c11ae567349517b01483535ee22d85e1df81bf3306",
+      "source_compatibility": "Relevant current model/contract/cache/validation/smoke sources checked against original Git commit; byte-identical. No current L4 inference performed.",
+      "verification_scope": "Original payload bytes SHA256 compared to original completion marker; inspected payload kind/status/identities. This summary is not a mounted readiness receipt."
+    },
+    {
+      "label": "qwen-smoke",
+      "url": "https://drive.google.com/file/d/17Q5dZwfY0wNXfrK4fEZUGwGJGLEeySJw/view",
+      "manifest_url": "https://drive.google.com/file/d/1h2hkn4t8m0bhAGOhF6V1u6tvjlZ2KU1h/view",
+      "bytes": 1397748,
+      "sha256": "6eab945e4d835f67a61e1cfacc9bfb9b18abfd0405c5add76ac357546f7f5a82",
+      "checksum_matches": true,
+      "kind": "stage1_smoke",
+      "code_commit": "d73133ce51247f10dd6bc7af35ee9fe9b59ed517",
+      "dataset_fingerprint": "54825d236efcd88cc5252918ebce6d1dad6109ef10a244281f262204bc6cc5bd",
+      "model_fingerprint": "280535919b08cad218a47706a293d398b3ee691200becc37d68eb9b6573ba16c",
+      "status": "passed",
+      "blockers": [],
+      "checks": {
+        "adapter_inspection": true,
+        "data_contract": true,
+        "finite_features": true,
+        "permutation_plumbing": true,
+        "repeat_extraction": true,
+        "toy_optimizer": true
+      },
+      "inspection_checks": {
+        "attention_visibility_documented": true,
+        "caption_spans_valid": true,
+        "eval_mode": true,
+        "frozen_parameters": true,
+        "input_policy_respected": true,
+        "native_text_preserved": true,
+        "no_gold_in_model_input": true,
+        "residual_hooks_consistent": true
+      },
+      "inspection_record_count": 64,
+      "toy_optimizer": [
+        {
+          "category": "vehicle.n.01",
+          "train_rows": 48,
+          "validation_rows": 16
+        }
+      ],
+      "permutation_plumbing": [
+        {
+          "image_vectors": 12,
+          "mask_carried_with_values": true,
+          "seed": 0
+        },
+        {
+          "image_vectors": 12,
+          "mask_carried_with_values": true,
+          "seed": 1
+        },
+        {
+          "image_vectors": 12,
+          "mask_carried_with_values": true,
+          "seed": 2
+        }
+      ],
+      "adapter": {
+        "decoder_blocks": 36,
+        "decoder_depths": [
+          9,
+          18,
+          27,
+          36
+        ],
+        "hook_convention": "forward hook on actual 1-based decoder block output, before final decoder norm",
+        "midpoint": 18,
+        "model_fingerprint": "280535919b08cad218a47706a293d398b3ee691200becc37d68eb9b6573ba16c",
+        "repeat_atol": 0,
+        "repeat_rtol": 0,
+        "supported_sites": [
+          "decoder:9:last_caption",
+          "decoder:9:caption_mean",
+          "decoder:18:last_caption",
+          "decoder:18:caption_mean",
+          "decoder:27:last_caption",
+          "decoder:27:caption_mean",
+          "decoder:36:last_caption",
+          "decoder:36:caption_mean",
+          "encoder:None:visual_mean",
+          "projector:None:visual_mean"
+        ],
+        "unsupported_sites": {
+          "post_caption": "Boundary semantics not yet validated"
+        }
+      },
+      "entry_hash": "25f2f7bacd7f7727df794ff5f58b7345804e5c185267a01b2850a422e3dd596f",
+      "source_compatibility": "Relevant current model/contract/cache/validation/smoke sources checked against original Git commit; byte-identical. No current L4 inference performed.",
+      "verification_scope": "Original payload bytes SHA256 compared to original completion marker; inspected payload kind/status/identities. This summary is not a mounted readiness receipt."
+    },
+    {
+      "label": "gemma-model",
+      "url": "https://drive.google.com/file/d/1w5AU7zU24_wB39_YduHoErSdOgpdJ5qD/view",
+      "manifest_url": "https://drive.google.com/file/d/1uVnvyDVwnhXkXGsPJqMNNcLeU-PCuKGv/view",
+      "bytes": 181639,
+      "sha256": "54f291f65980c3e62663695722801f89c3ac4979e6d95f5564853896d292c57b",
+      "checksum_matches": true,
+      "kind": "stage1_model_validation",
+      "code_commit": "d73133ce51247f10dd6bc7af35ee9fe9b59ed517",
+      "dataset_fingerprint": "54825d236efcd88cc5252918ebce6d1dad6109ef10a244281f262204bc6cc5bd",
+      "model_fingerprint": "ba079306905ee4bbcfbaa8de626437ee3ce2832e2de005abb72a78ee4e6f40c7",
+      "status": "passed",
+      "blockers": [],
+      "conditions_validated": {
+        "caption_only": [
+          "decoder:9:last_caption",
+          "decoder:9:caption_mean",
+          "decoder:17:last_caption",
+          "decoder:17:caption_mean",
+          "decoder:26:last_caption",
+          "decoder:26:caption_mean",
+          "decoder:34:last_caption",
+          "decoder:34:caption_mean"
+        ],
+        "image_caption": [
+          "decoder:9:last_caption",
+          "decoder:9:caption_mean",
+          "decoder:17:last_caption",
+          "decoder:17:caption_mean",
+          "decoder:26:last_caption",
+          "decoder:26:caption_mean",
+          "decoder:34:last_caption",
+          "decoder:34:caption_mean",
+          "encoder:None:visual_mean",
+          "projector:None:visual_mean"
+        ],
+        "image_only": [
+          "encoder:None:visual_mean",
+          "projector:None:visual_mean"
+        ]
+      },
+      "dimensions": {
+        "decoder:17:caption_mean": 2560,
+        "decoder:17:last_caption": 2560,
+        "decoder:26:caption_mean": 2560,
+        "decoder:26:last_caption": 2560,
+        "decoder:34:caption_mean": 2560,
+        "decoder:34:last_caption": 2560,
+        "decoder:9:caption_mean": 2560,
+        "decoder:9:last_caption": 2560,
+        "encoder:None:visual_mean": 1152,
+        "projector:None:visual_mean": 2560
+      },
+      "execution_identity": {
+        "backend": {
+          "batch_size": 1,
+          "capability": [
+            8,
+            9
+          ],
+          "cuda_version": "12.8",
+          "cudnn_allow_tf32": true,
+          "cudnn_benchmark": false,
+          "cudnn_deterministic": false,
+          "cudnn_version": 91002,
+          "deterministic_algorithms": false,
+          "device_name": "NVIDIA L4",
+          "device_type": "cuda",
+          "eval": true,
+          "float32_matmul_precision": "highest",
+          "image_processor_class": "Gemma3ImageProcessor",
+          "matmul_allow_tf32": false,
+          "padding": false,
+          "tokenizer_class": "GemmaTokenizerFast",
+          "truncation": false
+        },
+        "execution_fingerprint": "b30941a78d4d4a8ad551e7780c391f376cab98f53b18938ace8f77268020d771",
+        "site_specs": {
+          "decoder:17:caption_mean": {
+            "module_path": "model.language_model.layers.16",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "caption_mean"
+          },
+          "decoder:17:last_caption": {
+            "module_path": "model.language_model.layers.16",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "last_caption"
+          },
+          "decoder:26:caption_mean": {
+            "module_path": "model.language_model.layers.25",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "caption_mean"
+          },
+          "decoder:26:last_caption": {
+            "module_path": "model.language_model.layers.25",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "last_caption"
+          },
+          "decoder:34:caption_mean": {
+            "module_path": "model.language_model.layers.33",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "caption_mean"
+          },
+          "decoder:34:last_caption": {
+            "module_path": "model.language_model.layers.33",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "last_caption"
+          },
+          "decoder:9:caption_mean": {
+            "module_path": "model.language_model.layers.8",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "caption_mean"
+          },
+          "decoder:9:last_caption": {
+            "module_path": "model.language_model.layers.8",
+            "output": "forward module output; before final decoder norm",
+            "pooling": "last_caption"
+          },
+          "encoder:None:visual_mean": {
+            "module_path": "model.vision_tower",
+            "output": "exposed visual module output; mean over all non-channel axes",
+            "pooling": "visual_mean"
+          },
+          "projector:None:visual_mean": {
+            "module_path": "model.multi_modal_projector",
+            "output": "exposed visual module output; mean over all non-channel axes",
+            "pooling": "visual_mean"
+          }
+        },
+        "source_sha256": {
+          "hf.py": "a3a13bbb331b0361bcd7471eb92cc86c782a6ec61c9d18593785cb0265a1edcd",
+          "spans.py": "7d8458a8c119a578a0823172721822bf220c2d61144b0f44bd43086bac0a0c46"
+        }
+      },
+      "inspection_checks": {
+        "attention_visibility_documented": true,
+        "caption_spans_valid": true,
+        "eval_mode": true,
+        "frozen_parameters": true,
+        "input_policy_respected": true,
+        "native_text_preserved": true,
+        "no_gold_in_model_input": true,
+        "residual_hooks_consistent": true
+      },
+      "inspection_record_count": 8,
+      "adapter": {
+        "decoder_blocks": 34,
+        "decoder_depths": [
+          9,
+          17,
+          26,
+          34
+        ],
+        "hook_convention": "forward hook on actual 1-based decoder block output, before final decoder norm",
+        "midpoint": 17,
+        "model_fingerprint": "ba079306905ee4bbcfbaa8de626437ee3ce2832e2de005abb72a78ee4e6f40c7",
+        "repeat_atol": 0,
+        "repeat_rtol": 0,
+        "supported_sites": [
+          "decoder:9:last_caption",
+          "decoder:9:caption_mean",
+          "decoder:17:last_caption",
+          "decoder:17:caption_mean",
+          "decoder:26:last_caption",
+          "decoder:26:caption_mean",
+          "decoder:34:last_caption",
+          "decoder:34:caption_mean",
+          "encoder:None:visual_mean",
+          "projector:None:visual_mean"
+        ],
+        "unsupported_sites": {
+          "post_caption": "Boundary semantics not yet validated"
+        }
+      },
+      "resolved_config": {
+        "adapter": "gemma",
+        "attention_backend": "eager",
+        "chat_template_sha256": "7de1c58e208eda46e9c7f86397df37ec49883aeece39fb961e0a6b24088dd3c4",
+        "checkpoint_id": "google/gemma-3-4b-it",
+        "config_fingerprint": "ba079306905ee4bbcfbaa8de626437ee3ce2832e2de005abb72a78ee4e6f40c7",
+        "decoder_path": "model.language_model.layers",
+        "device": "cuda:0",
+        "image_policy": "pinned_processor_with_explicit_kwargs",
+        "image_processor_class": "Gemma3ImageProcessor",
+        "image_processor_use_fast": false,
+        "image_token_ids": [
+          262144
+        ],
+        "max_input_tokens": 1024,
+        "model_class": "Gemma3ForConditionalGeneration",
+        "precision": "bfloat16",
+        "processor_kwargs": {
+          "do_pan_and_scan": false
+        },
+        "processor_revision": "093f9f388b31de276ce2de164bdc2081324b9767",
+        "quantization": null,
+        "repeat_atol": 0,
+        "repeat_rtol": 0,
+        "revision": "093f9f388b31de276ce2de164bdc2081324b9767",
+        "software_versions": {
+          "Pillow": "11.3.0",
+          "huggingface-hub": "0.36.0",
+          "numpy": "2.1.3",
+          "safetensors": "0.6.2",
+          "scikit-learn": "1.6.1",
+          "tokenizers": "0.22.1",
+          "torch": "2.9.1",
+          "torchvision": "0.24.1",
+          "transformers": "4.57.6"
+        },
+        "tokenizer_revision": "093f9f388b31de276ce2de164bdc2081324b9767",
+        "visual_paths": {
+          "encoder": "model.vision_tower",
+          "projector": "model.multi_modal_projector"
+        }
+      },
+      "source_files_sha256": {
+        "src/common/__init__.py": "982f7dc97d4c6592e0c759e2b7012a4cf5d026be76861c4a62eac11b9ad60550",
+        "src/common/cache_keys.py": "7257a733d7eaf122f56f9f49138bd4b5bd0c13b4a007be75b4c62356bb437f39",
+        "src/common/contracts.py": "2d80593963a19d192753debfed59b23c796f1777464bcc72cf6a76318f6b799d",
+        "src/common/data.py": "6eb919d938aeab0735e5b34609a1c771babdd756d540ce91d9cf676375cb69b7",
+        "src/common/storage.py": "7597000f565c35941e821c63c2265d1df21854ba6019abbfb4c6b1f966cf902f",
+        "src/models/__init__.py": "72c0859830140d4eefaf73a7d09775014813d8bd9124f398d414acbc8269dfa3",
+        "src/models/hf.py": "a3a13bbb331b0361bcd7471eb92cc86c782a6ec61c9d18593785cb0265a1edcd",
+        "src/models/registry.py": "8812b9264376e7bb24008a981948231eb7b389d0aa016d51eed388ef4a345952",
+        "src/models/spans.py": "7d8458a8c119a578a0823172721822bf220c2d61144b0f44bd43086bac0a0c46"
+      },
+      "entry_hash": "07dcdaee49d610f6760be5c11ae567349517b01483535ee22d85e1df81bf3306",
+      "source_compatibility": "Relevant current model/contract/cache/validation/smoke sources checked against original Git commit; byte-identical. No current L4 inference performed.",
+      "verification_scope": "Original payload bytes SHA256 compared to original completion marker; inspected payload kind/status/identities. This summary is not a mounted readiness receipt."
+    },
+    {
+      "label": "gemma-smoke",
+      "url": "https://drive.google.com/file/d/17zeEmvUtNYP-izisJ1ZgWneExs7c2mdt/view",
+      "manifest_url": "https://drive.google.com/file/d/1A2RYCwJgJj5us7tWNU2zTglWd6RIhaso/view",
+      "bytes": 1399765,
+      "sha256": "7b999014821112726b64ef8a92c539b53d4f46252021b6cf74a0a4536bbecc6d",
+      "checksum_matches": true,
+      "kind": "stage1_smoke",
+      "code_commit": "d73133ce51247f10dd6bc7af35ee9fe9b59ed517",
+      "dataset_fingerprint": "54825d236efcd88cc5252918ebce6d1dad6109ef10a244281f262204bc6cc5bd",
+      "model_fingerprint": "ba079306905ee4bbcfbaa8de626437ee3ce2832e2de005abb72a78ee4e6f40c7",
+      "status": "passed",
+      "blockers": [],
+      "checks": {
+        "adapter_inspection": true,
+        "data_contract": true,
+        "finite_features": true,
+        "permutation_plumbing": true,
+        "repeat_extraction": true,
+        "toy_optimizer": true
+      },
+      "inspection_checks": {
+        "attention_visibility_documented": true,
+        "caption_spans_valid": true,
+        "eval_mode": true,
+        "frozen_parameters": true,
+        "input_policy_respected": true,
+        "native_text_preserved": true,
+        "no_gold_in_model_input": true,
+        "residual_hooks_consistent": true
+      },
+      "inspection_record_count": 64,
+      "toy_optimizer": [
+        {
+          "category": "vehicle.n.01",
+          "train_rows": 48,
+          "validation_rows": 16
+        }
+      ],
+      "permutation_plumbing": [
+        {
+          "image_vectors": 12,
+          "mask_carried_with_values": true,
+          "seed": 0
+        },
+        {
+          "image_vectors": 12,
+          "mask_carried_with_values": true,
+          "seed": 1
+        },
+        {
+          "image_vectors": 12,
+          "mask_carried_with_values": true,
+          "seed": 2
+        }
+      ],
+      "adapter": {
+        "decoder_blocks": 34,
+        "decoder_depths": [
+          9,
+          17,
+          26,
+          34
+        ],
+        "hook_convention": "forward hook on actual 1-based decoder block output, before final decoder norm",
+        "midpoint": 17,
+        "model_fingerprint": "ba079306905ee4bbcfbaa8de626437ee3ce2832e2de005abb72a78ee4e6f40c7",
+        "repeat_atol": 0,
+        "repeat_rtol": 0,
+        "supported_sites": [
+          "decoder:9:last_caption",
+          "decoder:9:caption_mean",
+          "decoder:17:last_caption",
+          "decoder:17:caption_mean",
+          "decoder:26:last_caption",
+          "decoder:26:caption_mean",
+          "decoder:34:last_caption",
+          "decoder:34:caption_mean",
+          "encoder:None:visual_mean",
+          "projector:None:visual_mean"
+        ],
+        "unsupported_sites": {
+          "post_caption": "Boundary semantics not yet validated"
+        }
+      },
+      "entry_hash": "25f2f7bacd7f7727df794ff5f58b7345804e5c185267a01b2850a422e3dd596f",
+      "source_compatibility": "Relevant current model/contract/cache/validation/smoke sources checked against original Git commit; byte-identical. No current L4 inference performed.",
+      "verification_scope": "Original payload bytes SHA256 compared to original completion marker; inspected payload kind/status/identities. This summary is not a mounted readiness receipt."
+    }
+  ]
+}
