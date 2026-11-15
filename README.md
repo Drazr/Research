@@ -12,7 +12,7 @@ Research context and the execution plan for frozen Qwen/Gemma VLM category probe
 
 ## Current status
 
-The scheduled starting block is G0 plus E01/E02/E03/E04/E19/E25. Stage 1 notebooks and shared implementations exist. Common data validation and both model runtime configurations passed in user-supplied Colab logs; a Gemma model-validation pass was also supplied. Post-fix Qwen model validation, both final smoke passes and overall acceptance remain pending. These are evidence-qualified status statements, not scientific results. Selected checkpoints and runtime pins live in configs/models.json and requirements-l4.txt; current mounted storage and artifact pointers are recorded in AGENTS.md.
+The scheduled starting block is G0 plus E01/E02/E03/E04/E19/E25. Stage 1 notebooks and shared implementations exist. Common data validation, both configurations, a Gemma model-validation pass and user-confirmed final smoke passes for both models were supplied in Colab logs. Typed artifact/readiness verification, including locating the separate post-fix Qwen model-validation report, remains pending before bulk launch. These are evidence-qualified status statements, not scientific results. Selected checkpoints/runtime pins live in configs/models.json and requirements-l4.txt; current mounted storage and evidence pointers are in AGENTS.md.
 
 Use one model selector for model-specific work, and model/configuration fingerprints for output compatibility. Keep shared preparation/extraction reusable; run E19/E25 from saved E01 predictions. All instructions apply to both model families and all four languages where technically supported.
 
@@ -55,3 +55,5 @@ Notebook entry points (user-requested conversion): `scripts/stage1/stage1_cpu.ip
 ## Stage 2 planning handoff
 
 [Stage 2 contracts](docs/stage2_contracts.md) fix the shared feature inventory, split/condition guards, shard/storage/resume rules, E03 preprocessing and release checks. [Stage 2 ownership](docs/stage2_ownership.md) defines the future shared-interface, extraction and E03 workstreams. [Planning report](reports/stage2_planning.md) distinguishes finalized design from pending implementation and actual readiness evidence. No Stage 2 code or scientific results were produced by this planning task. Stage 2 execution remains gated on the applicable Stage 1 passes; Stages 3-5 remain overview only.
+
+Final review revision 2 also fixes independent data/model plan bindings, plan-resolved notebook settings, same-forward token evidence, streamed E03 split releases and actual first-chunk resource projections. Both final smoke passes are recorded; they do not by themselves create Stage 2 arrays or replace model-validation payload verification. The next step is the coordinator's shared-interface implementation, not further experimental design or immediate unvalidated bulk extraction.
