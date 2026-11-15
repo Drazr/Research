@@ -1,6 +1,6 @@
 # Phase 1 execution plan: G9-Q6
 
-Created 14 November 2026. Status: planning; experiment scripts and model runs have not been executed by creating this file. Only Stage 1 is specified in detail. Stages 2-5 are an execution overview and will be specified one at a time.
+Created 14 November 2026; Stage 2 planning finalized 15 November 2026. Stages 1 and 2 are specified in detail. Stage 1 implementation exists with partial actual-runtime evidence; Stage 2 is specified but not implemented or executed. Stages 3-5 remain an execution overview and will be specified one at a time. A planning update does not establish experimental completion.
 
 ## Scope and authoritative context
 
@@ -15,9 +15,9 @@ The scientific scope is category accessibility, cross-context readout compatibil
 | Stage | Purpose and shared work | Parallelism and handoff |
 |---|---|---|
 | **1. Shared setup and initial validity checks** | Prepare the common four-language data manifest, frozen image partitions, labels/masks, model configurations, storage conventions and small extraction/optimizer checks. | Model-independent preparation happens once. Model-specific checks use the same entry point with different model keys. Freeze shared interfaces before chats implement dependent scripts. |
-| **2. Shared feature extraction and E03** | Extract the representations needed by E01/E04 together wherever serialized inputs and masks match. Reuse E02 visual-stage features when genuinely identical; its caption-only condition needs additional extraction. E03 uses the same captions/partitions on CPU. | E03 can overlap GPU extraction once its data inputs are frozen. Independent model jobs can run on separate available GPUs; on one GPU, queue extraction while CPU work proceeds. |
-| **3. Probe fitting and remaining validity controls** | Fit E01/E02/E04 readouts from validated caches; complete the full G0 shuffled-label controls on the actual feature pipeline. | Independent fits can overlap as their FIT and DEV-S caches become ready. No substantive interpretation proceeds past a failed G0 check. |
-| **4. Shared scoring and downstream analyses** | Save E01 DEV-C/SCREEN predictions once. Reuse those predictions for E01 metrics, E19 confidence policies and E25 paired-error analysis; produce E02/E04 scores from their fitted systems. | E19 and E25 can run together as soon as their required E01 predictions exist; they do not wait for unrelated E02/E04 jobs. Final comparative analyses wait for their actual inputs. |
+| **2. Shared feature extraction and E03 inputs** | Extract shared E01/E04 decoder features, E02 caption-only and once-per-image visual references, with explicit visual-reuse audits. Fit E03 vocabulary/IDF on FIT captions and transform eligible partitions on CPU; no category heads or scores yet. | E03 preprocessing can overlap a ready model's GPU extraction. Independent models need separate GPUs to overlap; on one L4 queue model processes. Publish verified condition/partition releases as they complete. |
+| **3. Probe fitting and remaining validity controls** | Fit E01/E02/E03/E04 readouts from validated caches; complete full G0 shuffled-label controls on the actual feature pipeline. | Independent fits can overlap as their complete FIT and DEV-S inputs become ready. E03 CPU fitting can overlap remaining GPU extraction; no substantive interpretation proceeds past a failed G0 check. |
+| **4. Shared scoring and downstream analyses** | Save E01 DEV-C/SCREEN predictions once. Reuse those predictions for E01 metrics, E19 confidence policies and E25 paired-error analysis; produce E02/E03/E04 scores from their fitted systems. | E19 and E25 can run together as soon as their required E01 predictions exist; they do not wait for unrelated E02/E03/E04 jobs. Final comparative analyses wait for their actual inputs. |
 | **5. Integration and preliminary findings** | Verify matching cohorts, model/config identities, masks and selection histories; assemble the complete results and unresolved questions. | Review each model separately before comparing patterns. Decide later preliminary work from actual evidence while keeping CONFIRM closed. |
 
 These stages express artifact dependencies, not five global barriers. For example, a validated model's Stage 3 fitting can overlap another model's Stage 2 extraction. Do not wait for an unrelated experiment to finish. Do not consume a partially written or unvalidated artifact.
@@ -184,7 +184,45 @@ Toy readout checks can verify dimensions, finite values, loss convergence, prior
 - [ ] Documented script ownership, small shared interfaces, environment/revision records and reproducible command/config conventions.
 - [ ] Stage 1 integration review records pass, blocked or unavailable items accurately; full G0 shuffled-label completion is explicitly pending Stage 3.
 
-Only then specify the detailed Stage 2 extraction and E03 implementation plan. The integration reviewer records completion in this file; individual chats report their own artifacts and checks without independently declaring the entire stage finished. No Stage 1 model check or experiment is marked complete merely because this plan has been written.
+At the user's explicit request, Stage 2 planning may be finalized before all Stage 1 runs finish; its execution remains gated on the applicable real acceptance evidence. The integration reviewer records completion in this file; individual chats report their own artifacts and checks without independently declaring the entire stage finished. No Stage 1 model check or experiment is marked complete merely because a plan has been written.
+
+## Stage 2: finalized implementation specification
+
+Planning version stage2-plan.v1, 15 November 2026. Full operational details and payload/role contracts are in [docs/stage2_contracts.md](docs/stage2_contracts.md); implementation ownership and parallel handoff are in [docs/stage2_ownership.md](docs/stage2_ownership.md). These documents are required reading before writing Stage 2 code. No Stage 2 notebooks, modules, configuration files or runtime outputs are created by this planning change.
+
+### 2.1 Purpose and launch boundary
+
+Create reusable raw features and E03 preprocessing without looking for a winning model/language/site. GPU launch is per model: require passed common data, matching generated configuration, actual model-validation and final smoke artifacts, plus a verified readiness receipt. A ready model need not wait for another blocked one. E03 preprocessing needs common data acceptance and runs once on CPU. Whole-stage acceptance requires both models and all required E03 outputs. The latest evidence does not yet authorize claiming these gates passed for both models.
+
+### 2.2 Frozen workload and feature inventory
+
+- Reuse the existing dataset/protocol fingerprints, draw-0 caption selection and image partitions. No data rebuilding, extra captions, native semantic verification, translation or CONFIRM preprocessing.
+- Eligible population: 2,880 images from FIT/DEV-S/DEV-C/SCREEN; 11,520 caption rows per condition across en/hi/bn/te. Keep all 25 targets/masks and the 14-category reporting cohort unchanged.
+- For each model extract image_caption and caption_only, each with last_caption and caption_mean at every validated fixed depth. Capture both poolings/required depths in the same forward; E01/E04 share these values. Obtain one actual image_only reference per image at every validated exposed visual encoder/projector site, at least one stage required. Image-only is not four language observations.
+- post_caption and decoder visual-token pooling remain explicitly unsupported/not scheduled in v1. E04's first implementation covers the supported caption-pooling contrast and documents its limits. Adding optional sites requires a pre-outcome versioned plan and actual span/visibility validation, not a silent implementation choice.
+- Preserve the L4 dense-bfloat16/eager/batch-one/1,024-token/no-truncation policy and actual physical site conventions. Store raw unscaled float32 vectors, never model-family-agnostic coordinates. Capture/verify combined visual hooks against explicit image-only references across the four actual contexts before any visual alias/reuse claim.
+
+### 2.3 Chunking, ordering, storage and resume
+
+Use 32-image storage chunks, with all four language views together and no cross-partition chunk. This gives 92 image chunks and 276 condition-chunks per model: FIT 68, DEV-S 6, DEV-C 6, SCREEN 12, each with three conditions. Storage chunks do not change actual tensor batch size one. The core workload is 25,920 unique forward inputs per model, plus deterministic repeat checks.
+
+Order partitions FIT, DEV-S, DEV-C, SCREEN and image IDs lexically within their already frozen partitions. Process image-only then four combined and four caption-only views per image; retain bounded CPU chunk buffers. One producer owns each unique run/chunk namespace under PHASE1_ROOT. Use existing checksum/completion helpers, portable numeric payloads, immutable job/release indexes and layered feature keys. Resume only exact compatible completed row/site coverage, leaving partial/conflicting attempts immutable and explicitly diagnosed. No retry may silently truncate, change precision/processor, replace captions or drop images.
+
+Ready condition/partition releases enable downstream work: a complete FIT/DEV-S recipe may proceed to Stage 3 while another condition/model is still extracting. No consumer discovers arbitrary shards by directory existence. Actual mounted-path readback and deterministic initial/repeat checks precede release. Exact schema, source hashes, backend identity, row/site arrays, token evidence, conflict handling and release validation are fixed in stage2_contracts.md.
+
+### 2.4 E03 preprocessing specification
+
+Create 13 model-independent families: per-language whitespace-token word TF-IDF, literal-character TF-IDF and two-column log-length features (12), plus one pooled four-language character TF-IDF (1). Word ngrams are 1-2, min_df=2, cap 20,000; character ngrams are 3-5, min_df=2, cap 50,000. Keep case, accents, Unicode and original whitespace under the declared literal character analyzer; do not introduce language-specific NLP resources. The contract fixes vocabulary tie/order rules, sublinear tf, smoothed idf, row L2 normalization, literal analyzer behavior and finite float32 sparse/dense storage.
+
+All vocabulary/IDF fitting uses the relevant FIT rows only. Transform DEV-S/DEV-C/SCREEN with the frozen FIT recipe; do not process CONFIRM. Preserve zero-feature rows and row identities. Per-language vocabularies are independent; pooled character preprocessing is explicitly multilingual, not source-only transfer. No label heads, C/layer selection, calibration or scientific scores occur in Stage 2. Stage 3 later handles shared source-FIT scaling, logistic readouts and pooled-view equal image weighting; Stage 4 handles scoring.
+
+### 2.5 Ownership, integration and completion
+
+The coordinator first implements/commits common Stage 2 interfaces, readiness/job/release validators and ownership at an immutable shared base. Then the extraction and E03 workstreams can implement separately against that base; no chat independently invents formats or edits frozen shared scientific rules. Future notebook entry points use scripts/stage2 with reusable src/stage2 modules, a single MODEL variable where applicable and secret-safe per-runtime authentication. Listed files in the ownership document are proposed future ownership, not present code.
+
+Acceptance requires all expected rows/sites for both models, all E03 families, exact common masks/cohorts and source identities, no CONFIRM processing, passed relevant software/actual runtime/restart/readback checks, explicit optional-site limitations and a coordinator report referencing verified release indexes. Full G0 random-target controls remain Stage 3. Detail and status checklist: [reports/stage2_planning.md](reports/stage2_planning.md).
+
+No acceptance claim follows from this planning change. Stage 2 implementation, executable shared-interface freeze, readiness receipts and production artifacts are all pending. Stages 3-5 are not finalized by these handoff requirements.
 
 ## Current status
 
@@ -193,10 +231,11 @@ Updated 15 November 2026 during coordinator integration.
 - Data branch 2f42b4a and model branch 2f374d2 are integrated into this phase1 snapshot with their histories preserved. Main remains unchanged.
 - Original data independently revalidated locally: 3,600 images, 14,400 selected four-language records, 14 primary categories and one preserved unknown cell. No scientific results were produced.
 - Shared stage1.v1 public APIs remain compatible; source-cache/storage helpers gained streaming, completion-verified publication without hard links. Cache corruption/partial-publication checks passed locally.
-- Combined CPU foundation/data/model/cache/L4-guard/condition-key suite: 38 tests passed. Tests using fake devices/modules are software checks, not actual GPU/model evidence.
+- Latest implemented CPU suite: 40 tests passed after the Qwen caption-alignment correction; 16 actual pinned-tokenizer checks passed on the selected four-language smoke rows. Those checks are not actual local GPU inference.
 - Selected L4 starting pair: Qwen2.5-VL-3B-Instruct and Gemma 3 4B IT, sequential dense bfloat16, batch one. Immutable revisions and the direct runtime pins are recorded; actual L4 execution/memory fit remains untested. Gemma gated processor metadata remains unresolved pending authorized access.
-- The user chose a different Google Drive account. No folder/artifact was created in the previously connected account. PHASE1_ROOT and actual Drive-mounted read/write/sync checks remain pending in the intended runtime.
-- Use docs/stage1_l4.md for actual storage/configuration/model-validation commands. Detailed Stage 2-5 planning remains pending. Stage 1 and full G0 are not complete.
+- The user supplied passed CPU preparation/validation logs under `/content/drive/MyDrive/phase1` and passed generated runtime configurations for both models. A subsequent Gemma model-validation log reported passed with no blockers. These are user-supplied runtime results; this chat has not independently inspected all payloads or certified every Drive sync/remount guarantee.
+- Post-fix Qwen model validation and final smoke passes for both models have not been supplied. Stage 1 overall acceptance and full G0 remain incomplete. Latest paths and authentication/provenance lessons are in AGENTS.md.
+- Stage 2 is now fully specified for implementation in docs/stage2_contracts.md and docs/stage2_ownership.md, at the user's request before remaining Stage 1 checks finish. No Stage 2 code or run is claimed. Stages 3-5 remain overview only.
 
 The design-review extraction-condition/split and cache-key gaps are addressed by the additive extraction.v2 request interface and layered execution/feature/readout/analysis identities; see docs/stage1_contracts.md. Legacy smoke calls stay FIT-only. The validator now requires repeatable caption-only and single-per-image visual extraction as well as image-plus-caption, and records actual backend/site identities when executed successfully. No new model outcome was inspected to choose these rules. No scientific question, split, data identity or confirmed model/GPU pass is changed by this implementation.
 

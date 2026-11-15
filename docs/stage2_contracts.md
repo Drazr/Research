@@ -1,0 +1,151 @@
+# Stage 2 specification: shared features and E03 inputs
+
+Planning version `stage2-plan.v1`, dated 15 November 2026. This is an implementation specification, not implemented software or permission to skip Stage 1 acceptance. Read AGENTS.md, plan.md, prelim.md, research.md and docs/stage1_contracts.md first. This document fixes operational choices that prelim.md leaves open; it does not change the research questions, released data or scientific protocol. Stages 3-5 remain separately planned work.
+
+## 1. Boundary and launch gates
+
+Stage 2 produces frozen VLM feature caches for E01/E02/E04 and model-independent caption features for E03. It fits only E03 vocabulary/IDF preprocessing on permitted FIT inputs. It does not fit category heads, choose C/layers/sites from scores, calibrate probabilities, produce SCREEN category predictions, run E19/E25, or interpret research outcomes. E03 classifier fitting belongs to Stage 3; E03 scoring belongs to Stage 4. Stage 3 work may overlap remaining extraction once its particular complete inputs are available.
+
+Planning and implementation may proceed now. Actual GPU extraction for a model requires a coordinator-accepted readiness receipt joining: passed real data validation, that model's passed runtime configuration, passed actual model validation, and passed final validity smoke, with checksummed upstream artifacts and matching data/protocol/model identities. The receipt must record the actual inference execution fingerprint, site inventory, dimensions, repeat tolerances and code provenance. A configuration pass alone is insufficient. A directory under smoke/ does not identify which check passed: inspect artifact kind and payload.
+
+Use a clean frozen checkout for a run. Current Stage 1 notebooks require a configuration artifact at the same checkout commit; generate configuration at the final implementation commit when required by that guard. Never edit old completion manifests to match a new commit. If adapter, tokenizer/processor, backend, precision, template or feature semantics differ from the accepted model-validation identity, revalidate the affected model before bulk extraction. Documentation-only history does not erase historical passes, but cannot bypass the current exact-commit configuration guard.
+
+E03 preprocessing needs the passed common data artifact and its data-validity checks, not an unrelated model's GPU completion. One ready model can start while another remains blocked. Overall Stage 2 model readiness/completion requires both model branches; no other chat may infer the missing passes.
+
+Latest supplied evidence at planning time: common CPU data and both configurations passed; a Gemma model-validation pass was supplied; no post-fix Qwen validation pass or final smoke pass for either model was supplied. Nothing in this specification marks those missing checks complete.
+
+## 2. Immutable inputs and population
+
+The persistent root is configurable PHASE1_ROOT, currently `/content/drive/MyDrive/phase1` in Colab. Reuse the exact completed dataset manifest in AGENTS.md. Dataset fingerprint is `54825d236efcd88cc5252918ebce6d1dad6109ef10a244281f262204bc6cc5bd`; protocol fingerprint is `8cf019d18a28a8bb18540f4ce2e26b17fc0af15a12c8d016138dc99c397c855a`. Do not change configs/protocol.json, reroll partitions, reselect captions or rebuild this dataset merely to start Stage 2.
+
+Only draw-0 original captions in en/hi/bn/te are scheduled. All 25 image-presence targets, the unknown-cell mask and the fixed 14-category primary cohort survive unchanged. The plant cell for image 6a20677eee04fd08 remains unknown. Captions are independent descriptions, not translations. No extra caption draws, translated instructions, category verbalizers, generated captions, manual checks or dataset enrichment are scheduled.
+
+| Partition | Images | Caption rows per condition | Stage 2 use |
+|---|---:|---:|---|
+| FIT | 2,160 | 8,640 | Frozen VLM extraction; E03 vocabulary/IDF fitting and transformation |
+| DEV-S | 180 | 720 | Transformation/extraction only; later declared selection |
+| DEV-C | 180 | 720 | Transformation/extraction only; later calibration/policy work |
+| SCREEN | 360 | 1,440 | Transformation/extraction only; no fitting or outcome-based choice |
+| CONFIRM | 720 | 2,880 | No model/tokenizer/vectorizer preprocessing, features or predictions |
+| Eligible total | 2,880 | 11,520 | Common preliminary population |
+
+Dataset metadata may be loaded to validate joins and frozen assignments. Filter/validate extraction requests before opening model inputs; do not tokenize or render CONFIRM captions to estimate token lengths. Target values and category names never enter a model request. Store targets as upstream data references, not extra columns embedded in feature matrices.
+
+Canonical ordering is partition order FIT, DEV-S, DEV-C, SCREEN; ascending canonical image ID within a partition; language order en, hi, bn, te within an image. This ordering only arranges existing partitions. It does not change their original seeded assignment. All IDs remain hexadecimal strings. Preserve original caption IDs/text hashes and the frozen selected-caption manifest.
+
+## 3. Extraction inventory and experiment coverage
+
+Use MODEL=qwen or gemma and one shared implementation with existing adapters. Freeze the resolved registry, actual execution identity and physical site specifications before writing feature artifacts. Determine L and D from the accepted actual-model report, not a family-name guess. Depths are ceil(L/4), ceil(L/2), ceil(3L/4), L, deduplicated; record the fixed midpoint ceil(L/2). Use module block outputs before final decoder normalization at every depth.
+
+| Input condition | Rows per model | Required stored feature sites | Consumers |
+|---|---:|---|---|
+| image_caption | 11,520 | last_caption and caption_mean at every fixed decoder depth | E01; combined-input E02; supported E04 pooling comparison |
+| caption_only | 11,520 | The same decoder depths and both caption poolings | Caption-only E02; consistent site diagnostics |
+| image_only | 2,880 | visual_mean at every exposed encoder/projector site validated by Stage 1 | Single per-image E02 reference |
+
+With four distinct depths there are eight decoder vectors per caption row per condition. Encoder/projector dimensions need not match decoder dimensions or one another. Store every validated exposed visual stage; require at least one, as specified by the Stage 1 minimum inventory. An unavailable stage has an explicit reason, never a fabricated zero vector. There is no four-language transfer grid for a single image-only vector.
+
+Stage2-plan.v1 schedules only last_caption and caption_mean for the decoder. post_caption and decoder visual-token pooling remain unsupported/not scheduled by the current adapters. Record this limitation in E04 coverage; never describe these two arms as the full optional E04 site catalog. Adding a boundary/visual-token arm requires a versioned extraction-plan extension and actual FIT-only span/visibility validation before extraction, independent of scientific outcomes. E24 input reordering, E07 extra caption draws and other reserve experiments are outside this plan.
+
+E01 and E04 share the very same image_caption forwards, hooks and vectors; separate experiment-specific GPU passes are forbidden when inputs/sites match. Capture both caption poolings from each hooked block in the same forward. Caption-only needs its own forward. Image-only has image content and the native wrapper but no caption or Caption prefix; it never requests a caption decoder site. Keep original captions unchanged and the same validated Caption prefix for both caption-bearing conditions. No answer generation or labels in prompts.
+
+Use extraction.v2 with purpose=preliminary_features. Keep the legacy Stage 1 extract wrapper FIT-only. caption_only may not ask for visual sites; image_only may not ask for caption sites. Do not weaken contract guards to make bulk extraction possible. Use frozen eval mode, no gradients, batch one, the selected L4 precision/processor/token limit and existing attention backend. Ordinary extraction does not request attention matrices; token-span/alignment checks still run per input. No normalization, centering, whitening, scaling, PCA or quantization is applied to stored raw vectors.
+
+Pooling arithmetic follows the actually validated adapter, including its tensor dtype before the final float32 CPU cast. Float32 storage does not mean float32 base inference or authorize changing pooling precision. A change to reduction arithmetic is an extraction-semantics change requiring a new execution identity and affected revalidation, not a cache-compatible formatting fix.
+
+## 4. Visual reference and reuse audit
+
+For each image, obtain an explicit image_only encoder/projector reference once. Use the English draw-0 record only as its stable source-record pointer; language, caption ID and caption text are excluded from its semantic input-view key and model serialization. Store semantic language/caption as null in its row table, with source_row_key retained separately for adapter provenance.
+
+During image_caption extraction also hook the same validated visual sites in the same forwards. Compare their float32 vectors with the corresponding explicit image_only vectors across all four caption contexts using the accepted repeat atol/rtol, initially zero. These audit hooks cost no extra combined-input forward. A Stage 1 check on a few FIT images does not authorize assuming invariance for the remaining population.
+
+Persist per-image/site/context equality status, maximum absolute difference and vector-content digests. The canonical E02 visual matrix is the actual image_only result. Do not store four duplicate visual matrices as independent language features or alias image_caption/image_only feature keys: their condition keys differ even when values agree. A failed expected invariance check blocks that model's extraction acceptance for audit; retain valid artifacts and the failure evidence without interpreting it as a language effect or silently changing site/cohort definitions.
+
+## 5. Work units, execution order and restart
+
+The fixed storage work unit is 32 independent images, never a tensor batch of 32. Boundaries never cross partitions. FIT has 68 chunks, DEV-S 6, DEV-C 6 and SCREEN 12: 92 chunks per model. A full caption-bearing chunk has 128 rows; the final smaller chunk keeps its exact row count, with no padding/fabrication. Each model therefore expects 276 logical condition-chunks. Each caption chunk covers all four languages and all required decoder sites.
+
+Freeze a checksummed job plan before bulk work. It enumerates every image/selected-caption/view ID, partition, chunk, condition, required site, physical pooling definition, expected row count and upstream identity. There are 25,920 unique core forward inputs per model before small repeat checks: 11,520 combined + 11,520 caption-only + 2,880 image-only. No extra forward is assigned just because several experiments consume the same vector.
+
+Process FIT, DEV-S, DEV-C, SCREEN in that order. Within a chunk process each image's image_only reference, four image_caption views and four caption_only views, accumulating at most that chunk's CPU outputs. Combined visual audits can immediately use the reference. Flush independently complete condition artifacts when available. Release hooks/tensors after every forward; never keep full-dataset hidden states or attention matrices on GPU. Load one model once per extraction process and exit when its queued work ends.
+
+Before production, repeat the first eligible FIT image in all nine core conditions/views at all required sites, with the actual bulk execution path and fixed tolerances. Verify row IDs, spans, finite vectors, physical sites/dimensions, visual audits and measured memory. This is a plumbing gate, not a category-performance pilot or a reason to choose sites. Continue from these exact completed production work units after the checks; do not invent a new test split.
+
+On one L4 queue Qwen and Gemma processes. CPU E03 can run in a separate CPU runtime against the same immutable dataset. With distinct L4s, model jobs can overlap; never share a live mutable output path. Within one model, partition/condition/chunk ownership must be explicit if more than one producer is assigned. Do not launch several large model processes on the same L4 to simulate parallelism.
+
+Resume by checking completion markers, full identities, ordered rows and all file hashes, not by file existence or latest modification time. Skip only verified compatible required vectors. Partial/corrupt/blocked artifacts are not consumable: record the problem, leave the old attempt immutable and publish a new unique attempt for affected work. Never overwrite a completed artifact or delete another producer's files. Valid unaffected chunks remain reusable after a crash or failure.
+
+If multiple candidates cover the same semantic feature key, require identical canonical float32 vector content for the fixed execution policy. Different run metadata/container checksums alone are not a vector conflict. Conflicting numerical values are a reproducibility error, not a newest-file selection. If a plan changes chunk sizes or adds sites, exact existing row/site feature keys may be referenced in a new job plan without redoing compatible vectors; plan-level compatibility must still be rechecked.
+
+## 6. Artifact layout and payload schema
+
+Use existing src/common/storage.py publication/verification and cache_keys.py identities, with a Stage 2 payload schema field `stage2.features.v1` or `stage2.text.v1`. Keep the outer storage marker schema stage1.v1 compatible; do not silently change existing dataset/contract fingerprints. Stage 2 implementation adds validators for its own payloads rather than treating a generic passed marker as sufficient.
+
+Use compact job IDs, e.g. MODEL plus short execution/plan hash prefixes, only as directory labels. Full 64-character identities in manifests are authoritative; a prefix collision is an error. Never infer compatibility from these compact names. All runtime artifacts are beneath PHASE1_ROOT:
+
+| Namespace | Contents |
+|---|---|
+| cache/shared/stage2-plans/RUN_ID/ | Immutable full job plan, readiness references and expected coverage |
+| features/JOB_ID/RUN_ID/SPLIT/CONDITION/chunk_NNNN/ | Completion-verified feature payloads; unique attempt/run paths |
+| cache/shared/stage2-text/RECIPE_ID/RUN_ID/ | E03 fitted vocabulary/IDF, transformed sparse/dense matrices and rows |
+| features/JOB_ID/indexes/RUN_ID/ | Verified per-condition/partition release indexes and final model coverage |
+| results/stage2-validation/RUN_ID/ | Integration, missing coverage and acceptance reports, not scientific scores |
+
+Publication writes payloads then _COMPLETE.json last. Consumers independently verify completion and checksums from the mounted persistent path, including after a restarted process. Before bulk writes, perform a small unique storage publish/readback probe in a separate process under this root. This tests mounted filesystem access, not a guarantee of remote sync under every failure mode. Avoid hard links, rename-based cloud assumptions, distributed appends or shared SQLite writers. On Windows use an appropriately short explicit development root; do not silently move authoritative artifacts outside PHASE1_ROOT to evade path limits.
+
+Each completed feature chunk contains:
+
+- `rows.jsonl`: zero-based local row_index, canonical image_id, split, condition, language/caption_id for caption conditions (null for image_only), caption_draw_key=0 where applicable, source_row_key, input_view_fingerprint and exact feature keys per stored site. Caption text is referenced through the immutable source record/hash, not rewritten into a new dataset.
+- `site_000.npy`, etc.: one uncompressed little-endian float32 C-contiguous N-by-D matrix per site. allow_pickle=False when loading; no object dtype. Site-to-filename mapping, exact D and physical module/pooling conventions are explicit. Every required vector must be finite; undefined scientific metrics are a later issue, not NaN feature placeholders.
+- `token_evidence.jsonl` for caption inputs: processed token count, caption positions/last position, image positions, role/other positions or their exact derivation, processor attention mask, input-ID hash, native-serialization hash, alignment method and evidence reference for actual visibility from Stage 1. No full token-by-hidden tensors or per-layer attention dumps. For image_only caption positions are empty and last_caption is null. Never label cached Stage 1 visibility as newly measured attention on every bulk row.
+- `chunk.json`: schema, job/plan/execution fingerprints, resolved model/config identity, source/selection/split hashes, required sites and dimensions, canonical row-manifest hash, feature-key/content-digest table, source file hashes, code commit, runtime versions/backend flags, batch/precision/storage policies, upstream artifact references and audit status.
+- Visual comparison evidence for combined-input chunks, linked to the explicit completed image_only reference artifacts. Required audits must pass before that chunk is released for consumers.
+
+The outer manifest retains all common required fields: kind, status, run_id, code_commit, protocol_fingerprint, dataset_fingerprint, model_fingerprint (null only for model-independent E03), seeds, software_versions, upstream_artifacts and payload checksums. Add storage_scope and Stage 2 execution/plan identities. Never put token secrets in payloads. Job/release indexes list immutable child completion-manifest paths and hashes; no mutable latest pointer or global append log is authoritative.
+
+Raw feature key = existing execution_fingerprint + input_view_fingerprint + physical site specification, including stored float32 convention. Full original model/protocol/data/split identities remain required provenance and compatibility checks. Readout regularization, calibration, confidence policies, thresholds, metric choices and bootstrap seeds are not raw feature keys. Adapter semantics/backend/weights or source view changes are. Never mix raw feature coordinates across models or label a cached value from another condition as a matching key.
+
+## 7. E03 preprocessing: fixed CPU recipes
+
+Prepare 13 named feature families, once across the project: word_tfidf per each of four languages, char_tfidf per language, length per language, and one pooled_char_tfidf. Transform every eligible selected-caption row; per-language outputs have FIT/DEV-S/DEV-C/SCREEN row counts 2,160/180/180/360. The pooled vocabulary is fitted on the 8,640 FIT caption rows, then applied to all four contexts, preserving language/image IDs. Reuse these same outputs for both VLM comparisons.
+
+These are deliberately fixed baseline preprocessing choices, not a search over language-specific tokenizers or the best result. Keep the native source strings unchanged. Store exact analyzer/weighting definitions in each recipe fingerprint:
+
+| Family | Analyzer and fixed vocabulary limits |
+|---|---|
+| word_tfidf | Case-sensitive Unicode whitespace-delimited tokens equivalent to str.split, retaining attached punctuation and combining marks; token unigrams and adjacent bigrams; min_df=2 caption documents; max_features=20,000 per-language vocabulary |
+| char_tfidf | Literal contiguous Unicode-code-point character ngrams of lengths 3, 4 and 5, including original whitespace/punctuation; no char_wb padding or implicit whitespace collapsing; min_df=2; max_features=50,000 per-language vocabulary |
+| pooled_char_tfidf | Identical character recipe, one max_features=50,000 vocabulary/IDF fitted jointly to the four languages' FIT captions; not a source-only cross-language-transfer system |
+| length | Two dense columns: log1p(number of Unicode code points in the unchanged caption), log1p(number of whitespace-delimited tokens); float64 calculation cast to float32 storage |
+
+No lowercasing, accent stripping, Unicode normalization, stemming, stop-word lists, translation, external vocabulary or semantic tokenizer. If a library's default analyzer changes these semantics, use an explicit analyzer; do not silently accept its defaults. Word tokens are a reproducible surface baseline, not a native linguistic word segmentation claim.
+
+For vocabulary inclusion document frequency counts caption rows in that recipe's FIT population, including the four released context rows per FIT image for the pooled recipe; it is not a claim of independent image observations. Keep terms meeting min_df; if over the cap, rank by descending raw FIT corpus term count, breaking ties by lexicographic Unicode term order. Assign final feature columns in lexicographic term order (ngram tuples for words, code-point strings for characters). Freeze this ordering and its hash.
+
+TF-IDF: tf=1+ln(raw count) for nonzero entries; idf=ln((1+N_FIT_documents)/(1+df))+1; row L2 normalization over retained terms; float64 arithmetic followed by float32 storage. Ignore out-of-vocabulary terms in later partitions. A zero retained-feature row remains an explicit all-zero sparse row with a logged count; never delete its image. An empty fitted vocabulary blocks that required family, rather than switching min_df/caps after examining results.
+
+Fit all vocabulary inclusion/counts/IDF only on the applicable FIT captions. Do not fit a DEV-S-specific vocabulary, inspect SCREEN distribution to change caps, or tokenize CONFIRM for convenience. Record FIT record-ID and text hashes separately from transformation row hashes. Length features have no learned Stage 2 parameters. Stage 2 emits no category scaler, PCA, head, selected C or predictions. Stage 3 applies the common source-FIT-only scaling/head protocol with sparse-compatible operations; no dense conversion or new target-informed preprocessing is authorized here.
+
+Persist each sparse family as CSR matrices per split with float32 data and explicit shape/index dtypes, sorted indices and rows.jsonl; use portable non-pickle sparse storage. Keep exact vocabulary/IDF in JSON plus numeric arrays, with term-order, analyzer and FIT-document hashes. Length matrices use the same dense .npy convention. Preserve all-zero rows, IDs and partitions. Fitted preprocessing and transformation artifacts are checksummed and independently reloadable; reconstructing a transform must reproduce feature order and values. CPU dependencies include numpy 2.1.3 and scikit-learn 1.6.1 from the selected profile; record/freeze the actual resolved SciPy and remaining package versions before artifact generation, and include them in the preprocessing identity. Do not install GPU packages just to run E03.
+
+The pooled baseline's later supervised head must keep each FIT image's total loss weight equal (four context views at one quarter each), using the unchanged common C/loss convention. Stage 2 records the view grouping/weights for that future fit; it does not fit the head. Per-language baselines have one row per image. No coefficient-space transfer is defined between separate language vocabularies.
+
+## 8. Automatic checks, failures and release to later stages
+
+Before accepting any completed chunk, verify source completion/hashes, matching dataset/protocol/selection/split/model/execution identities, exact row order/coverage, site-to-array mapping, finite values and stable dimensions, token-span masks, condition semantics and required visual audits. Check request split authorization even on a cache hit. Features/scalers from SCREEN must never become FIT inputs through a generic row loader.
+
+Initial runtime checks and periodic release checks must use deterministic input identities, not category performance. Repeat first and last row of every completed chunk once when validating its publication path, using the same batch-one policy and tolerances; this adds documented diagnostic forwards but no new independent scientific examples. Save input IDs and repeat outcomes so resume does not repeatedly redo an already accepted repeat audit. Failed repeat checks block release and preserve their evidence.
+
+Any over-limit input, malformed span, invalid image, missing view, OOM or model error produces a diagnostic with exact image/condition/site and stops release for the affected model job. Do not truncate, change precision/resize/attention, substitute another caption, drop a language/image, shrink the common cohort or invent zeros. Already completed compatible chunks remain valid. A runtime-capacity failure can restart the identical job after freeing resources; changing an inference policy needs an explicit versioned configuration, new execution identity and revalidation before any new bulk artifacts. Cohort changes require a new pre-outcome scientific/data version; they are not routine exception handling.
+
+E03 automatic checks cover all expected families/rows, FIT-only vocabulary/IDF fitting, frozen term order, hand-computable TF-IDF examples, native Unicode/whitespace preservation under each declared analyzer, unseen/zero-feature rows, sparse/dense shape/dtype/finite checks, deterministic reload and strict CONFIRM exclusion. No manually reviewed captions or image labels are required. VLM validation needs meaningful routing/cache/restart fixtures plus available actual FIT-only integration checks; fake adapters do not certify GPU correctness.
+
+Publish a passed release index only for a complete verified condition/partition/site inventory, referencing all accepted immutable child artifacts and audits. Missing required rows/sites makes the release blocked, not a lower sample count. Stage 3 may consume complete FIT and DEV-S releases for the particular recipe/model before unrelated conditions or another model finish. It may not consume partially written chunks through directory discovery. DEV-C/SCREEN raw feature releases are separately labeled and permissioned by the later task's declared role.
+
+Overall Stage 2 acceptance requires: a frozen plan and actual readiness evidence; complete verified three-condition inventories for both models; complete 13-family E03 preprocessing; no CONFIRM access; portable readback/resume checks; explicit unsupported optional-site coverage; and a coordinator integration report with checksummed handoff indexes. All required code/config/notebook/test artifacts must be reviewable at a clean committed implementation revision. Full shuffled-label G0 controls remain Stage 3; no scientific interpretation starts before they pass. Stage 2 completion alone does not establish signal, novelty, an explanation or paper viability.
+
+## 9. Handoff and scope stability
+
+Stage 3 receives raw matrices plus exact rows, FIT/DEV-S release indexes, 25-target/mask/category-order references, source preprocessing recipes and model/site identities; it fits the independent sigmoid/logistic systems defined in prelim.md. Stage 4 later consumes DEV-C/SCREEN features and fitted systems to publish predictions once for E01 and reuse them for E19/E25, as well as E02/E03/E04 scores. Do not precompute learned correctness targets, adapted feature maps or post-hoc winning sites during Stage 2.
+
+Method lineage is already recorded in M1/M2/prelim.md: frozen readouts and controls (S01/S02), stage/site separation (S24/S05/S47), cross-context compatibility versus accessibility (S31/S39) and caption surface references (S15/S16). This document implements their bounded adaptations, not new literature findings or a novelty claim. G7 and reserve experiments remain outside the scheduled G9-Q6 block. Any scientific change is logged before affected outcomes, not disguised as a loader fix.

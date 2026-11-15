@@ -5,20 +5,20 @@ Research context and the execution plan for frozen Qwen/Gemma VLM category probe
 ## Start here
 
 1. [AGENTS.md](AGENTS.md): rules for every coding chat.
-2. [plan.md](plan.md): five execution stages; only Stage 1 is detailed.
+2. [plan.md](plan.md): five execution stages; Stages 1 and 2 are detailed, with Stage 2 specified but not implemented.
 3. [research.md](research.md) and [prelim.md](prelim.md): current questions, designs and scientific protocol.
 4. [M1.md](M1.md), [M2.md](M2.md), [paper.md](paper.md): methods and bibliography.
 5. [Historical literature analysis](references/analysis.md): context, not permission to revive superseded proposals.
 
 ## Current status
 
-The scheduled starting block is G0 plus E01/E02/E03/E04/E19/E25. Experiment scripts and model runs are not implemented/completed by uploading these files. The existing label-only split/support audit is included. Original native-caption acquisition/selection and the common image population were validated locally. Compact checkpoint candidates and a pinned L4 runtime are selected in configs/models.json and requirements-l4.txt; actual authorized metadata resolution, model/GPU and persistent Drive validation remain pending.
+The scheduled starting block is G0 plus E01/E02/E03/E04/E19/E25. Stage 1 notebooks and shared implementations exist. Common data validation and both model runtime configurations passed in user-supplied Colab logs; a Gemma model-validation pass was also supplied. Post-fix Qwen model validation, both final smoke passes and overall acceptance remain pending. These are evidence-qualified status statements, not scientific results. Selected checkpoints and runtime pins live in configs/models.json and requirements-l4.txt; current mounted storage and artifact pointers are recorded in AGENTS.md.
 
 Use one model selector for model-specific work, and model/configuration fingerprints for output compatibility. Keep shared preparation/extraction reusable; run E19/E25 from saved E01 predictions. All instructions apply to both model families and all four languages where technically supported.
 
 ## Storage and parallel work
 
-Set PHASE1_ROOT to Drive's phase1 folder. Persistent dataset caches, token/processor caches, feature shards, checkpoints, predictions and logs all live beneath it in namespaces described in plan.md. Temporary scratch can be local; consumers require completed, compatible artifacts. No remote Drive folder, dataset transfer or model download is implied by this repository setup.
+Set PHASE1_ROOT to Drive's phase1 folder, currently `/content/drive/MyDrive/phase1` in the user's Colab runtime. Persistent dataset caches, token/processor caches, feature shards, checkpoints, predictions and logs live beneath it in namespaces described in plan.md. Temporary scratch can be local; consumers require completed, compatible artifacts. The reported mounted-path CPU pass does not by itself guarantee every remote-sync failure mode.
 
 Main versions reviewed context, configurations, scripts and small reproducibility manifests. Full images/captions/weights/runtime arrays stay outside Git. Stage folders organize code; phase1 is the proposed integration branch and separate task branches/worktrees isolate concurrent chats' edits.
 
@@ -30,11 +30,11 @@ Python 3.9+ standard library suffices for this provenance utility. Point the arg
 python tools/reproduce_split_audit.py --phase1-root /path/to/Drive/phase1
 ```
 
-For an already downloaded pinned CSV, also pass --annotation-csv /path/to/xm3600_annotation.csv. No Qwen/Gemma inference is run. The full four-language loader, pinned model environments and experimental entry points remain Stage 1/subsequent-stage work as described in plan.md.
+For an already downloaded pinned CSV, also pass --annotation-csv /path/to/xm3600_annotation.csv. No Qwen/Gemma inference is run. The implemented four-language loader and Stage 1 notebook entry points are described in plan.md; later-stage implementation remains pending.
 
 ## Stage 1 coordinator foundation
 
-The shared implementation APIs are frozen as stage1.v1 in [docs/stage1_contracts.md](docs/stage1_contracts.md). Read [file ownership](docs/stage1_ownership.md) before starting parallel changes. The [integration report](reports/stage1_integration.md) distinguishes the 11 passed software tests from blocked actual-model smoke checks. Data/model worker implementation and Stage 1 completion remain pending.
+The shared implementation APIs are described in [docs/stage1_contracts.md](docs/stage1_contracts.md). Read [file ownership](docs/stage1_ownership.md) before starting parallel changes. The [integration report](reports/stage1_integration.md) preserves the historical checks and subsequent fixes; current user-supplied runtime evidence and remaining gates are summarized in AGENTS.md. Stage 1 overall completion remains pending.
 
 Run the standard-library foundation checks from the repository root:
 
@@ -51,3 +51,7 @@ The two Stage 1 worker implementations are integrated on phase1. The selected Qw
 
 
 Notebook entry points (user-requested conversion): `scripts/stage1/stage1_cpu.ipynb` runs preparation then validation; `configure_l4.ipynb`, `validate_model.ipynb` and `run_validity_smoke.ipynb` run in that order per MODEL. The five former scripts/stage1 Python entry files are removed. Their shared implementations now live in src/stage1; scientific rules, artifacts and completion gates are unchanged. Notebook syntax and CPU fixture checks do not establish actual Colab/L4/Drive completion.
+
+## Stage 2 planning handoff
+
+[Stage 2 contracts](docs/stage2_contracts.md) fix the shared feature inventory, split/condition guards, shard/storage/resume rules, E03 preprocessing and release checks. [Stage 2 ownership](docs/stage2_ownership.md) defines the future shared-interface, extraction and E03 workstreams. [Planning report](reports/stage2_planning.md) distinguishes finalized design from pending implementation and actual readiness evidence. No Stage 2 code or scientific results were produced by this planning task. Stage 2 execution remains gated on the applicable Stage 1 passes; Stages 3-5 remain overview only.
