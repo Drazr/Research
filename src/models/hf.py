@@ -10,7 +10,7 @@ from pathlib import Path
 from src.common.contracts import (ContractError, ExtractionRequest, FeatureBatch, FeatureSite,
                                   decoder_depths, require_extraction_split)
 from src.common.storage import within
-from .spans import caption_positions, validate_attention
+from .spans import caption_positions, map_image_expansion, validate_attention
 
 def validate_device(torch, config):
     """Fail before processor/weight downloads when the requested GPU is absent."""
@@ -123,22 +123,33 @@ class HFAdapter:
             raise ContractError('Input exceeds configured token limit; truncation forbidden')
         tok = self.processor.tokenizer
         decoded = tok.decode(ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)
-        aligned = tok(decoded, add_special_tokens=False, return_offsets_mapping=True,
+        # Qwen decoding can normalize native text. Align its original serialization
+        # using fast-tokenizer offsets, then verify the complete processed ID stream.
+        alignment_text = text if self.config['adapter'] == 'qwen' else decoded
+        aligned = tok(alignment_text, add_special_tokens=False, return_offsets_mapping=True,
                       return_special_tokens_mask=True)
-        if aligned['input_ids'] != ids:
+        if self.config['adapter'] == 'qwen':
+            mapping = map_image_expansion(aligned['input_ids'], ids, self.config['image_token_ids'])
+        elif aligned['input_ids'] != ids:
             raise ContractError('Unsupported lossless token-offset alignment for this tokenizer')
+        else:
+            mapping = {i: i for i in range(len(ids))}
         image_positions = [i for i, token in enumerate(ids) if token in self.config['image_token_ids']]
         if bool(image_positions) != bool(images):
             raise ContractError('Configured image tokens disagree with input condition')
-        special = [token in tok.all_special_ids for token in ids]
+        special = [token in tok.all_special_ids for token in aligned['input_ids']]
+        source_image_positions = [i for i, token in enumerate(aligned['input_ids'])
+                                  if token in self.config['image_token_ids']]
         caption = ([] if condition == 'image_only' else
-                   caption_positions(decoded, row.caption_text, aligned['offset_mapping'], special, image_positions))
+                   [mapping[i] for i in caption_positions(alignment_text, row.caption_text,
+                        aligned['offset_mapping'], special, source_image_positions)])
         if image_positions and caption and max(image_positions) >= min(caption):
             raise ContractError('Processor did not preserve image-before-caption order')
         if 'labels' in processed:
             raise ContractError('Unexpected labels in processor output')
         evidence = {'row_key': row.row_key, 'condition': condition, 'token_count': len(ids),
                     'native_serialization': text, 'decoded_processor_sequence': decoded,
+                    'caption_alignment': 'original serialization offsets; exact text IDs with image expansion' if self.config['adapter'] == 'qwen' else 'lossless decoded offsets',
                     'processor_attention_mask': processed['attention_mask'][0].tolist(),
                     'input_ids_sha256': hashlib.sha256(str(ids).encode()).hexdigest(),
                     'caption_positions': caption, 'last_caption': caption[-1] if caption else None,

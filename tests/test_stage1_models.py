@@ -2,12 +2,28 @@
 import unittest
 from pathlib import Path
 from src.common.contracts import ContractError, ModelInput, decoder_depths
-from src.models.spans import caption_positions
+from src.models.spans import caption_positions, map_image_expansion
 from src.models.registry import create_adapter
 from src.models.hf import HFAdapter
 
 
 class ModelContractTests(unittest.TestCase):
+    def test_original_offsets_survive_unicode_normalization_and_image_expansion(self):
+        # Decode may compose e + combining accent; offsets refer to unchanged input.
+        text = '<i>Caption:\ne\u0301'
+        ids = list(range(100, 100+len(text)))
+        ids[0] = 99
+        final = [99]*8 + ids[1:]
+        mapping = map_image_expansion(ids, final, [99])
+        selected = caption_positions(text, 'e\u0301', [(i,i+1) for i in range(len(text))],
+                                     [False]*len(text), [0])
+        self.assertEqual([final[mapping[i]] for i in selected], ids[-2:])
+
+    def test_image_expansion_rejects_text_changes_and_missing_or_extra_tokens(self):
+        for final in ([1,99,99,7,3], [1,99,2], [1,99,2,3,4], [1,2,3]):
+            with self.assertRaises(ContractError): map_image_expansion([1,99,2,3], final, [99])
+        self.assertEqual(map_image_expansion([1,2,3], [1,2,3], [99]), {0:0,1:1,2:2})
+
     def test_depths(self):
         for blocks in range(1, 100):
             ds = decoder_depths(blocks)

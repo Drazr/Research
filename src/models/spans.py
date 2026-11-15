@@ -4,7 +4,7 @@ from src.common.contracts import ContractError
 
 def caption_positions(text, caption, offsets, special_mask, image_positions):
     if text.count(caption) != 1:
-        raise ContractError('Caption must occur exactly once in decoded processor input')
+        raise ContractError('Caption must occur exactly once in alignment text')
     start = text.index(caption)
     end = start + len(caption)
     if len(offsets) != len(special_mask):
@@ -23,6 +23,37 @@ def caption_positions(text, caption, offsets, special_mask, image_positions):
     if selected != list(range(selected[0], selected[-1] + 1)):
         raise ContractError('Noncontiguous caption content')
     return selected
+
+
+def map_image_expansion(source_ids, processed_ids, image_token_ids):
+    """Qwen: preserve every text token; only image-placeholder run lengths may grow.
+
+    Offsets come from the original serialization, not decoded/normalized text.
+    Non-image insertions, removals, substitutions and reordered tokens fail closed.
+    """
+    image_ids = set(image_token_ids)
+    mapping = {}
+    i = j = 0
+    while i < len(source_ids) and j < len(processed_ids):
+        token = source_ids[i]
+        if token != processed_ids[j]:
+            raise ContractError('Processor changed non-image token sequence during alignment')
+        if token in image_ids:
+            a, b = i, j
+            while i < len(source_ids) and source_ids[i] == token:
+                i += 1
+            while j < len(processed_ids) and processed_ids[j] == token:
+                j += 1
+            if j-b < i-a:
+                raise ContractError('Processor removed image placeholder tokens')
+            # Image tokens are never caption readouts; no ambiguous mapping for them.
+        else:
+            mapping[i] = j
+            i += 1
+            j += 1
+    if i != len(source_ids) or j != len(processed_ids):
+        raise ContractError('Processor/source token lengths differ outside image expansion')
+    return mapping
 
 
 def validate_attention(matrix, caption, image):

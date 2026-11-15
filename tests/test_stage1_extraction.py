@@ -104,7 +104,7 @@ class ExtractionTests(unittest.TestCase):
             adapter = HFAdapter.__new__(HFAdapter)
             adapter.root, adapter.processor = root, Processor()
             adapter.config = {'processor_kwargs': {}, 'max_input_tokens': 10,
-                              'image_token_ids': [99], 'device': 'cpu'}
+                              'image_token_ids': [99], 'device': 'cpu', 'adapter': 'qwen'}
             _, evidence = adapter._prepare(r, 'image_only', 'preliminary_features')
             self.assertEqual(adapter.processor.messages, [{'role': 'user', 'content': [{'type': 'image'}]}])
             self.assertEqual(evidence['caption_positions'], [])
