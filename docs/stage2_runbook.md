@@ -18,7 +18,7 @@ This is model-independent work. It can run alongside GPU extraction after shared
 
 ## 3. Extract per model on L4
 
-Dedicated launchers are also available: extract_features_qwen.ipynb and extract_features_gemma.ipynb. They retain the generic notebook's 13-cell order and shared backend, with a fixed model and the user-reported accepted model-plan path prefilled. Use each on its own L4 runtime to overlap the two models; they do not create additional GPU capacity. Runtime verification still checks the selected plan. Resume lists remain explicit and model-specific. Keep an already active Qwen job running rather than starting another Qwen producer just to use the new notebook; start only Gemma in the separate runtime in that case. For a future resumed launch, retain the last printed progress manifest before changing runtimes.
+Use two copies of the shared extract_features.ipynb on separate L4 runtimes to run Qwen and Gemma in parallel, setting each copy's MODEL and matching MODEL_PLAN. On one L4, run them sequentially. Keep an active job on its frozen checkout. If replacing a stopped job, supply its latest printed progress manifest in RESUME_INDEXES; an empty list starts fresh. Separate model-specific notebooks are not needed.
 
 Open extract_features.ipynb, select MODEL=qwen or gemma and its matching MODEL_PLAN completion path, then run setup/preflight. For Gemma enable that notebook's access to the authorized HF_TOKEN secret and run authentication. Set RESUME_INDEXES only to explicit prior progress completion paths when resuming. Execution repeats preflight and compares actual loaded runtime identity to the bound plan before any production forward.
 
