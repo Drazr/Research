@@ -1,5 +1,7 @@
 # Stage 3 implementation handoff and reserved interfaces
 
+Implementation update: coordinator-owned modules/notebooks now exist. docs/stage3_interfaces.md supersedes the reserved-callable table below with executable signatures, recovery APIs and exact worker file ownership. Branch both workers from that document's first-add commit. Worker orchestration, actual mounted preparation/fitting and complete runtime acceptance remain pending; see reports/stage3_foundation.md. The planning history below is preserved for scientific intent.
+
 16 November 2026; review revision 2, planning only. Read AGENTS.md, plan.md, prelim.md, stage3_contracts.md and accepted Stage 2 interfaces. This document creates no code, branch, chat or executable API. The current task authorizes planning; implementation is separate. The final Stage 2 passed pointer is now user-supplied; first preparation verifies its exact binding without rerunning the Stage 2 suite.
 
 ## Ownership and sequencing
