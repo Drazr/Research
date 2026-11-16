@@ -1,6 +1,6 @@
 # Phase 1 execution plan: G9-Q6
 
-Created 14 November 2026; Stage 2 planning finalized 15 November 2026. Stages 1 and 2 are specified in detail. Stage 1 implementation exists with evidence-qualified actual-runtime passes. Stage 2 coordinator interfaces/notebooks are implemented; extraction/E03 workers and runtime acceptance remain pending. See docs/stage2_interfaces.md and reports/stage2_implementation.md. Stages 3-5 remain an execution overview and will be specified one at a time. Software implementation does not establish experimental completion.
+Created 14 November 2026; Stages 1-3 are now specified in detail as of 16 November 2026. Stages 1/2 software is implemented with evidence-qualified component runtime passes; final Stage 2 suite acceptance has not yet been supplied. Stage 3 is documentation/planning only, with no implementation or fits. See the stage-specific contracts, integration and planning reports. Stages 4/5 remain an execution overview and will be specified separately. Software implementation or planning does not establish experimental completion.
 
 ## Scope and authoritative context
 
@@ -24,7 +24,7 @@ These stages express artifact dependencies, not five global barriers. For exampl
 
 ### Stage 3-5 reuse requirement (user decision, 15 November 2026)
 
-This records a design requirement, not a finalized Stage 3 numerical plan or new code. Cache expensive reusable results once, with shared readers and immutable compatibility identities, so different scripts consume the same outputs. Store them under PHASE1_ROOT; do not duplicate artifacts merely to give each experiment a separate copy.
+This records the cross-stage reuse requirement; the concrete Stage 3 numerical/cache plan is now in docs/stage3_contracts.md. No implementation is created by either note. Cache expensive reusable results once, with shared readers and immutable compatibility identities, so different scripts consume the same outputs. Store them under PHASE1_ROOT; do not duplicate artifacts merely to give each experiment a separate copy.
 
 | Artifact to retain | Purpose and reuse boundary |
 |---|---|
@@ -244,6 +244,16 @@ The coordinator first implements/commits common Stage 2 interfaces, readiness/jo
 Acceptance requires all expected rows/sites for both models, all E03 families, exact common masks/cohorts and source identities, no CONFIRM processing, passed relevant software/actual runtime/restart/readback checks, explicit optional-site limitations and a coordinator report referencing verified release indexes. Full G0 random-target controls remain Stage 3. Detail and status checklist: [reports/stage2_planning.md](reports/stage2_planning.md).
 
 Implementation update: the coordinator executable shared interfaces, evidence bridge, schemas, readers/writers, preparation/validation notebooks and software tests are implemented. See docs/stage2_interfaces.md for the frozen API/ownership and reports/stage2_implementation.md for verified historical evidence and remaining gates. Branch both workers from the exact coordinator publication SHA. Extraction/E03 implementations, mounted readiness receipts and production artifacts remain pending; Stage 2 is not complete. Stages 3-5 are not finalized by these handoff requirements.
+
+## Stage 3: finalized fitting/control specification — 16 November 2026
+
+Stage 3 details are now specified in [docs/stage3_contracts.md](docs/stage3_contracts.md), with [implementation ownership](docs/stage3_ownership.md) and a [planning review](reports/stage3_planning.md). This update is documentation only. Stages 4/5 remain overview/handoff requirements, not finalized implementations. Actual Stage 3 launch requires the passed final Stage 2 suite; user-reported completion of both extraction jobs and E03 is recorded, but the suite verdict is still pending.
+
+The Stage 3 workload is derived from accepted site/recipe inventories: 145 ordinary systems, 4 C candidates and all 25 category statuses; the same 3-seed randomized-target fitting/selection pipeline adds matched controls. This gives 14,500 ordinary and 43,500 control nominal binary fits before fixed retries. Reuse cached raw features/E03 preprocessing and label-free source statistics. Fit independent float64 logistic heads with the documented source-only scaler, image weights, exact objective/solver/retry and fixed-primary-cohort C-selection/tie rules. Selected systems reference FIT-only weights; no refit on development data or real SCREEN tuning.
+
+Shared numeric sessions verify arrays/targets at open/resume and reuse bounded immutable inputs; do not reread raw images or refit scalers per category/C/seed. Checkpoint complete 25-head C blocks and 100-draw diagnostic blocks, then selections/registries, rather than every optimizer step or cheap log event. The coordinator first freezes the tested numerical/cache APIs; ordinary-fit and G0 orchestration workers reuse that same engine. Future CPU notebooks are prepare_stage3, fit_readouts, run_g0 and validate_stage3, with shared modules under src/stage3; these are planned paths, not existing commands.
+
+G0 uses three fixed whole-image target-vector/mask permutations and source-DEV-S selection. Control-only SCREEN scoring and a predeclared conditional global randomization diagnostic complete its validity gate; ordinary scientific predictions, source DEV-C confidence policies and E19/E25 reuse remain Stage 4. A flagged/failed control or structural/solver/identity violation blocks substantive interpretation until resolved. No GPU, new dataset/manual annotation or extra scientific experiment is required. Stage 3 implementation/runtime acceptance remains pending.
 
 ## Current status
 

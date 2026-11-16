@@ -1,5 +1,7 @@
 # Research: G9-Q6 multilingual VLM probing
 
+Stage 3 is now specified for implementation: [fitting/control contracts](docs/stage3_contracts.md), [shared/worker ownership](docs/stage3_ownership.md) and [planning review](reports/stage3_planning.md). It reuses Stage 2 numeric artifacts on CPU with bounded checkpoints and one common fit engine. No Stage 3 code/fits were added by planning; actual launch waits for accepted Stage 2 suite validation. Both extraction jobs and E03 have user-reported component completion; a final suite pass has not yet been supplied.
+
 Stage 2 software is now integrated on phase1. Start with the [Stage 2 runbook](docs/stage2_runbook.md); [integration verification](reports/stage2_integration.md) records 78 passed combined tests and real-data inventory checks, with actual production/L4 completion still pending. The four entry notebooks are in scripts/stage2. Older foundation/planning notes describe history rather than the latest implementation status.
 
 Research context and the execution plan for frozen Qwen/Gemma VLM category probes using XM3600 images, original English/Hindi/Bengali/Telugu captions, and shared image-category labels. The aim is to investigate accessibility, readout portability and reliability. Language-only causal explanations and global novelty are not established by the data/design alone.
