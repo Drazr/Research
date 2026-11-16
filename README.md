@@ -1,22 +1,22 @@
 # Research: G9-Q6 multilingual VLM probing
 
-Stage 3 is now specified for implementation: [fitting/control contracts](docs/stage3_contracts.md), [shared/worker ownership](docs/stage3_ownership.md) and [planning review](reports/stage3_planning.md). It reuses Stage 2 numeric artifacts on CPU with bounded checkpoints and one common fit engine. No Stage 3 code/fits were added by planning; actual launch waits for accepted Stage 2 suite validation. Both extraction jobs and E03 have user-reported component completion; a final suite pass has not yet been supplied.
+Stage 3 review revision 2 is specified for implementation: [fitting/control contracts](docs/stage3_contracts.md), [shared/worker ownership](docs/stage3_ownership.md) and [planning review](reports/stage3_planning.md). It reuses Stage 2 numeric artifacts on CPU through a planned numeric-only reader and one common fit engine. Durable checkpoints retain completed fits and reusable summaries; 100-draw G0 batches stay in RAM. No Stage 3 code/fits were added by planning. The user supplied final Stage 2 validation status=passed at results/stage2-validation/20261116T010841Z-17d614fe5da340b4b6c036a431fc6be8/_COMPLETE.json under PHASE1_ROOT; first preparation verifies that exact suite and consumed numeric bytes without rerunning the full Stage 2 validator.
 
-Stage 2 software is now integrated on phase1. Start with the [Stage 2 runbook](docs/stage2_runbook.md); [integration verification](reports/stage2_integration.md) records 78 passed combined tests and real-data inventory checks, with actual production/L4 completion still pending. The four entry notebooks are in scripts/stage2. Older foundation/planning notes describe history rather than the latest implementation status.
+Stage 2 software is integrated on phase1. The [Stage 2 runbook](docs/stage2_runbook.md) and [integration verification](reports/stage2_integration.md) record its implementation, 78 passed combined tests and historical real-data inventory checks. The four entry notebooks are in scripts/stage2. Production completion is now user-reported through the final suite pass above; older pending-run/foundation/planning notes describe history rather than the current evidence.
 
 Research context and the execution plan for frozen Qwen/Gemma VLM category probes using XM3600 images, original English/Hindi/Bengali/Telugu captions, and shared image-category labels. The aim is to investigate accessibility, readout portability and reliability. Language-only causal explanations and global novelty are not established by the data/design alone.
 
 ## Start here
 
 1. [AGENTS.md](AGENTS.md): rules for every coding chat.
-2. [plan.md](plan.md): five execution stages; Stages 1 and 2 are detailed. Stage 2 coordinator interfaces are implemented; workers/runtime acceptance remain pending.
+2. [plan.md](plan.md): five execution stages; Stages 1-3 are detailed. Stage 1/2 software is integrated; Stage 3 implementation and runtime acceptance remain pending.
 3. [research.md](research.md) and [prelim.md](prelim.md): current questions, designs and scientific protocol.
 4. [M1.md](M1.md), [M2.md](M2.md), [paper.md](paper.md): methods and bibliography.
 5. [Historical literature analysis](references/analysis.md): context, not permission to revive superseded proposals.
 
 ## Current status
 
-The scheduled starting block is G0 plus E01/E02/E03/E04/E19/E25. Stage 1 notebooks and shared implementations exist. Common data validation, both configurations, a Gemma model-validation pass and user-confirmed final smoke passes for both models were supplied in Colab logs. Typed artifact/readiness verification, including locating the separate post-fix Qwen model-validation report, remains pending before bulk launch. These are evidence-qualified status statements, not scientific results. Selected checkpoints/runtime pins live in configs/models.json and requirements-l4.txt; current mounted storage and evidence pointers are in AGENTS.md.
+The scheduled starting block is G0 plus E01/E02/E03/E04/E19/E25. Stage 1/2 notebooks and shared implementations exist. Earlier common data/model/smoke evidence, both complete extraction jobs, complete E03 preprocessing and the final passed Stage 2 suite are recorded in AGENTS.md. The latest suite verdict is user-reported; this planning review did not independently inspect Drive. No Stage 3 fits/full G0 gate or scientific results exist here. Selected checkpoints/runtime pins live in configs/models.json and requirements-l4.txt; current mounted storage and evidence pointers are in AGENTS.md.
 
 Use one model selector for model-specific work, and model/configuration fingerprints for output compatibility. Keep shared preparation/extraction reusable; run E19/E25 from saved E01 predictions. All instructions apply to both model families and all four languages where technically supported.
 
