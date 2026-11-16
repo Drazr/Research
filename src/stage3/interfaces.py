@@ -8,3 +8,12 @@ from .validation import validate_stage3
 from .operations import current_producer
 from .recovery import read_completed, publish_run_index, load_run_index
 from .readouts import candidate as load_candidate_block
+
+
+def expected_group_rows(plan, group_id, role):
+    """Authenticate row identities for recovery without reading feature matrices."""
+    from src.stage2.schema import check, frozen
+    from .artifacts import Store
+    from .readouts import expected_rows
+    check(role in ROLES and group_id in plan['groups'], 'Unknown row role/group')
+    return frozen(expected_rows(plan,group_id,ROLES[role],Store(plan.root,plan.protocol)))

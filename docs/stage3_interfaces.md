@@ -55,6 +55,12 @@ immutable and hash-bound; a new process checks disk again. No pathname-only trus
 
 ## Public callables
 
+Integrated recovery addition: expected_group_rows(plan, group_id, role) returns
+authenticated row metadata for a declared Stage 3 role without reading feature
+matrices. G0 uses it to check resumed score joins; logits/checksums/selection and
+target identities remain verified. A completed score resume must not reopen
+SCREEN feature payloads merely to recover the same row list.
+
 | Callable | Return and required semantics |
 |---|---|
 | compile_fit_plan(suite_manifest, root, protocol, producer) | FitPlan; writes one complete plan, validates exact 24 releases/13 families/145 groups, binds runtime/numerical recipes, profiling group IDs and eligible targets; no fitting or raw-image access |

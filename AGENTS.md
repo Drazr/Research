@@ -1,5 +1,17 @@
 # Instructions for all Research chats
 
+## Stage 3 worker integration — 16 November 2026
+
+Both worker implementations are integrated with the canonical runtime correction.
+Read docs/stage3_runbook.md for the required profile/ordinary/G0/reduction/final
+validation sequence. All Stage 3 notebooks use CPU; E03 runs once. Their setup
+defaults select integrated phase1, never an uncorrected worker branch. G0 resume
+checks completed-score row joins using expected_group_rows metadata instead of
+reloading unused SCREEN vectors. Existing score/candidate/statistic hashes and
+semantic checks remain enforced. This is software integration, not production
+acceptance: mounted plan binding, ownership configuration, actual representative
+measurements, all fit/control coverage and the final registry remain pending.
+
 ## Stage 3 executable foundation — 16 November 2026
 
 The coordinator foundation is implemented under src/stage3 with CPU preparation/validation notebooks in scripts/stage3. Read docs/stage3_interfaces.md before worker coding; its first-add commit is the immutable implementation base for both workers, recoverable with `git log --diff-filter=A --format=%H -- docs/stage3_interfaces.md`. Earlier planning commit 0ed0f79 is not that base. The ordinary worker owns fit_readouts.py/notebook and tests/test_stage3_fits.py; G0 owns run_g0.py/notebook and tests/test_stage3_g0.py. Shared modules remain coordinator-owned. Use the frozen public imports, typed FitPlan/session/reference semantics, one numerical engine, explicit recovery references and disjoint group ownership. Only the ordinary producer publishes each group's statistics; G0 reuses that reference. Preparation owns the shared assignments.

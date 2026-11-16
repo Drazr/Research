@@ -1,5 +1,13 @@
 # Phase 1 execution plan: G9-Q6
 
+Stage 3 worker integration update, 16 November 2026: ordinary-fit and G0 worker
+modules/notebooks are now present alongside the coordinator. Follow
+[the integrated runbook](docs/stage3_runbook.md): preparation, agreed ownership,
+ordinary profiles, G0 seed0 profiles, measured full runs with profile reuse,
+complete G0 reduction, then final validation. Runtime-order correction and
+metadata-only completed-score recovery are included. Production acceptance and
+scientific outcomes remain pending; older worker-pending notes describe history.
+
 Implementation update, 16 November 2026: the Stage 3 coordinator foundation now exists. Read [executable interfaces and ownership](docs/stage3_interfaces.md) and [foundation evidence](reports/stage3_foundation.md). CPU numeric-only plan/session/statistics/fit/selection/control/recovery/validation primitives and prepare_stage3/validate_stage3 notebooks are implemented. Ordinary-fit and G0 scheduling workers are not implemented; mounted suite binding, representative production measurements and full Stage 3 acceptance remain pending. Use the first-add commit of docs/stage3_interfaces.md as the immutable worker base, not the earlier planning commit. The planning-only status below describes the prior design review.
 
 Created 14 November 2026; Stages 1-3 are now specified in detail as of 16 November 2026. The user supplied the final Stage 2 validation status=passed at results/stage2-validation/20261116T010841Z-17d614fe5da340b4b6c036a431fc6be8/_COMPLETE.json under PHASE1_ROOT. This is user-reported runtime evidence; first Stage 3 preparation verifies the exact accepted suite and consumed numeric bytes. Stage 3 review revision 2 is documentation/planning only, with no implementation or fits. See the stage-specific contracts, integration and planning reports. Stages 4/5 remain an execution overview and will be specified separately. Software implementation or planning does not establish experimental completion.
