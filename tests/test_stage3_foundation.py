@@ -118,6 +118,16 @@ class Fixture:
 
 
 class MathTests(unittest.TestCase):
+    def test_runtime_pool_order_is_canonical_but_changes_still_block(self):
+        from threadpoolctl import threadpool_info
+        pools=threadpool_info()
+        with patch('threadpoolctl.threadpool_info',return_value=pools): expected=runtime()
+        with patch('threadpoolctl.threadpool_info',return_value=list(reversed(pools))): self.assertEqual(runtime(),expected)
+        changed=copy.deepcopy(pools);changed[0]['version']='different-build'
+        with patch('threadpoolctl.threadpool_info',return_value=changed): self.assertNotEqual(runtime(),expected)
+        changed[0]['num_threads']=2
+        with patch('threadpoolctl.threadpool_info',return_value=changed):
+            with self.assertRaises(ContractError):runtime()
     def test_independent_process_readback_and_corruption(self):
         import subprocess,sys
         with tempfile.TemporaryDirectory() as temp:
@@ -216,6 +226,13 @@ class IntegrationTests(unittest.TestCase):
             reloaded=load_fit_plan(self.plan.reference,self.plan.root,self.plan.protocol)
         self.assertEqual(reloaded['fit_identity'],self.plan['fit_identity'])
         self.assertEqual(len(self.plan['profiling_groups']),6)
+        # Parent imports sklearn.metrics first; child imports only interfaces.
+        # This reproduces the real worker's fresh-process plan-loading path.
+        import subprocess,sys
+        code='import json,sys; from src.stage3.interfaces import load_fit_plan; p=load_fit_plan(sys.argv[1],sys.argv[2],json.loads(sys.argv[3])); print(p["fit_identity"])'
+        child=subprocess.run([sys.executable,'-c',code,str(self.plan.root/self.plan.reference['path']),str(self.plan.root),json.dumps(self.plan.protocol)],cwd=REPO,text=True,capture_output=True)
+        self.assertEqual(child.returncode,0,child.stdout+child.stderr)
+        self.assertIn(self.plan['fit_identity'],child.stdout)
     def test_numeric_sessions_role_cache_and_corruption(self):
         gids=[g for g,b in self.plan['groups'].items() if b['source']=='vlm' and b['language']=='hi'][:2]
         s=open_numeric_session(self.plan,self.plan.root,gids,'source_fit');rows,x=s.read(gids[0]); reads=dict(s.store.reads)

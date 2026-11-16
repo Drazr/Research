@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from pathlib import Path
 import numpy as np
 from scipy.sparse import csr_matrix
-from src.common.contracts import fingerprint, TargetRecord, LANGUAGES
+from src.common.contracts import fingerprint, TargetRecord, LANGUAGES, canonical_bytes
 from src.stage2.schema import check, frozen, plain, specification
 from src.stage2.plans import text_recipes, planned_rows
 from .artifacts import Store, write
@@ -24,6 +24,9 @@ def runtime():
     check(all(p['num_threads'] == 1 for p in pools), 'Set BLAS/OpenMP threads to one before imports')
     result['threadpools'] = [{k:p.get(k) for k in ('internal_api','prefix','version','num_threads','threading_layer','architecture')}
                              for p in pools]
+    # Discovery order depends on import order, not the numerical environment.
+    # Retain every record/field (including duplicates); normalize only order.
+    result['threadpools'].sort(key=canonical_bytes)
     return result
 
 

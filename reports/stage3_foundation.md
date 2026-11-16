@@ -1,5 +1,13 @@
 # Stage 3 coordinator foundation — 16 November 2026
 
+Coordinator follow-up: the G0 worker reproduced an import-order-dependent runtime
+identity mismatch. runtime() now sorts the retained threadpool records by canonical
+bytes. Field values, duplicates, strict package pins and one-thread checks remain
+intact. Added reversed-order versus genuine-change checks and a fresh-process
+plan reload with different import order. This changes no callable signature,
+solver, target or weighting recipe. Apply the shared correction before production;
+do not edit old manifests or infer that production features/fits need rerunning.
+
 Implemented the shared CPU numerical/data/storage foundation and two coordinator
 notebooks. This is the executable base for worker implementation, not completed
 Stage 3 production work. Read docs/stage3_interfaces.md for signatures, payloads,

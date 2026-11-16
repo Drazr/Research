@@ -32,6 +32,13 @@ pins and actual thread pools. current_producer(scope='persistent-drive') refuses
 a dirty checkout and records actual commit/runtime. No Torch, L4 or HF token is
 needed. PHASE1_ROOT is /content/drive/MyDrive/phase1 in the user's Colab runtime.
 
+Coordinator runtime-order correction: threadpool records are sorted by canonical
+record bytes before creating the runtime identity. Discovery/import order alone
+must not cause fresh-process rejection; library/version/thread changes still do.
+Use the coordinator correction for production preparation and worker execution;
+do not patch shared files privately. Old fixture plans may be recreated, never
+rewritten. No production artifact rerun is established as necessary by this fix.
+
 Artifact references are immutable mappings `{path, sha256}` relative to that root.
 Use `plain(value)` from src.stage2.schema for JSON conversion. A FitPlan is an
 immutable Mapping with .root, .protocol and .reference. Keep it and bounded
