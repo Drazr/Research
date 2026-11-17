@@ -155,7 +155,7 @@ class MathTests(unittest.TestCase):
         with patch('src.stage3.engine.LogisticRegression',return_value=fake) as maker:
             with self.assertRaises(ContractError):
                 fit_heads(np.ones((4,2)),np.tile([0.,1,0,1],(25,1)).T,np.ones((4,25),dtype=bool),np.ones(4),.1)
-        self.assertEqual([c.kwargs['max_iter'] for c in maker.call_args_list],[1000,5000])
+        self.assertEqual([c.kwargs['max_iter'] for c in maker.call_args_list],[1000,5000,20000])
 
     def test_stage2_reference_feature_reader_equivalence(self):
         from test_stage2_foundation import ArtifactFixture

@@ -59,7 +59,7 @@ def fit_heads(x,y,known,weights,C):
         if len(np.unique(yy))!=2:
             records.append(dict(counts,status='unestimable',attempts=[])); continue
         attempts=[]
-        for limit in (1000,5000):
+        for limit in (1000,5000,20000):
             started=time.monotonic()
             model=LogisticRegression(C=C,solver='lbfgs',penalty='l2',fit_intercept=True,class_weight=None,
                                      tol=1e-8,max_iter=limit,warm_start=False)

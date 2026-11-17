@@ -72,7 +72,12 @@ def _body(plan,ref,kind,store=None,fit=True):
     store=store or Store(plan.root,plan.protocol)
     store.dataset=plan.get('dataset_fingerprint')
     b=store.json(ref,'body.json','stage3_'+kind)
-    if fit: check(b['fit_identity']==plan['fit_identity'],'Incompatible fitted artifact')
+    if fit:
+        if b['fit_identity']==plan['fit_identity']:
+            check(b['plan']==plain(plan.reference),'Artifact plan binding mismatch')
+        else:
+            check(b['fit_identity'] in plan.legacy and
+                  b['plan']==plain(plan.legacy[b['fit_identity']]),'Incompatible fitted artifact')
     return b,store
 
 

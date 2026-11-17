@@ -44,3 +44,9 @@ are reusable production units, not another dataset or extra experiments. E03
 is not rerun for each model. Ordinary scoring, E19/E25, interpretation and
 Stage 4 are not enabled until the accepted Stage 3 registry exists. CONFIRM
 remains closed. Local fixture passes do not establish mounted production success.
+
+For the original 6749bd9f53148def run's E03 iteration exhaustion, use the one-time
+CPU amend_solver_budget.ipynb and the explicit recovery instructions in
+docs/stage3_solver_amendment.md. Do not rerun preparation/ordinary fitting or edit
+engine.py inside a running checkout. Completed original units remain reusable
+only through the new plan's authenticated compatibility receipt.

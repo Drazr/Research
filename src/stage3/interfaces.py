@@ -8,6 +8,7 @@ from .validation import validate_stage3
 from .operations import current_producer
 from .recovery import read_completed, publish_run_index, load_run_index
 from .readouts import candidate as load_candidate_block
+from .amendment import amend_solver_budget
 
 
 def expected_group_rows(plan, group_id, role):

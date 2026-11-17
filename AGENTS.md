@@ -1,5 +1,19 @@
 # Instructions for all Research chats
 
+## Stage 3 solver-budget amendment — 17 November 2026
+
+Read docs/stage3_solver_amendment.md before resuming the original Stage 3 plan.
+The diagnostic-only pooled-character seed0 C=10 head converged at 5511 iterations;
+the original 5000 cap was insufficient. The only numerical change is a uniform
+third cold-start 20000 attempt after unchanged 1000/5000 attempts fail. No objective,
+tolerance, C, target, scaler, dependency or selection change is authorized. Use
+the explicit amend-budget migration/new identity and checked compatibility receipt
+to retain completed original ordinary/G0 units without rewriting old artifacts.
+Do not bypass the plan guard or promote diagnostic coefficients to accepted fits.
+Initialize shared output directories once before parallel Drive writers, then
+flush/unmount/remount. Preserve each worker's explicit latest complete/failure
+indexes. This software amendment does not establish production Stage 3 acceptance.
+
 ## Stage 3 worker integration — 16 November 2026
 
 Both worker implementations are integrated with the canonical runtime correction.

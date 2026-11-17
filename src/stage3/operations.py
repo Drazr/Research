@@ -18,10 +18,11 @@ def current_producer(scope='local-development'):
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('task',choices=['prepare','validate','readback'])
+    parser.add_argument('task',choices=['prepare','validate','readback','amend-budget'])
     parser.add_argument('--phase1-root',required=True)
     parser.add_argument('--manifest',required=True)
     parser.add_argument('--inventory')
+    parser.add_argument('--diagnostic-manifest')
     parser.add_argument('--storage-scope',choices=['local-development','persistent-drive'],default='persistent-drive')
     a=parser.parse_args(); root=phase1_root(a.phase1_root)
     repo=Path(__file__).resolve().parents[2]
@@ -34,7 +35,14 @@ def main():
         return
     producer=current_producer(a.storage_scope)
     print(json.dumps({'event':'stage3_task_start','task':a.task,'code_commit':producer['code_commit']}),flush=True)
-    if a.task=='prepare':
+    if a.task=='amend-budget':
+        from .amendment import amend_solver_budget
+        if not a.diagnostic_manifest: raise ContractError('Explicit diagnostic manifest required')
+        plan=amend_solver_budget(a.manifest,a.diagnostic_manifest,root,protocol,producer)
+        result={'plan':str(root/plan.reference['path']),'reference':dict(plan.reference),
+                'fit_identity':plan['fit_identity'],'legacy':dict(plan['compatibility']),
+                'stage3_complete':False}
+    elif a.task=='prepare':
         plan=compile_fit_plan(a.manifest,root,protocol,producer)
         assignments=publish_target_assignments(plan,root,producer)
         result={'plan':str(root/plan.reference['path']),'assignments':dict(assignments),

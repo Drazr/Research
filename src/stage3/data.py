@@ -37,7 +37,14 @@ def numerical_identity():
     return {'engine_sha256': file_sha256(Path(__file__).with_name('engine.py')),
             'target_weight_semantics':fingerprint([inspect.getsource(f) for f in (weights,donor_map,targets)]),
             'recipe':'sum-weighted-logloss-L2-unpenalized-intercept.v1',
-            'C':list(CS), 'tol':1e-8, 'iterations':[1000,5000], 'variance_threshold':1e-12}
+            'C':list(CS), 'tol':1e-8, 'iterations':[1000,5000,20000], 'variance_threshold':1e-12}
+
+
+def fit_fingerprint(body):
+    identity={k:plain(body[k]) for k in ('suite','groups','categories','targets','numerical','runtime')}
+    if 'compatibility' in body:
+        identity['compatibility']=plain(body['compatibility'])
+    return fingerprint(identity)
 
 
 class FitPlan(Mapping):
@@ -45,6 +52,10 @@ class FitPlan(Mapping):
         self.body, self.root, self.protocol = frozen(body), Path(root).resolve(), protocol
         self.reference = frozen(reference)
         self.store = store or Store(root, protocol)
+        self.legacy = frozen({})
+        if 'compatibility' in body:
+            from .amendment import validate_compatibility
+            self.legacy=frozen(validate_compatibility(body,self.store))
     def __getitem__(self,k): return self.body[k]
     def __iter__(self): return iter(self.body)
     def __len__(self): return len(self.body)
@@ -164,7 +175,7 @@ def compile_fit_plan(suite_manifest, root, protocol, producer):
     actual=runtime()
     check(producer['software_versions']==actual, 'Record actual pinned numerical runtime')
     body.update(schema='stage3.plan.v1',runtime=actual,numerical=numerical_identity())
-    body['fit_identity']=fingerprint({k:body[k] for k in ('suite','groups','categories','targets','numerical','runtime')})
+    body['fit_identity']=fit_fingerprint(body)
     classes={}
     for gid,g in body['groups'].items():
         cls=g['model'] if g['source']=='vlm' else g['recipe']['family']
@@ -184,7 +195,7 @@ def load_fit_plan(manifest,root,protocol):
     check(b['runtime']==runtime() and b['numerical']==numerical_identity(), 'Numerical environment/implementation changed')
     original=suite_inventory(b['suite'],store)
     check(all(b[k]==v for k,v in original.items()), 'Plan no longer matches accepted suite')
-    check(b['fit_identity']==fingerprint({k:b[k] for k in ('suite','groups','categories','targets','numerical','runtime')}), 'Fit identity mismatch')
+    check(b['fit_identity']==fit_fingerprint(b), 'Fit identity mismatch')
     return FitPlan(b,root,protocol,store.ref(manifest),store)
 
 

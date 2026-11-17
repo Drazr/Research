@@ -131,3 +131,14 @@ validate_stage3.ipynb waits for the integrated explicit worker inventory. Stage 
 ordinary DEV-C/SCREEN readers will require the accepted Stage 3 registry; those
 permissions are not exposed by Stage 3's role enum. No CONFIRM access or scientific
 interpretation is enabled. Bring worker heads back for coordinator integration.
+
+## Computational amendment API — 17 November 2026
+
+`amend_solver_budget(legacy_manifest, diagnostic_manifest, root, protocol,
+producer) -> FitPlan` is coordinator-owned and exported by interfaces.py.
+It authenticates a budget-only compatibility receipt and publishes a new plan;
+workers retain their existing call signatures. Use `operations amend-budget`
+with `--manifest` and `--diagnostic-manifest`, or the one-time amendment notebook.
+Completed original references remain immutable and are permitted only for the
+exact original plan recorded in the receipt. No general cross-plan fallback exists.
+See docs/stage3_solver_amendment.md for provenance and recovery requirements.
