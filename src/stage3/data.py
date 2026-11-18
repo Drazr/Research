@@ -199,6 +199,58 @@ def load_fit_plan(manifest,root,protocol):
     return FitPlan(b,root,protocol,store.ref(manifest),store)
 
 
+def _read_verified_group(plan, store, gid, split):
+    """Internal numeric reader. Callers must authorize their role and group first."""
+    check(split in ('FIT', 'DEV-S', 'DEV-C', 'SCREEN'), 'Closed numeric split')
+    g=plain(plan['groups'][gid]); ref=g['releases'][split]
+    if g['source']=='vlm':
+        b=store.json(ref,'release.json','stage2_feature_release')
+        m=_plan(store,g['model_plan'],'stage2_model_plan')
+        expected=[u for u in m['work_units'] if u['split']==split]
+        check(len(b['chunks'])==len(expected), 'Chunk coverage mismatch')
+        rows,parts=[],[]
+        for cr,u in zip(b['chunks'],expected):
+            cb=store.json(cr,'chunk.json','stage2_feature_chunk')
+            rr=store.rows(cr)
+            check(cb['plan']==g['model_plan'] and cb['plan_fingerprint']==m['plan_fingerprint']
+                  and cb['execution_identity']==m['execution_identity'] and cb['model_config']==m['model_config']
+                  and cb['source_identity']==m['source_identity'] and cb['chunk_id']==u['chunk_id']
+                  and cb['split']==split and cb['condition']==g['condition']
+                  and rr==planned_rows(m,u['chunk_id'],g['condition']), 'Chunk/row provenance mismatch')
+            spec=cb['sites'][g['site']]
+            check(spec['dimension']==g['dimension'] and spec['spec']==m['execution_identity']['site_specs'][g['site']], 'Site mismatch')
+            a=store.array(cr,spec['file'],'<f4',(len(rr),g['dimension']))
+            check([hashlib.sha256(v.tobytes()).hexdigest() for v in a]==cb['vector_digests'][g['site']], 'Vector content mismatch')
+            ix=[i for i,r in enumerate(rr) if r['language']==g['language']]
+            rows.extend(rr[i] for i in ix); parts.append(a[ix])
+        x=np.concatenate(parts)
+    else:
+        b=store.json(ref,'text_release.json','stage2_text_release')
+        fam=store.json(g['family'],'family.json','stage2_text_family')
+        check(b['split']==split and b['preprocessor']==fam['preprocessor'] and b['preprocessing_fingerprint']==fam['preprocessing_fingerprint'], 'Text identity mismatch')
+        rows=store.rows(ref)
+        dp=store.json(plan['data_plan'],'plan.json','stage2_data_plan')
+        expected=[dict(r,row_index=i,image_loss_weight=0.25 if g['language'] is None else 1.) for i,r in
+                  enumerate(r for r in dp['rows']['caption_only'] if r['split']==split and (g['language'] is None or r['language']==g['language']))]
+        check(rows==expected and b['shape']==[len(rows),g['dimension']], 'Text row identity mismatch')
+        if g['recipe']['family']=='length':
+            x=store.array(ref,'matrix.npy','<f4',b['shape'])
+        else:
+            a=store.array(ref,'data.npy','<f4'); i=store.array(ref,'indices.npy','<i4'); p=store.array(ref,'indptr.npy','<i4')
+            check(a.ndim==i.ndim==p.ndim==1 and len(p)==len(rows)+1 and p[0]==0 and p[-1]==len(a)==len(i)
+                  and np.all(np.diff(p.astype('i8'))>=0) and np.all((i>=0)&(i<g['dimension'])) and np.all(a>0), 'Invalid CSR')
+            for j in range(len(rows)): check(np.all(np.diff(i[p[j]:p[j+1]].astype('i8'))>0), 'CSR columns not unique/sorted')
+            x=csr_matrix((a,i,p),shape=b['shape'])
+            norms=np.asarray(x.astype('f8').multiply(x).sum(axis=1)).ravel()
+            check(np.all((norms==0)|np.isclose(norms,1,atol=4e-7,rtol=4e-7)), 'TF-IDF norm mismatch')
+    check(len(rows)>0 and all(r['split']==split and r['image_id'] in plan['targets'] for r in rows), 'Closed/unjoined rows')
+    for r in rows: check(plan['targets'][r['image_id']]['split']==split, 'Cross-split target join')
+    if hasattr(x,'data') and hasattr(x,'indices'):
+        for a in (x.data,x.indices,x.indptr): a.flags.writeable=False
+    else: x.flags.writeable=False
+    rows=tuple(frozen(r) for r in rows)
+    return rows, x
+
 class NumericSession:
     def __init__(self,plan,groups,role):
         check(role in ROLES, 'Unauthorized Stage 3 role')
@@ -213,53 +265,7 @@ class NumericSession:
         if self._current is not None and self._current[0]==gid:
             return self._current[1:]
         split=ROLES[self.role]
-        g=plain(self.plan['groups'][gid]); ref=g['releases'][split]
-        if g['source']=='vlm':
-            b=self.store.json(ref,'release.json','stage2_feature_release')
-            m=_plan(self.store,g['model_plan'],'stage2_model_plan')
-            expected=[u for u in m['work_units'] if u['split']==split]
-            check(len(b['chunks'])==len(expected), 'Chunk coverage mismatch')
-            rows,parts=[],[]
-            for cr,u in zip(b['chunks'],expected):
-                cb=self.store.json(cr,'chunk.json','stage2_feature_chunk')
-                rr=self.store.rows(cr)
-                check(cb['plan']==g['model_plan'] and cb['plan_fingerprint']==m['plan_fingerprint']
-                      and cb['execution_identity']==m['execution_identity'] and cb['model_config']==m['model_config']
-                      and cb['source_identity']==m['source_identity'] and cb['chunk_id']==u['chunk_id']
-                      and cb['split']==split and cb['condition']==g['condition']
-                      and rr==planned_rows(m,u['chunk_id'],g['condition']), 'Chunk/row provenance mismatch')
-                spec=cb['sites'][g['site']]
-                check(spec['dimension']==g['dimension'] and spec['spec']==m['execution_identity']['site_specs'][g['site']], 'Site mismatch')
-                a=self.store.array(cr,spec['file'],'<f4',(len(rr),g['dimension']))
-                check([hashlib.sha256(v.tobytes()).hexdigest() for v in a]==cb['vector_digests'][g['site']], 'Vector content mismatch')
-                ix=[i for i,r in enumerate(rr) if r['language']==g['language']]
-                rows.extend(rr[i] for i in ix); parts.append(a[ix])
-            x=np.concatenate(parts)
-        else:
-            b=self.store.json(ref,'text_release.json','stage2_text_release')
-            fam=self.store.json(g['family'],'family.json','stage2_text_family')
-            check(b['split']==split and b['preprocessor']==fam['preprocessor'] and b['preprocessing_fingerprint']==fam['preprocessing_fingerprint'], 'Text identity mismatch')
-            rows=self.store.rows(ref)
-            dp=self.store.json(self.plan['data_plan'],'plan.json','stage2_data_plan')
-            expected=[dict(r,row_index=i,image_loss_weight=0.25 if g['language'] is None else 1.) for i,r in
-                      enumerate(r for r in dp['rows']['caption_only'] if r['split']==split and (g['language'] is None or r['language']==g['language']))]
-            check(rows==expected and b['shape']==[len(rows),g['dimension']], 'Text row identity mismatch')
-            if g['recipe']['family']=='length':
-                x=self.store.array(ref,'matrix.npy','<f4',b['shape'])
-            else:
-                a=self.store.array(ref,'data.npy','<f4'); i=self.store.array(ref,'indices.npy','<i4'); p=self.store.array(ref,'indptr.npy','<i4')
-                check(a.ndim==i.ndim==p.ndim==1 and len(p)==len(rows)+1 and p[0]==0 and p[-1]==len(a)==len(i)
-                      and np.all(np.diff(p.astype('i8'))>=0) and np.all((i>=0)&(i<g['dimension'])) and np.all(a>0), 'Invalid CSR')
-                for j in range(len(rows)): check(np.all(np.diff(i[p[j]:p[j+1]].astype('i8'))>0), 'CSR columns not unique/sorted')
-                x=csr_matrix((a,i,p),shape=b['shape'])
-                norms=np.asarray(x.astype('f8').multiply(x).sum(axis=1)).ravel()
-                check(np.all((norms==0)|np.isclose(norms,1,atol=4e-7,rtol=4e-7)), 'TF-IDF norm mismatch')
-        check(len(rows)>0 and all(r['split']==split and r['image_id'] in self.plan['targets'] for r in rows), 'Closed/unjoined rows')
-        for r in rows: check(self.plan['targets'][r['image_id']]['split']==split, 'Cross-split target join')
-        if hasattr(x,'data') and hasattr(x,'indices'):
-            for a in (x.data,x.indices,x.indptr): a.flags.writeable=False
-        else: x.flags.writeable=False
-        rows=tuple(frozen(r) for r in rows)
+        rows, x = _read_verified_group(self.plan, self.store, gid, split)
         self._current=(gid,rows,x)
         return rows,x
 

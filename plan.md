@@ -1,5 +1,9 @@
 # Phase 1 execution plan: G9-Q6
 
+Stage 4 coordinator update, 19 November 2026. The shared code, CPU preparation and validation notebooks, and fixture tests are implemented. The four worker chats branch from the exact foundation commit first adding [docs/stage4_interfaces.md](docs/stage4_interfaces.md). Stage 4 production awaits the accepted Stage 3 registry and integrated workers.
+
+Stage 4 planning update, 18 November 2026. The detailed Stage 4 plan below covers inputs, scoring, experiments, storage, ownership, acceptance and the Stage 5 handoff. The global G0 gate was verified unflagged (p=0.362 over all 145 groups). Scientific execution opens after acceptance of the final Stage 3 registry.
+
 Stage 3 worker integration update, 16 November 2026: ordinary-fit and G0 worker
 modules/notebooks are now present alongside the coordinator. Follow
 [the integrated runbook](docs/stage3_runbook.md): preparation, agreed ownership,
@@ -10,7 +14,7 @@ scientific outcomes remain pending; older worker-pending notes describe history.
 
 Implementation update, 16 November 2026: the Stage 3 coordinator foundation now exists. Read [executable interfaces and ownership](docs/stage3_interfaces.md) and [foundation evidence](reports/stage3_foundation.md). CPU numeric-only plan/session/statistics/fit/selection/control/recovery/validation primitives and prepare_stage3/validate_stage3 notebooks are implemented. Ordinary-fit and G0 scheduling workers are not implemented; mounted suite binding, representative production measurements and full Stage 3 acceptance remain pending. Use the first-add commit of docs/stage3_interfaces.md as the immutable worker base, not the earlier planning commit. The planning-only status below describes the prior design review.
 
-Created 14 November 2026; Stages 1-3 are now specified in detail as of 16 November 2026. The user supplied the final Stage 2 validation status=passed at results/stage2-validation/20261116T010841Z-17d614fe5da340b4b6c036a431fc6be8/_COMPLETE.json under PHASE1_ROOT. This is user-reported runtime evidence; first Stage 3 preparation verifies the exact accepted suite and consumed numeric bytes. Stage 3 review revision 2 is documentation/planning only, with no implementation or fits. See the stage-specific contracts, integration and planning reports. Stages 4/5 remain an execution overview and will be specified separately. Software implementation or planning does not establish experimental completion.
+Created 14 November 2026. The user supplied the final Stage 2 validation status=passed at results/stage2-validation/20261116T010841Z-17d614fe5da340b4b6c036a431fc6be8/_COMPLETE.json under PHASE1_ROOT. Stage 3 binds that exact accepted suite and verifies consumed numeric bytes. See the stage-specific contracts, integration and planning reports for chronology and evidence.
 
 ## Scope and authoritative context
 
@@ -257,7 +261,7 @@ Implementation update: the coordinator executable shared interfaces, evidence br
 
 ## Stage 3: finalized fitting/control specification — 16 November 2026
 
-Stage 3 review revision 2 is specified in [docs/stage3_contracts.md](docs/stage3_contracts.md), with [implementation ownership](docs/stage3_ownership.md) and a [planning review](reports/stage3_planning.md). This update is documentation only. Stages 4/5 remain overview/handoff requirements, not finalized implementations. The final Stage 2 suite now has a user-reported passed verdict at the pointer above; Stage 3 first-consumer verification binds that exact artifact without rerunning the entire Stage 2 validator.
+Stage 3 review revision 2 is specified in [docs/stage3_contracts.md](docs/stage3_contracts.md), with [implementation ownership](docs/stage3_ownership.md) and a [planning review](reports/stage3_planning.md). The final Stage 2 suite has a user-reported passed verdict at the pointer above. Stage 3 first-consumer verification binds that exact artifact without rerunning the entire Stage 2 validator.
 
 The Stage 3 workload is derived from accepted site/recipe inventories: 145 ordinary systems, 4 C candidates and all 25 category statuses; the same 3-seed randomized-target fitting/selection pipeline adds matched controls. This gives 14,500 ordinary and 43,500 control nominal binary fits before fixed retries. Reuse cached raw features/E03 preprocessing and label-free source statistics. Fit independent float64 logistic heads with the documented source-only scaler, image weights, exact objective/solver/retry and fixed-primary-cohort C-selection/tie rules. Selected systems reference FIT-only weights; no refit on development data or real SCREEN tuning. The 17 November computational amendment adds a third 20000 cold-start budget after unchanged 1000/5000 failures, based on a diagnostic-only head converging at 5511. Use a new plan identity with authenticated budget-only compatibility for completed original units; see docs/stage3_solver_amendment.md. Production recovery/global acceptance remain pending.
 
@@ -265,7 +269,55 @@ The shared numeric-only reader verifies accepted metadata and consumed numeric b
 
 G0 uses three fixed whole-image target-vector/mask permutations and source-DEV-S selection. Control-only SCREEN scoring and a predeclared conditional global randomization diagnostic complete its validity gate; ordinary scientific predictions, source DEV-C confidence policies and E19/E25 reuse remain Stage 4. A flagged/failed control or structural/solver/identity violation blocks substantive interpretation until resolved. No GPU, new dataset/manual annotation or extra scientific experiment is required. Stage 3 implementation/runtime acceptance remains pending.
 
+## Stage 4: finalized scoring and analysis specification — 18 November 2026
+
+### 4.1 Goal and launch boundary
+
+Measure accessibility, cross-context transfer, probability quality, selective confidence and paired errors for E01/E02/E03/E04/E19/E25. Launch only from an explicit passed `stage3_system_registry` with `stage3_complete=true`, independent readback and the matching unflagged G0 gate. Verify the registry's amended plan, Stage 2 suite, group, target and ordinary selection identities. Score with the 145 accepted ordinary readouts and source-FIT scalers on CPU. FIT and DEV-S supply lineage and support metadata. DEV-C features are reserved for E19's source diagonals, SCREEN is exploratory evaluation, and CONFIRM stays closed.
+
+### 4.2 Frozen scoring workload
+
+| Source | SCREEN prediction slots | DEV-C prediction slots |
+|---|---:|---:|
+| Qwen | 256 decoder routes and 2 image-only diagonals | 4 E19 source diagonals |
+| Gemma | 256 decoder routes and 2 image-only diagonals | 4 E19 source diagonals |
+| Shared E03 | 12 language-specific diagonals and 1 pooled four-view block | 0 |
+| **Total** | **529** | **8** |
+
+Each decoder grid has four source heads and four target views at the same model, condition, depth and pooling. Conditions are image-plus-caption and caption-only. Poolings are `last_caption` and `caption_mean`. Use Qwen depths 9/18/27/36 and Gemma depths 9/17/26/34, as verified against the upstream plan. Image-only encoder and projector each contribute one view per image. E03's pooled character system uses four caption views per image with separate context results and an equally weighted context macro. Keep the 360 SCREEN images, 180 DEV-C images, caption draw 0 and all 25 category slots. Preserve the frozen 14-category primary cohort and the unknown `plant.n.02` cell for SCREEN image `6a20677eee04fd08`.
+
+Apply the frozen source scaler, coefficient matrix and intercept in float64 to the verified target features. Preserve dense centering, sparse TF-IDF scaling and head estimability. Save ordered row identities and canonical logits once and derive probabilities and 0.5 decisions in the common reader. Use the existing Stage 2 numeric verification logic behind a Stage 4 split and ownership guard. Authenticate consumed selected weights, scalers and target arrays using the accepted manifests.
+
+### 4.3 Experiment outputs and uncertainty
+
+| Family | Required comparisons and reporting |
+|---|---|
+| E01 | All four fixed-depth image-plus-caption `last_caption` transfer grids. Report absolute AUROC/AP, Brier/NLL and thresholded outcomes, alongside matched diagonal-minus-transfer discrimination gaps and transfer-minus-diagonal loss gaps. Show FIT prevalence and always-absent references. |
+| E02 | Pair image-plus-caption and caption-only results at matched decoder sites, routes and image-category cohorts. Show condition differences, changes in transfer gaps and separate encoder/projector image-only baselines. |
+| E03 | Score word TF-IDF, character TF-IDF and length per language, plus pooled character once across four contexts. Compare against each model's matched same-context caption-only midpoint. Keep separate-vocabulary coefficients in their own feature spaces. |
+| E04 | Compare `last_caption` and `caption_mean` over the fixed depths and complete route grids. Report combined and caption-only conditions separately. Record the limits on `post_caption` and decoder visual-token pooling. |
+| E19 | At the E01 midpoint (Qwen 18, Gemma 17), obtain per-source/category raw confidence cutoffs from source DEV-C at nominal 50%, 75% and 90% coverage, including cutoff ties. Apply the same cutoffs to every SCREEN target. Report actual coverage, retained and base risk, class-specific retention/correctness and the score-blind reference. |
+| E25 | Reuse the E01 midpoint SCREEN logits to compare all six unordered target-context pairs per fixed source head. Report diagonal-head pairs as a secondary comparison. Show disagreement, joint errors and label-stratified excess overlap, directional conditionals with denominators, and 1,000 within-label permutations. |
+
+Use 2,000 shared paired SCREEN image bootstrap draws across models, methods and contexts, with 95% percentile intervals and valid-draw counts. Keep all matched views and masks with each sampled image. Hold the E19 source cutoffs fixed during resampling. Report support and undefined outcomes explicitly. Primary macros retain the fixed 14 categories, and subgroup or correctness inference requires at least 20 cases per relevant outcome class. Report full fixed-depth profiles and keep SCREEN results exploratory. See [Stage 4 scoring and analysis contracts](docs/stage4_contracts.md) for the exact cutoff, metric, resampling and status rules.
+
+### 4.4 Execution order, ownership and resume
+
+1. The coordinator owns the acceptance gate, route inventory, shared scoring and analysis interfaces, bootstrap inputs and release validation. Freeze those interfaces before splitting implementation across workers.
+2. Use one CPU scoring entry point with the `MODEL` selector for Qwen or Gemma. Run them in parallel on separate runtimes when available. A shared CPU worker scores E03 once. Score E01 midpoint SCREEN and E19 source DEV-C first, then let E19/E25 consume those predictions as the remaining E01/E02/E04 routes finish. E03 comparisons wait for matched neural blocks.
+3. Measure runtime, memory and Drive cost on one metadata-selected midpoint site per model, pooled E03 and representative E19/E25 analysis blocks. Reuse completed outputs in production. Stream phase and block progress during verification and execution.
+4. Use `PHASE1_ROOT/cache/shared/stage4/` for immutable plans and shared resampling, `predictions/stage4/` for canonical prediction blocks and `results/stage4/` for analyses and accepted releases. Group scores by target feature block, with all eligible source heads together. Persist completed analysis blocks and E19 cutoffs for resume. Check explicit manifest and payload hashes and exact compatibility before reuse. Assign disjoint output ownership.
+
+### 4.5 Deliverables, acceptance and Stage 5 handoff
+
+- [ ] Validate the final Stage 3 registry and bind the accepted fit, scaler and feature references to the Stage 4 plan.
+- [ ] Verify complete prediction coverage across 529 SCREEN and eight DEV-C slots, both models and shared E03. Check exact split, view, category and mask joins and their behavior at restart.
+- [ ] Deliver all six analysis families with absolute results, paired effects, uncertainty, baselines, support and optional coverage. Verify dense/sparse scoring, masks and tie handling, deterministic resampling and rejection of incompatible or corrupt artifacts.
+- [ ] Independently read back the final release and publish `stage4_complete=true`. Hand Stage 5 the prediction and lineage references, metric and contrast tables, E19 cutoffs and risk/coverage, E25 paired-error results and null references, uncertainty and unresolved statuses. Stage 5 assembles complete per-model reports before comparing models and uses that evidence to prioritize focused follow-ups. It reuses the verified results and leaves CONFIRM closed.
+
 ## Current status
+
+18 November 2026: the completed global gate was read from `results/dc2c5ff3bcfdc1ee/g0/20261118T152645Z-25834f6f3a6d4a07b625c7753113077d/_COMPLETE.json` and its body matched the marker checksum. All 145 group references matched the reduction inventory. The user reported `validate_S3` running. Stage 4 implementation, launch and experimental results remain pending.
 
 Latest runtime evidence, 16 November 2026: the final Stage 2 validator reported passed at results/stage2-validation/20261116T010841Z-17d614fe5da340b4b6c036a431fc6be8/_COMPLETE.json. This supersedes pending-production/suite statements in the historical integration notes below. This review did not independently inspect Drive or produce Stage 3 code/runs. Its finalized design uses numeric-only consumer verification and limited meaningful checkpoints; implementation interfaces and runtime acceptance remain pending.
 

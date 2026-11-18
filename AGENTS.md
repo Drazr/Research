@@ -1,5 +1,13 @@
 # Instructions for all Research chats
 
+## Stage 4 coordinator foundation — 19 November 2026
+
+The worker-facing APIs and file ownership are documented in [docs/stage4_interfaces.md](docs/stage4_interfaces.md). Use the immutable commit first adding that file as the four worker branches' common base. The CPU preparation and validation notebooks are coordinator-owned. Accepted Stage 3 production inputs are required for Stage 4 preparation. A complete accepted Stage 4 release requires integration and actual worker outputs.
+
+## Stage 4 planning freeze — 18 November 2026
+
+Read [the Stage 4 specification](docs/stage4_contracts.md) before implementing scoring or analysis. Stage 4 requires the final accepted Stage 3 registry with its G0 gate and independent readback. The gate has been verified unflagged (p=0.362 across 145 groups). The final registry was pending at planning. Use frozen ordinary readouts on accepted Stage 2 numeric features with Stage 4 split authorization. Keep DEV-C limited to E19 source diagonals, use SCREEN for the fixed scoring inventory, and keep CONFIRM closed. Share canonical logits, matched cohorts and paired resampling across E01/E02/E03/E04/E19/E25. Verify the Stage 4 release before giving it to Stage 5 for integration.
+
 ## Stage 3 solver-budget amendment — 17 November 2026
 
 Read docs/stage3_solver_amendment.md before resuming the original Stage 3 plan.
