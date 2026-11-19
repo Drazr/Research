@@ -818,7 +818,7 @@ def _evaluate_screen(
     categories = list(protocol["category_order"])
     n_cats = len(categories)
     primary_idx = _primary_indices(protocol)
-    screen_min_support = int(protocol["minimum_support"]["SCREEN"])
+    screen_min_support = int(protocol["minimum_positive_and_negative"]["SCREEN"])
 
     # Load all 4 Stage 4 SCREEN blocks (16 routes) and verify identical image alignment.
     screen_preds = {}
