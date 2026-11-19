@@ -689,3 +689,130 @@ Stage 5 is a single cohesive CPU synthesis module (~30–60s runtime on Colab CP
 
 > **Prompt — Stage 5 (Phase 2 synthesis, decision register, and independent readback)**
 > Work from `<STAGE5_BASE_SHA>` on branch `phase2` in `C:/Users/APOORV/Documents/Codex/2026-11-12/ex/work/Research-stage1-integrated`. Read `phase2.md` (§1.5, §2.9, §4.7, §5.1–5.5), `prelim.md` (§12.4), `src/phase2/gates.py` (`STAGE5_DECISION_RANGES`), and the top-level output schemas in `src/phase2/{run_e29,run_e17,run_e30,run_e11,score_e07}.py`. You own ONLY `src/phase2/synthesize.py`, `scripts/phase2/synthesize_phase2.ipynb`, and `tests/test_phase2_synthesize.py`. Do not edit Stage 1–4 modules or Phase 1 files. Implement the CPU Stage 5 synthesizer that: (1) authenticates all 15 Stage 1–4 refs (`phase2_plan`, `e07_audit`, `e17_auth`, E29 analysis & gates, E17 analysis, E07 releases, E30 analysis, E11 analysis, E07 analysis for both `qwen` and `gemma`) checking matching `plan_identity`, `dataset_fingerprint`, `confirm_excluded=True`, and all recorded invariance/self-check/parity flags; (2) extracts tidy comparison tables across all 5 experiments and evaluates every direction against `src.phase2.gates.STAGE5_DECISION_RANGES`, assigning `retain` / `revise` / `park within tested scope` / `insufficient evidence` with exact comparison, effect, 95% CI, denominators, strongest contrary evidence, and remaining alternative explanation; (3) publishes `phase2_release` (`KIND_RELEASE`, `SCHEMA_RELEASE`) under `phase2/releases/<run_id>/` containing `body.json` and human-readable `phase2_review.md`; and (4) provides a `verify-release` CLI subcommand invoked in a fresh subprocess to independently re-authenticate the release and all upstream markers on disk. Pre-fill all 15 certified Stage 1–4 `{path, sha256}` refs from `phase2.md` §2.9 & §4.7 directly in Cell 3 of `scripts/phase2/synthesize_phase2.ipynb` (`CODE_REF = 'phase2'`) so it runs out-of-the-box on Colab CPU (~30–60s) and prints `phase2_review.md` plus the final `phase2_release` ref. Add thorough unit/fixture tests in `tests/test_phase2_synthesize.py` and report commit SHA, tests passed, and Colab run readiness.
+
+---
+
+## Phase 2 Results Review & Decision Register — 20 November 2026
+
+- **Release schema:** `phase2.release.v1` (`phase2-stage5.v1`)
+- **Plan identity:** `d54c462c03842268a4c38ee12a82be07842179dd88b393e51b1bc5f86a9e95fa`
+- **Dataset fingerprint:** `54825d236efcd88cc5252918ebce6d1dad6109ef10a244281f262204bc6cc5bd`
+- **CONFIRM status:** `CLOSED` (`confirm_excluded = True`)
+- **E07 coverage verdict:** `passed_restricted`
+
+### 1. Combined Decision Register
+
+| Direction | Experiment | Combined Decision | Qwen | Gemma |
+|---|---|---|---|---|
+| `E29_pooling_gap_reduction` | E29 | **revise** | `revise` | `revise` |
+| `E30_pooling_feature_vs_head` | E30 | **revise** | `revise` | `revise` |
+| `E11_fit_covariate_scale` | E11 | **revise** | `revise` | `revise` |
+| `E17_source_calibration` | E17 | **revise** | `revise` | `retain` |
+| `E17_target_calibration` | E17 | **revise** | `revise` | `revise` |
+| `E07_caption_view_stability` | E07 | **revise** | `revise` | `revise` |
+
+### 2. Per-Model Quantitative Summary (Primary 14-Category Macro, 95% Paired Bootstrap CI)
+
+#### QWEN
+
+| Experiment | Key Contrast / Metric | Estimate [95% CI] |
+|---|---|---|
+| **E29** | `image_caption` ΔG = G(last) − G(mean) (AUROC) | +0.0798 [+0.0733, +0.0866] |
+| **E29** | `image_caption` residual G(mean) (AUROC) | +0.0301 [+0.0267, +0.0338] |
+| **E29** | `caption_only` diagnostic ΔG (AUROC) | +0.0640 [+0.0555, +0.0725] |
+| **E30** | Fixed `last` head feature gain (AUROC) | +0.0919 [+0.0853, +0.0985] |
+| **E30** | Fixed `mean` head feature gain (AUROC) | +0.0054 [-0.0028, +0.0135] |
+| **E30** | Head × pooling interaction (AUROC) | +0.0865 [+0.0773, +0.0958] |
+| **E11** | `mean_scale` AUROC gap reduction | +0.0005 [+0.0002, +0.0008] |
+| **E11** | `mean_scale` recovered fraction of G_res | 0.0166 [0.0054, 0.0277] |
+| **E11** | `mean_scale` NLL / Brier gain vs identity | +0.2013 [+0.1919, +0.2111] / +0.0429 [+0.0408, +0.0450] |
+| **E17** | `source_dev_c:temp` NLL / Brier gain vs raw | +0.0393 [+0.0373, +0.0413] / +0.0034 [+0.0033, +0.0036] |
+| **E17** | `source_dev_c:temp_intercept` NLL / Brier gain vs raw | +0.0397 [+0.0378, +0.0417] / +0.0035 [+0.0033, +0.0037] |
+| **E17** | `target_dev_c:temp` NLL / Brier gain vs raw | +0.1809 [+0.1681, +0.1938] / +0.0236 [+0.0218, +0.0255] |
+| **E17** | `target_dev_c:temp_intercept` NLL / Brier gain vs raw | +0.2103 [+0.1982, +0.2227] / +0.0365 [+0.0339, +0.0391] |
+| **E07** | Draw 1 vs 0 full-12 / changed-9 ΔG_last (AUROC) | +0.0044 [-0.0010, +0.0094] / +0.0059 [-0.0014, +0.0125] |
+| **E07** | Draw 2 vs 0 full-12 / changed-9 ΔG_last (AUROC) | +0.0064 [+0.0010, +0.0115] / +0.0086 [+0.0014, +0.0153] |
+| **E07** | Draw 1 / Draw 2 restricted-cohort ΔG_last (AUROC) | n/a / n/a |
+
+#### GEMMA
+
+| Experiment | Key Contrast / Metric | Estimate [95% CI] |
+|---|---|---|
+| **E29** | `image_caption` ΔG = G(last) − G(mean) (AUROC) | +0.0460 [+0.0404, +0.0516] |
+| **E29** | `image_caption` residual G(mean) (AUROC) | +0.0157 [+0.0125, +0.0193] |
+| **E29** | `caption_only` diagnostic ΔG (AUROC) | +0.0304 [+0.0244, +0.0361] |
+| **E30** | Fixed `last` head feature gain (AUROC) | +0.0512 [+0.0457, +0.0567] |
+| **E30** | Fixed `mean` head feature gain (AUROC) | +0.0059 [-0.0008, +0.0128] |
+| **E30** | Head × pooling interaction (AUROC) | +0.0453 [+0.0369, +0.0531] |
+| **E11** | `mean_scale` AUROC gap reduction | +0.0003 [+0.0000, +0.0005] |
+| **E11** | `mean_scale` recovered fraction of G_res | 0.0167 [0.0004, 0.0349] |
+| **E11** | `mean_scale` NLL / Brier gain vs identity | +0.0662 [+0.0613, +0.0710] / +0.0167 [+0.0152, +0.0182] |
+| **E17** | `source_dev_c:temp` NLL / Brier gain vs raw | +0.0493 [+0.0454, +0.0536] / +0.0039 [+0.0036, +0.0043] |
+| **E17** | `source_dev_c:temp_intercept` NLL / Brier gain vs raw | +0.0517 [+0.0479, +0.0559] / +0.0043 [+0.0039, +0.0047] |
+| **E17** | `target_dev_c:temp` NLL / Brier gain vs raw | +0.1140 [+0.1026, +0.1267] / +0.0108 [+0.0093, +0.0124] |
+| **E17** | `target_dev_c:temp_intercept` NLL / Brier gain vs raw | +0.1274 [+0.1166, +0.1388] / +0.0159 [+0.0144, +0.0175] |
+| **E07** | Draw 1 vs 0 full-12 / changed-9 ΔG_last (AUROC) | +0.0009 [-0.0033, +0.0051] / +0.0012 [-0.0045, +0.0067] |
+| **E07** | Draw 2 vs 0 full-12 / changed-9 ΔG_last (AUROC) | +0.0023 [-0.0022, +0.0068] / +0.0031 [-0.0029, +0.0091] |
+| **E07** | Draw 1 / Draw 2 restricted-cohort ΔG_last (AUROC) | n/a / n/a |
+
+### 3. Detailed Decision Notes (Strongest Contrary Evidence & Alternative Explanations)
+
+#### QWEN
+- **`E29_pooling_gap_reduction` → `revise`**: image_caption midpoint 12-route mean AUROC gap reduction Delta_G = G(last_caption) - G(caption_mean).
+  - Effect: `+0.0798 [+0.0733, +0.0866]` (valid draws: `2000`).
+  - Strongest contrary evidence: caption_only diagnostic Delta_G = +0.0640 [+0.0555, +0.0725]; residual image_caption G_res = +0.0301 [+0.0267, +0.0338] remains above zero.
+  - Remaining alternative explanation: Independent head fits at last_caption vs caption_mean (tested by E30); caption-only lexical pooling contribution if caption_only mirrors image_caption.
+- **`E30_pooling_feature_vs_head` → `revise`**: 2x2 head x pooling swap at midpoint image_caption (fixed-head feature gains & paired interaction on 12-route mean AUROC gap).
+  - Effect: `+0.0919 [+0.0853, +0.0985]` (valid draws: `2000`).
+  - Strongest contrary evidence: Interaction = +0.0865 [+0.0773, +0.0958] and fixed-head-mean feature gain = +0.0054 [-0.0028, +0.0135]; asymmetric head_mean_on_last drop (collapse_flagged=False).
+  - Remaining alternative explanation: Asymmetric feature-distribution compatibility: last_caption heads benefit directly from caption_mean features without refitting, whereas caption_mean heads degrade when evaluated on last_caption features.
+- **`E11_fit_covariate_scale` → `revise`**: target_fit_input_adapted mean_scale vs identity on caption_mean midpoint (12-route mean AUROC gap reduction; NLL/Brier companions).
+  - Effect: `+0.0005 [+0.0002, +0.0008]` (valid draws: `2000`).
+  - Strongest contrary evidence: mean_scale AUROC gap reduction = +0.0005 [+0.0002, +0.0008] (recovered fraction = 0.0166 [0.0054, 0.0277]); NLL gain = +0.2013 [+0.1919, +0.2111], Brier gain = +0.0429 [+0.0408, +0.0450].
+  - Remaining alternative explanation: Diagonal coordinate scaling cannot correct cross-lingual rotation/subspace misalignment (E12 candidate); loss-only shifts belong with probability calibration (E17); draw-0 only until paired with E07.
+- **`E17_source_calibration` → `revise`**: source_dev_c_calibrated (source_dev_c:temp_intercept) vs raw & FIT-prior on midpoint last_caption SCREEN (12-route mean NLL & Brier gain).
+  - Effect: `+0.0397 [+0.0378, +0.0417]` (valid draws: `2000`).
+  - Strongest contrary evidence: Ranking (AUROC/AP) is strictly invariant (max_diff=0.00e+00); 0.5-decision flip rate on source_dev_c:temp_intercept = 0.0026; NLL gain vs FIT-prior = -0.1003 [-0.1181, -0.0836].
+  - Remaining alternative explanation: Global 1- or 2-parameter logit scaling cannot fix per-category or ranking transfer errors; source DEV-C may under-correct target-specific logit shifts.
+- **`E17_target_calibration` → `revise`**: target_dev_c_supervised_calibration (target_dev_c:temp_intercept) vs raw & FIT-prior on midpoint last_caption SCREEN (12-route mean NLL & Brier gain).
+  - Effect: `+0.2103 [+0.1982, +0.2227]` (valid draws: `2000`).
+  - Strongest contrary evidence: Ranking (AUROC/AP) is strictly invariant (max_diff=0.00e+00); 0.5-decision flip rate on target_dev_c:temp_intercept = 0.0783; NLL gain vs FIT-prior = +0.0702 [+0.0603, +0.0800].
+  - Remaining alternative explanation: Global 1- or 2-parameter logit scaling cannot fix per-category or ranking transfer errors; target DEV-C requires 180 labeled target examples.
+- **`E07_caption_view_stability` → `revise`**: Frozen-head alternate-caption draws 1 & 2 vs draw 0 (draw_2 changed_9_g_last_shift worst-case AUROC gap shift).
+  - Effect: `+0.0086 [+0.0014, +0.0153]` (valid draws: `2000`).
+  - Strongest contrary evidence: Verdict=passed_restricted: unavailable single-caption languages=['bn'] (bn has 0 alternate captions in XM3600 SCREEN); sign_reversed=False; draw_1 restricted g_last_shift=n/a.
+  - Remaining alternative explanation: Frozen-head E07 tests evaluation-view sensitivity with heads trained on draw 0; it does not test training-view refit sensitivity or separate wording from caption content.
+
+#### GEMMA
+- **`E29_pooling_gap_reduction` → `revise`**: image_caption midpoint 12-route mean AUROC gap reduction Delta_G = G(last_caption) - G(caption_mean).
+  - Effect: `+0.0460 [+0.0404, +0.0516]` (valid draws: `2000`).
+  - Strongest contrary evidence: caption_only diagnostic Delta_G = +0.0304 [+0.0244, +0.0361]; residual image_caption G_res = +0.0157 [+0.0125, +0.0193] remains above zero.
+  - Remaining alternative explanation: Independent head fits at last_caption vs caption_mean (tested by E30); caption-only lexical pooling contribution if caption_only mirrors image_caption.
+- **`E30_pooling_feature_vs_head` → `revise`**: 2x2 head x pooling swap at midpoint image_caption (fixed-head feature gains & paired interaction on 12-route mean AUROC gap).
+  - Effect: `+0.0512 [+0.0457, +0.0567]` (valid draws: `2000`).
+  - Strongest contrary evidence: Interaction = +0.0453 [+0.0369, +0.0531] and fixed-head-mean feature gain = +0.0059 [-0.0008, +0.0128]; asymmetric head_mean_on_last drop (collapse_flagged=False).
+  - Remaining alternative explanation: Asymmetric feature-distribution compatibility: last_caption heads benefit directly from caption_mean features without refitting, whereas caption_mean heads degrade when evaluated on last_caption features.
+- **`E11_fit_covariate_scale` → `revise`**: target_fit_input_adapted mean_scale vs identity on caption_mean midpoint (12-route mean AUROC gap reduction; NLL/Brier companions).
+  - Effect: `+0.0003 [+0.0000, +0.0005]` (valid draws: `2000`).
+  - Strongest contrary evidence: mean_scale AUROC gap reduction = +0.0003 [+0.0000, +0.0005] (recovered fraction = 0.0167 [0.0004, 0.0349]); NLL gain = +0.0662 [+0.0613, +0.0710], Brier gain = +0.0167 [+0.0152, +0.0182].
+  - Remaining alternative explanation: Diagonal coordinate scaling cannot correct cross-lingual rotation/subspace misalignment (E12 candidate); loss-only shifts belong with probability calibration (E17); draw-0 only until paired with E07.
+- **`E17_source_calibration` → `retain`**: source_dev_c_calibrated (source_dev_c:temp_intercept) vs raw & FIT-prior on midpoint last_caption SCREEN (12-route mean NLL & Brier gain).
+  - Effect: `+0.0517 [+0.0479, +0.0559]` (valid draws: `2000`).
+  - Strongest contrary evidence: Ranking (AUROC/AP) is strictly invariant (max_diff=0.00e+00); 0.5-decision flip rate on source_dev_c:temp_intercept = 0.0017; NLL gain vs FIT-prior = +0.0556 [+0.0380, +0.0727].
+  - Remaining alternative explanation: Global 1- or 2-parameter logit scaling cannot fix per-category or ranking transfer errors; source DEV-C may under-correct target-specific logit shifts.
+- **`E17_target_calibration` → `revise`**: target_dev_c_supervised_calibration (target_dev_c:temp_intercept) vs raw & FIT-prior on midpoint last_caption SCREEN (12-route mean NLL & Brier gain).
+  - Effect: `+0.1274 [+0.1166, +0.1388]` (valid draws: `2000`).
+  - Strongest contrary evidence: Ranking (AUROC/AP) is strictly invariant (max_diff=0.00e+00); 0.5-decision flip rate on target_dev_c:temp_intercept = 0.0377; NLL gain vs FIT-prior = +0.1312 [+0.1189, +0.1434].
+  - Remaining alternative explanation: Global 1- or 2-parameter logit scaling cannot fix per-category or ranking transfer errors; target DEV-C requires 180 labeled target examples.
+- **`E07_caption_view_stability` → `revise`**: Frozen-head alternate-caption draws 1 & 2 vs draw 0 (draw_2 changed_9_g_last_shift worst-case AUROC gap shift).
+  - Effect: `+0.0031 [-0.0029, +0.0091]` (valid draws: `2000`).
+  - Strongest contrary evidence: Verdict=passed_restricted: unavailable single-caption languages=['bn'] (bn has 0 alternate captions in XM3600 SCREEN); sign_reversed=False; draw_1 restricted g_last_shift=n/a.
+  - Remaining alternative explanation: Frozen-head E07 tests evaluation-view sensitivity with heads trained on draw 0; it does not test training-view refit sensitivity or separate wording from caption content.
+
+### 4. Next-Step Recommendation
+
+- **Recommendation:** `proceed_to_post_prelim`
+- **Surviving directions:** `E29_pooling_gap_reduction`, `E30_pooling_feature_vs_head`, `E11_fit_covariate_scale`, `E17_source_calibration`, `E17_target_calibration`, `E07_caption_view_stability`
+- **Parked directions:** none
+- **Unresolved directions:** none
+- **CONFIRM:** CLOSED (untouched throughout Phase 1 and Phase 2)
