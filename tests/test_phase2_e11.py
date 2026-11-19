@@ -44,6 +44,7 @@ try:
     HAS_NUMPY = True
 except ImportError:
     HAS_NUMPY = False
+    EXPECTED_FIT_IMAGES = 2160
 
 
 def _fake_producer():
