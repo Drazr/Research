@@ -140,7 +140,7 @@ def _extract_targets_for_rows(stage4_plan, rows, expected_split):
 
 def _primary_indices(protocol):
     """Return ordered integer indices of the 14 fixed primary categories."""
-    categories = list(protocol["categories"])
+    categories = list(protocol["category_order"])
     primary = list(protocol["primary_categories"])
     check(len(primary) == 14, f"Expected 14 fixed primary categories; got {len(primary)}")
     return [categories.index(cat) for cat in primary]
@@ -221,7 +221,7 @@ def _score_or_resume_dev_c_blocks(
 
     root = plan.root
     protocol = plain(plan.protocol)
-    categories = list(protocol["categories"])
+    categories = list(protocol["category_order"])
     n_cats = len(categories)
     resume_map = dict(resume_dev_c_refs or {})
 
@@ -792,7 +792,7 @@ def _evaluate_screen(
     t_read0 = time.perf_counter()
     stage4_plan = plan.binding.stage4_plan
     protocol = plain(plan.protocol)
-    categories = list(protocol["categories"])
+    categories = list(protocol["category_order"])
     n_cats = len(categories)
     primary_idx = _primary_indices(protocol)
     screen_min_support = int(protocol["minimum_support"]["SCREEN"])
