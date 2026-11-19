@@ -1,5 +1,7 @@
 # Phase 1 execution plan: G9-Q6
 
+Stage 5 planning update, 19 November 2026. The reporting, synthesis and follow-up decision procedure is specified below. Stage 5 execution awaits the accepted Stage 4 release.
+
 Stage 4 integration update, 19 November 2026. All four worker implementations are integrated. Stage 3 acceptance was verified on Drive. Use [the Stage 4 runbook](docs/stage4_runbook.md) for the registry pointer, CPU notebook order, checkpoints and release validation. Production Stage 4 execution remains pending.
 
 Stage 4 coordinator update, 19 November 2026. The shared code, CPU preparation and validation notebooks, and fixture tests are implemented. The four worker chats branch from the exact foundation commit first adding [docs/stage4_interfaces.md](docs/stage4_interfaces.md). Stage 4 production awaits the accepted Stage 3 registry and integrated workers.
@@ -317,7 +319,51 @@ Use 2,000 shared paired SCREEN image bootstrap draws across models, methods and 
 - [ ] Deliver all six analysis families with absolute results, paired effects, uncertainty, baselines, support and optional coverage. Verify dense/sparse scoring, masks and tie handling, deterministic resampling and rejection of incompatible or corrupt artifacts.
 - [ ] Independently read back the final release and publish `stage4_complete=true`. Hand Stage 5 the prediction and lineage references, metric and contrast tables, E19 cutoffs and risk/coverage, E25 paired-error results and null references, uncertainty and unresolved statuses. Stage 5 assembles complete per-model reports before comparing models and uses that evidence to prioritize focused follow-ups. It reuses the verified results and leaves CONFIRM closed.
 
+## Stage 5 — Integration and preliminary findings
+
+### 5.1 Accepted inputs and reporting boundary
+
+Run on CPU after `validate_stage4` reports `status=passed` and `stage4_complete=true`. Save the exact release `reference` (relative marker path and SHA-256) from that output. Bind it to the Stage 4 plan with the existing `load_stage4_release(plan, reference)` interface, including the independent readback, Stage 3 registry and G0 gate. Use the accepted inventory of 153 prediction blocks (529 SCREEN and eight DEV-C slots) and 47 analysis units. Individual worker outputs and profiles do not establish release acceptance. If a unit is missing or incompatible, resolve that unit in Stage 4 and use the resulting accepted release.
+
+Read and verify the referenced analysis blocks once per reporting task. Their rows and cutoff records supply the numerical results. Trace prediction, model revision, feature, source-FIT scaler and DEV-S selection lineage through the accepted references. Use prediction metadata and hashes for provenance. Reopen numeric predictions only for a specific integrity discrepancy that cannot be resolved from the released tables. No extraction, refitting, rescoring, new resampling or cutoff selection is part of Stage 5. CONFIRM stays closed. DEV-C contributes only the already frozen E19 policies.
+
+### 5.2 Assembly order and ownership
+
+1. **Coordinator, once.** Bind the release and freeze the report schema and ownership. Reuse the Stage 4 canonical identities, support and status vocabulary. Join rows by experiment, model or shared source, condition, scheduled depth and pooling, route or pair, category or cohort, metric, contrast and policy where applicable. Keep each row's comparison direction, fixed cohort, estimate, interval, draw count, relevant denominators, status/reason and source references. Derive coverage counts from the accepted inventory and log discrepancies with their unit IDs.
+2. **Three independent CPU reporting tasks.** Build the shared E03 shallow-reference table once. In parallel, assemble the Qwen and Gemma tables from each model's accepted units, including its already published E03 comparisons. Use the same entry point with a `MODEL` selector for the two model tasks. Each task owns one report bundle and reads only its declared subset. A model task can read the accepted E03 references directly and does not need to wait for the shared report.
+3. **Coordinator, once after all three bundles.** Verify their common release identity and completeness, then align comparable designs and write the cross-model synthesis and decision register. Show both model estimates and uncertainties side by side. Match scheduled depth role, pooling, condition, directed source/target, masks, category cohort and reference policy. Label physical depths explicitly. Overlap or non-overlap of separate intervals does not establish a cross-model difference. These models share images, labels and E03 evidence.
+4. **Independent report readback.** Check the finished tables against the accepted row inventory and trace the claims and decision entries back to their exact rows. Confirm that a fresh reader can open and verify the complete bundle. Publish a completion marker only after those checks.
+
+### 5.3 Required report views
+
+| Family | Main view and interpretation check |
+|---|---|
+| E01 | Report the four full directed grids per model, each route's target diagonal, paired gaps and absolute discrimination, probability losses and decision metrics. Check the target diagonal's absolute quality and support before interpreting a gap as readout incompatibility. Preserve the supplied signs and show all fixed depths. |
+| E02 and E03 | Show matched combined versus caption-only contrasts and gap changes alongside both absolute results. Report visual-only encoder/projector references once per site. Present the shared shallow baselines once and neural-minus-shallow comparisons per model. Caption-only or shallow success narrows what can be attributed to the image. Independently authored captions leave wording and content entangled with context. |
+| E04 | Show both pooling results and paired differences for both conditions across the fixed grids. Carry forward the unavailable post-caption and decoder visual pooling arms. Flag patterns sensitive to the measurement site. |
+| E19 | Pair nominal coverage with actual source and target coverage, retained risk, base error, score-blind risk at matched coverage, and class-specific retention/correctness. Show support, constant-reference ties and fixed cutoff lineage. A coverage shift and a risk shift are different outcomes. Keep probability losses and selective risk as distinct evidence. |
+| E25 | Show fixed-head target-pair results separately from the diagonal-head comparison. Preserve observed disagreement and common error, label-stratified marginals, independence reference, permutation quantiles and conditional denominators. Shared error after accounting for marginal rates motivates follow-up and does not identify its cause. |
+
+Tables retain all scheduled rows, including null-looking, contradictory, low-support, undefined and unavailable outcomes. The 14-category primary macro keeps its fixed membership. Show category-level support and the one preserved unknown cell. A wide or undefined interval leaves the effect unresolved, and a narrow interval near zero describes the tested setting without establishing equivalence. Explain the limits of the SCREEN exploratory intervals, shared image sampling and reused predictions. Keep G0 as a validity prerequisite. The results concern diagnostic category readouts under the released caption contexts, with no direct measurement of free-form VLM behavior.
+
+### 5.4 Decisions for later preliminary work
+
+Create one entry per distinct candidate pattern or unresolved research direction. Record the G9 or Q6 question, scope (model, routes, depth/site and cohort), exact supporting and contrary row references, effect sizes and intervals, absolute/reference quality, relevant diagnostics, plausible alternatives, the next uncertainty to resolve and the evidence that would change the decision. Use `retain`, `revise`, `park within tested scope` or `insufficient evidence` as in `prelim.md`. Give priority to supported contrasts with meaningful absolute baselines, coherent patterns across relevant checks, and a feasible next test. Keep well-supported model-specific patterns eligible. Flag sparse, unstable or baseline-limited findings before proposing follow-up. Avoid rankings by significance, winner-only depths, post hoc thresholds and blanket claims from a single route or metric.
+
+For each retained or revised direction, identify at most one immediate next preliminary test and its dependency on existing artifacts or fresh automated work. For example, a supported transfer gap with a useful target diagonal can motivate E11 if mean/scale differences remain plausible. A probability-quality or triage problem can motivate E17 or E18 depending on whether the unresolved issue is recalibration or support across strata. Pooling-sensitive findings warrant a narrower site claim before expanding scope. These are conditional candidates. Check close literature before elevating any pattern to a novelty claim. A later plan must authorize any new fitting, extraction or evaluation. Focused competing-explanation testing follows preliminary narrowing, with a new explicit protocol before any CONFIRM access. Keep G7 separate from this scheduled batch. No additional manual annotation, verification or dataset enrichment is required.
+
+### 5.5 Storage and completion
+
+Use an immutable run directory under `PHASE1_ROOT/results/stage5/`, keyed in its manifest by Stage 4 release hash, reporting schema and code commit. Persist the two per-model table bundles and shared E03 table as reusable handoffs, then the final synthesis, decision register and provenance index. Render plots from those tables. Keep joins, filters and formatting in memory. Skip row-level checkpoints, copied logits, duplicate tables for each plot and intermediate caches. On restart, reuse only completed bundles whose parent hashes and reporting recipe match. Assign one writer per bundle and keep drafts separate from accepted outputs.
+
+- [ ] Bind the accepted Stage 4 release and audit complete report coverage for both models and shared E03.
+- [ ] Verify every comparison preserves cohort, pairing, support, direction and selection provenance. Record known exclusions and unavailable arms.
+- [ ] Publish the per-model and comparative findings, evidence-linked decisions and focused follow-up shortlist, including unresolved outcomes.
+- [ ] Verify the final bundle by readback and record `stage5_complete=true` only after the reporting checks pass. Completion establishes preliminary reporting, with follow-ups still subject to their own study plan.
+
 ## Current status
+
+19 November 2026. Stage 5 planning is complete. Stage 4 workers are integrated and analysis runs are in progress or reported finished. This planning update has no accepted Stage 4 validation reference. Stage 5 reporting and any selection of research directions remain pending.
 
 18 November 2026: the completed global gate was read from `results/dc2c5ff3bcfdc1ee/g0/20261118T152645Z-25834f6f3a6d4a07b625c7753113077d/_COMPLETE.json` and its body matched the marker checksum. All 145 group references matched the reduction inventory. The user reported `validate_S3` running. Stage 4 implementation, launch and experimental results remain pending.
 

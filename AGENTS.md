@@ -1,5 +1,9 @@
 # Instructions for all Research chats
 
+## Stage 5 coordinator foundation
+
+Read the Stage 5 section of `plan.md` and [the Stage 5 worker handoff](docs/stage5_interfaces.md). Both worker branches use the first commit adding that handoff as their common base. Keep model and shared E03 reports independently executable on CPU. Use the explicit accepted Stage 4 release path and SHA-256, reuse its analysis tables, and keep CONFIRM closed. Fixture checks and code integration do not establish production reporting or a scientific finding.
+
 ## Stage 4 worker integration — 19 November 2026
 
 Follow [the Stage 4 runbook](docs/stage4_runbook.md) for the accepted Stage 3 registry pointer, CPU notebook order, shared prediction handoffs and release validation. The Stage 3 registry carries all 145 ordinary systems and its independent readback. Stage 4 worker implementations and notebooks are integrated. Production readiness evidence, scoring, analyses and final Stage 4 acceptance come from the mounted run.
