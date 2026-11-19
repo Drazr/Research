@@ -100,7 +100,11 @@ def _load_screen_images(root: Path, binding) -> dict:
     splits_entry = files["splits.json"]
     splits_path = within(root, splits_entry["path"])
     check(file_sha256(splits_path) == splits_entry["sha256"], "Stage 1 splits.json checksum mismatch")
-    splits_map = json.loads(splits_path.read_text(encoding="utf-8"))
+    splits_doc = json.loads(splits_path.read_text(encoding="utf-8"))
+    if E07_SPLIT in splits_doc and isinstance(splits_doc[E07_SPLIT], list):
+        screen_id_set = set(splits_doc[E07_SPLIT])
+    else:
+        screen_id_set = {iid for iid, sp in splits_doc.items() if sp == E07_SPLIT}
 
     records_entry = files["records.jsonl"]
     records_path = within(root, records_entry["path"])
@@ -118,7 +122,7 @@ def _load_screen_images(root: Path, binding) -> dict:
             if split != E07_SPLIT:
                 continue
             iid = rec["image_id"]
-            check(splits_map.get(iid) == E07_SPLIT, f"Split mismatch for SCREEN image {iid}")
+            check(iid in screen_id_set, f"Split mismatch for SCREEN image {iid}")
             pair = (rec["image_path"], rec["image_sha256"])
             if iid in screen_images:
                 check(screen_images[iid] == pair, f"Inconsistent image metadata for {iid}")
