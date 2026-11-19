@@ -611,3 +611,81 @@ Can run **in parallel with Stage 3 Chats A (`E30`) and B (`E11`)** from the same
 
 > **Prompt — Stage 4 Chat C (E07 CPU scorer & comparator)**
 > Branch a clean worktree from `<STAGE34_BASE_SHA>` on `phase2` in `Drazr/Research`. Read `phase2.md` §1.3–1.5, §1.7, §2.9, §4.1–4.3 and `docs/phase2_stage1_interfaces.md`. You own ONLY `src/phase2/score_e07.py`, `scripts/phase2/score_e07.ipynb`, and `tests/test_phase2_e07_score.py`. Do not edit Stage 1/2 shared modules or Phase 1 files. Implement the CPU E07 scorer/comparator (`MODEL` selector: `qwen` or `gemma`, notebook `CODE_REF = 'phase2'`) that: (1) loads `phase2_plan` + explicitly binds `Phase1Binding` via `bind_phase1`, verifies `phase2_e07_audit` (refusing `blocked`), `phase2_e07_release` (verifying all chunk manifests, `.npy` hashes/shapes, and passing repeat checks), and the model's Stage 2 E29 `phase2_analysis_block` (`draw0_reference`); (2) runs in-memory `en→en` draw-0 SCREEN reproduction self-checks (`atol=0, rtol=0`) for both `last_caption` and `caption_mean` against Stage 4; (3) scores ONLY the verified unique changed views per `(pooling, target_language)` with the 4 frozen Stage 3 midpoint `image_caption` heads/scalers via `src.stage3.engine.transform` (gracefully handling zero-changed languages like `bn` with `(4, 0, 25)` empty logits), verifies mapped draw-1/draw-2 counts match `audit_body["draw_buckets"]`, publishes 8 compact `phase2_prediction_block` artifacts under `phase2/predictions/e07_screen/<model>/<run_id>/`, and reuses Stage 4 draw-0 logits bit-for-bit (`atol=0, rtol=0`) on all unchanged/byte-identical rows; and (4) evaluates BOTH `full_screen_360` (12-route mean + `changed_targets_only` 9-route mean, asserting `<= 1e-12` parity with E29 `draw0_reference`) AND `restricted_changed_cohort` (per-target `S_changed(t, draw_k)` with exact matched draw-0 companion on identical image-category cells and sliced `(2000, 360)` bootstrap counts, marking `n_changed == 0` languages `"unavailable"`, reporting `supported_primary_ge_10` and 14-primary macros, pooling-reduction shifts, and sign preservation) using `protocol["category_order"]` and `protocol["minimum_positive_and_negative"]["SCREEN"]`, publishing under `phase2/results/e07/<model>/<run_id>/`. Keep CONFIRM closed and never refit heads. Support explicit-ref resume and streamed JSON progress. Add unit/fixture tests covering zero-changed language handling, unchanged-row `atol=0` reuse, `draw0_reference` parity, restricted-cohort pairing, and resume rejection. Report branch, commit SHA, owned files, tests passed, and Colab run prerequisites.
+
+### 4.7 Stage 3 & Stage 4 certified completion ledger — 20 November 2026
+
+All 6 Stage 3 (`E30`, `E11`) and Stage 4 (`score_e07`) Colab CPU runs passed on mounted `PHASE1_ROOT` with `0.0` self-check/parity diffs, zero Phase 1 mutation, and `CONFIRM` closed:
+
+| Stage / Artifact | Model | Authoritative relative path under `PHASE1_ROOT` | SHA-256 | Verified outcome |
+|---|---|---|---|---|
+| **Stage 3 E30 analysis** | `qwen` | `phase2/results/e30/qwen/20261119T230416Z-8c601fa863604e3395624e37382fdedb/_COMPLETE.json` | `0dbe25f3fe6659b6e18419153c354b97ee4b124d8b29bd5096e7652c7a0b1f9f` | `passed`; `feature_gain|last = +0.0919`, `feature_gain|mean = +0.0054`, `interaction = +0.0865`; no off-distribution collapse. |
+| **Stage 3 E30 analysis** | `gemma` | `phase2/results/e30/gemma/20261119T225928Z-682c54d91984488aacffba40ab0f6b2c/_COMPLETE.json` | `0de28dc4d6d4592e4312c3b64c86c8810267d1a4d10f9f36bb319a32b5382c6a` | `passed`; `feature_gain|last = +0.0512`, `feature_gain|mean = +0.0059`, `interaction = +0.0453`; no off-distribution collapse. |
+| **Stage 3 E11 analysis** | `qwen` | `phase2/results/e11/qwen/20261119T230112Z-af0550ca6a0c494e8a4f9d1728af213e/_COMPLETE.json` | `552d0f4f59bf0760ff7ee8da62b64197550d9087071becd2a260080f203f4c1b` | `passed`; 2,160 paired FIT IDs (0 FIT matrix reloads); `en→en` `0.0`; `mean_shift` AUROC/AP diff `0.0`. |
+| **Stage 3 E11 analysis** | `gemma` | `phase2/results/e11/gemma/20261119T230113Z-af983c1752eb4861a0c9390d53c096e5/_COMPLETE.json` | `09fa67ee3d4aed49726e57403077f47aeca47bab6fe4a67559ce2def0173dbbc` | `passed`; 2,160 paired FIT IDs (0 FIT matrix reloads); `en→en` `0.0`; `mean_shift` AUROC/AP diff `0.0`. |
+| **Stage 4 E07 analysis** | `qwen` | `phase2/results/e07/qwen/20261119T230606Z-f629f48ed8e7431b930fce6b47d8fd53/_COMPLETE.json` | `f8bda6f082862a07a15b42d497d605894ab4ceed7403dfdb257d9ff013f3ee09` | `passed` (`passed_restricted`); `e29_draw0_max_abs_diff = 0.0`; eligible `[en, hi, te]`, unavailable `[bn]`. |
+| **Stage 4 E07 analysis** | `gemma` | `phase2/results/e07/gemma/20261119T230653Z-7ee10a1674f245ea97d5e50a6a6645ae/_COMPLETE.json` | `4603c8d8120d816ce14a7c299e561248a1f63fa670ac6c776e7a6034f09bdd95` | `passed` (`passed_restricted`); `e29_draw0_max_abs_diff = 0.0`; eligible `[en, hi, te]`, unavailable `[bn]`. |
+
+---
+
+## Stage 5: finalized specification — 20 November 2026
+
+Planning freeze `phase2-stage5.v1`. This section finalizes **Phase 2 Stage 5**: authenticating every Phase 2 Stage 1–4 artifact on mounted `PHASE1_ROOT`, evaluating all five experiments (`E29`, `E30`, `E11`, `E17`, `E07`) across both models (`qwen`, `gemma`) against the predeclared `STAGE5_DECISION_RANGES` (`src.phase2.gates`), publishing the immutable **`phase2_release`** bundle (`phase2/releases/<run_id>/`) with a human-readable **`phase2_review.md`** decision register, and certifying completion with a **fresh-subprocess independent readback**.
+
+### 5.1 Entry prerequisites and complete pinned input inventory
+
+Stage 5 runs once on **Colab CPU** (pinned `requirements-stage2-cpu.txt`, ~30–60 seconds) with **zero new model scoring, zero feature reads, zero bootstrap recomputation, zero Phase 1 mutation, and `CONFIRM` closed**. It takes the exact pinned Stage 1–4 completion references from §2.9 and §4.7:
+
+- **Stage 1:** `phase2_plan`, `phase2_e07_audit`, `phase2_e17_auth`.
+- **Stage 2:** `E29` analysis & gate (`qwen`, `gemma`), `E17` analysis (`qwen` authoritative run `20261119T174402Z-...`, `gemma`), `E07` feature releases (`qwen`, `gemma`).
+- **Stage 3:** `E30` analysis (`qwen`, `gemma`), `E11` analysis (`qwen`, `gemma`).
+- **Stage 4:** `E07` analysis (`qwen`, `gemma`).
+
+All 15 references are verified via `load_phase2_artifact` / `load_phase2_plan` / `load_e29_gate` / `load_e07_audit` / `load_e17_auth`, asserting identical `plan_identity`, `dataset_fingerprint`, `confirm_excluded == True`, and matching upstream pointers (`e29_gate_ref`, `e07_audit_ref`, `e07_release_ref`, `e17_auth_ref`, `e29_analysis_ref`).
+
+### 5.2 Predeclared decision register and evaluation rules
+
+Per [prelim.md §12.4](prelim.md#124-decision-boundary-after-the-round) and [phase2.md §1.5](#15-predeclared-decision-ranges-and-e29-gating-of-e30-and-e11), Stage 5 evaluates each research direction per model (`qwen`, `gemma`) and combined using the frozen constants in `src.phase2.gates.STAGE5_DECISION_RANGES`, assigning exactly one of four outcomes:
+
+- **`retain`** — effect meets the predeclared consequential threshold with 95% CI excluding zero favorably, all mandatory invariance/sanity checks pass, and no disqualifying contrary control invalidates the scope.
+- **`revise`** — a genuine effect is observed, but narrowed or qualified by a control/diagnostic (e.g., E30 head–pooling interaction or off-distribution asymmetry, E11 loss-only improvement routing to E17, E17 target-only calibration without source portability, E07 restricted-cohort/view sensitivity or `bn` single-caption coverage limit, or E29 `caption_only` mirroring `image_caption`).
+- **`park within tested scope`** — 95% CI lies wholly within the predeclared practically negligible bound with adequate precision (`valid_draws >= 1900`).
+- **`insufficient evidence`** — interval straddles the negligible and consequential ranges, `valid_draws < 1900`, or cohort support is insufficient.
+
+Every decision entry MUST record:
+1. `direction_id` & `experiment` (`E29`, `E30`, `E11`, `E17_source`, `E17_target`, `E07_view_stability`)
+2. `decision` (`retain` | `revise` | `park within tested scope` | `insufficient evidence`)
+3. `exact_comparison` (metric, arm contrast, supervision label, cohort)
+4. `effect` & `ci_95` (`[lower, upper]`, `valid_draws / 2000`)
+5. `denominators` (`n_images`, `n_routes`, `n_primary_categories`, and for E07 `n_changed_views` + `unchanged_view_fraction`)
+6. `invariance_and_sanity_checks` (exact recorded tolerances and pass/fail booleans)
+7. `strongest_contrary_evidence` (e.g., E29 `caption_only` reduction, E30 asymmetric `head_mean_on_last` drop, E11 `mean_shift` vs `mean_scale` split, E17 `0.5`-threshold flips on `temp_intercept`, E07 `bn` single-caption unavailability and `restricted_changed_cohort` vs `full_screen_360` difference)
+8. `remaining_alternative_explanation`
+
+### 5.3 Frozen Stage 5 wire schema (`phase2_release`) and independent readback
+
+- **Artifact namespace:** `phase2/releases/<run_id>/` (`KIND_RELEASE = "phase2_release"`, `SCHEMA_RELEASE = "phase2.release.v1"`).
+- **Files published inside `phase2/releases/<run_id>/`:**
+  - `body.json`: structured JSON containing `schema`, `phase2_version`, `plan`, `plan_identity`, `dataset_fingerprint`, `protocol_fingerprint`, `confirm_excluded` (`True`), `stage1_refs` (`phase2_plan`, `e07_audit`, `e17_auth`), `stage2_refs` (`e29`, `e29_gates`, `e17`, `e07_releases`), `stage3_refs` (`e30`, `e11`), `stage4_refs` (`e07`), `integrity_checks` (all cross-artifact lineage, invariance, self-check, and parity assertions), `experiment_summaries` (compact tidy metrics/CIs for E29, E30, E11, E17, E07 × both models), `decision_register` (per-model and combined verdicts), `post_prelim_recommendation` (`proceed_to_post_prelim` vs `optional_phase3_needed` with explicit surviving directions and open questions), and `independent_readback` (`verified: True`, `subprocess_exit_code: 0`, `verified_artifact_count`).
+  - `phase2_review.md`: concise, publication-grade Markdown synthesis report (ready to copy into `phase2.md` / `prelim.md` or inspect directly) with summary tables, decision register, strongest contrary evidence, and next-step recommendation.
+- **Fresh-subprocess independent readback:** After publishing the pending `phase2_release` (or via a dedicated `--verify-release` CLI command invoked in a clean `subprocess.run([sys.executable, '-u', '-m', 'src.phase2.synthesize', 'verify-release', ...])`), a fresh Python subprocess re-authenticates the published `phase2_release` `_COMPLETE.json`, its `body.json` & `phase2_review.md` SHA-256s, and every referenced Stage 1–4 completion marker on disk without sharing in-memory state.
+
+### 5.4 Owned files and implementation scope (single chat, no parallel split needed)
+
+Stage 5 is a single cohesive CPU synthesis module (~30–60s runtime on Colab CPU), so it runs as **one coding chat** branching from `STAGE5_BASE_SHA` on `phase2`:
+
+| Owned files (exclusive) | Deliverable |
+|---|---|
+| `src/phase2/synthesize.py` | Cross-stage verifier, automatic `STAGE5_DECISION_RANGES` evaluator, tidy `phase2_release` + `phase2_review.md` publisher, fresh-subprocess `verify-release` readback CLI. |
+| `scripts/phase2/synthesize_phase2.ipynb` | Colab CPU notebook (`CODE_REF = 'phase2'`, all 15 Stage 1–4 refs pre-filled in Cell 3, runs synthesis + fresh-subprocess readback and prints `phase2_review.md` + final `phase2_release` `{path, sha256}`). |
+| `tests/test_phase2_synthesize.py` | Unit/fixture tests covering cross-stage lineage mismatch rejection, tampered analysis rejection, `CONFIRM` exclusion check, all 4 decision outcomes (`retain`, `revise`, `park within tested scope`, `insufficient evidence`), fresh-subprocess readback, and notebook contract. |
+
+### 5.5 Stage 5 acceptance criteria
+
+- [ ] **Local tests pass:** `tests/test_phase2_synthesize.py` passes (plus all Stage 1–4 tests remain green).
+- [ ] **Mounted Colab CPU synthesis + fresh-subprocess readback pass:** `scripts/phase2/synthesize_phase2.ipynb` authenticates all 15 Stage 1–4 refs on mounted `PHASE1_ROOT`, publishes `phase2/releases/<run_id>/_COMPLETE.json` + `phase2_review.md`, and passes the fresh-subprocess independent readback check with exit code `0`.
+- [ ] **Decision register complete & `CONFIRM` still closed:** Every direction carries an explicit decision (`retain` / `revise` / `park within tested scope` / `insufficient evidence`), exact effect/CI/denominators, strongest contrary evidence, and remaining alternative explanation; zero Phase 1 mutation and zero `CONFIRM` access.
+
+### 5.6 Ready-to-paste prompt for Stage 5 coding chat
+
+> **Prompt — Stage 5 (Phase 2 synthesis, decision register, and independent readback)**
+> Work from `<STAGE5_BASE_SHA>` on branch `phase2` in `C:/Users/APOORV/Documents/Codex/2026-11-12/ex/work/Research-stage1-integrated`. Read `phase2.md` (§1.5, §2.9, §4.7, §5.1–5.5), `prelim.md` (§12.4), `src/phase2/gates.py` (`STAGE5_DECISION_RANGES`), and the top-level output schemas in `src/phase2/{run_e29,run_e17,run_e30,run_e11,score_e07}.py`. You own ONLY `src/phase2/synthesize.py`, `scripts/phase2/synthesize_phase2.ipynb`, and `tests/test_phase2_synthesize.py`. Do not edit Stage 1–4 modules or Phase 1 files. Implement the CPU Stage 5 synthesizer that: (1) authenticates all 15 Stage 1–4 refs (`phase2_plan`, `e07_audit`, `e17_auth`, E29 analysis & gates, E17 analysis, E07 releases, E30 analysis, E11 analysis, E07 analysis for both `qwen` and `gemma`) checking matching `plan_identity`, `dataset_fingerprint`, `confirm_excluded=True`, and all recorded invariance/self-check/parity flags; (2) extracts tidy comparison tables across all 5 experiments and evaluates every direction against `src.phase2.gates.STAGE5_DECISION_RANGES`, assigning `retain` / `revise` / `park within tested scope` / `insufficient evidence` with exact comparison, effect, 95% CI, denominators, strongest contrary evidence, and remaining alternative explanation; (3) publishes `phase2_release` (`KIND_RELEASE`, `SCHEMA_RELEASE`) under `phase2/releases/<run_id>/` containing `body.json` and human-readable `phase2_review.md`; and (4) provides a `verify-release` CLI subcommand invoked in a fresh subprocess to independently re-authenticate the release and all upstream markers on disk. Pre-fill all 15 certified Stage 1–4 `{path, sha256}` refs from `phase2.md` §2.9 & §4.7 directly in Cell 3 of `scripts/phase2/synthesize_phase2.ipynb` (`CODE_REF = 'phase2'`) so it runs out-of-the-box on Colab CPU (~30–60s) and prints `phase2_review.md` plus the final `phase2_release` ref. Add thorough unit/fixture tests in `tests/test_phase2_synthesize.py` and report commit SHA, tests passed, and Colab run readiness.
