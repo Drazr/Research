@@ -44,7 +44,6 @@ from src.phase2.interfaces import (
     bind_phase1,
     check,
     contract,
-    current_producer,
     frozen,
     load_phase2_artifact,
     midpoint_depth,
@@ -56,6 +55,7 @@ from src.phase2.interfaces import (
 )
 from src.phase2.plan import load_phase2_plan
 from src.stage2.evidence import bridge_hash, extract_with_evidence
+from src.stage2.operations import current_producer as stage2_current_producer
 from src.stage2.plans import load_job_plan
 from src.stage2.readiness import assert_runtime
 from src.stage2.schema import artifact, json_bytes, jsonl, read_json
@@ -922,7 +922,7 @@ def main(argv=None):
         })
         return 0
 
-    producer = current_producer(args.storage_scope)
+    producer = stage2_current_producer(scope=args.storage_scope)
     from importlib.metadata import version
 
     for pkg in ("torch", "torchvision", "transformers", "tokenizers", "safetensors", "huggingface-hub", "Pillow"):
