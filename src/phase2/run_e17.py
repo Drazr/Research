@@ -490,7 +490,30 @@ def fit_macro_bce_calibrator(logits, y, known, primary_indices, form, *, estimab
         jac=True,
         options={"gtol": E17_BFGS_GTOL, "maxiter": E17_BFGS_MAXITER},
     )
-    check(bool(res.success), f"BFGS calibrator ({form}) failed to converge: {res.message}")
+    total_nit = int(res.nit)
+    if (not res.success) and getattr(res, "status", None) == 2 and np.isfinite(res.x).all() and np.isfinite(res.fun):
+        # SciPy BFGS can report status=2 (precision loss) when already at the float64 minimum;
+        # polish with L-BFGS-B from res.x and verify small gradient norm.
+        polish = minimize(
+            _objective_and_grad,
+            np.asarray(res.x, dtype=np.float64),
+            method="L-BFGS-B",
+            jac=True,
+            options={"gtol": E17_BFGS_GTOL, "ftol": 1e-15, "maxiter": E17_BFGS_MAXITER},
+        )
+        total_nit += int(polish.nit)
+        if np.isfinite(polish.x).all() and np.isfinite(polish.fun) and float(polish.fun) <= float(res.fun):
+            res = polish
+
+    grad_norm_check = float(np.max(np.abs(res.jac))) if np.isfinite(res.jac).all() else float("inf")
+    converged = bool(res.success) or (
+        getattr(res, "status", None) == 2
+        and np.isfinite(res.x).all()
+        and np.isfinite(res.fun)
+        and grad_norm_check <= 1e-6
+        and float(res.fun) <= float(raw_loss) + 1e-12
+    )
+    check(converged, f"BFGS calibrator ({form}) failed to converge: {res.message}")
     check(np.isfinite(res.x).all() and np.isfinite(res.fun), f"Nonfinite BFGS solution for {form}")
 
     log_t = float(res.x[0])
@@ -505,8 +528,8 @@ def fit_macro_bce_calibrator(logits, y, known, primary_indices, form, *, estimab
         "log_T": log_t,
         "T": t_val,
         "b": b_val,
-        "converged": bool(res.success),
-        "nit": int(res.nit),
+        "converged": bool(converged),
+        "nit": total_nit,
         "grad_norm": grad_norm,
         "dev_c_loss_raw": float(raw_loss),
         "dev_c_loss_cal": float(res.fun),
