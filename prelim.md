@@ -8,7 +8,7 @@ Prepared 14 November 2026 from [M1.md](M1.md), [M2.md](M2.md) and the ongoing G9
 
 **Five additions are genuinely new: E24-E28.** E05, E14 and E19 are revised existing designs made independent of outcome triggers, not new additions. All original IDs remain traceable. There are 27 counted families across both phases; layers, routes, seeds, category pairs and minor variants remain within families. A distinct analysis can reuse predictions and need no extra VLM inference; it is not another independent replication.
 
-**Status: design only.** No Qwen/Gemma inference, probe fitting, measured model results or direction pruning has been performed. The only executed analyses are automatic partition/support checks of the already released category CSV, including E28 eligibility. No human annotation, semantic validation, new image/caption collection or new gold dataset is required.
+**Phase 1 status.** Six experiments were completed (E01–E04, E19 and E25), and G0 passed as a separate validity gate. The other six initial designs and all 15 reserve designs remain unrun. See [the Phase 1 results review](phase1.md#phase-1-results-review--19-november-2026). No human annotation, semantic validation, new image/caption collection or new gold dataset is required.
 
 ## 1. Exact research scope
 
@@ -113,6 +113,8 @@ SCREEN is explicitly exploratory and reusable for choosing later preliminary que
 
 ## 3. G0: automatic validity gate — not counted as an experiment
 
+**Phase 1 status:** passed and unflagged (p = 0.362).
+
 - Verify unique canonical image IDs, exact image/caption/label joins, raw original-language field provenance, duplicate captions, missing files and the actual common four-language population. Use lossless integer/hex conversion; large IDs must not pass through lossy floating-point parsing.
 - Check label alphabet, unknown masks, all split/image overlaps and category supports. Verify that labels, category indices and target language metadata do not enter the representation input through filenames, prompt construction or preprocessing.
 - Check processor/token-span alignment, deterministic repeated features, feature shapes and attention visibility. A visual prefix with no access to later text should not acquire unexplained language differences; a model with a different visibility pattern must be documented rather than forced into that expectation.
@@ -147,21 +149,15 @@ Among preplannable studies, the initial set emphasizes broad discovery contrasts
 
 All initial families cover English, Hindi, Bengali and Telugu and both model families where technically supported. E28 has a preselected category-pair cohort rather than all 25 targets. All cards use the shared split/masks; the same 720 CONFIRM images remain closed. This is a design review, not measured evidence that a direction is promising or novel.
 
-### 4.2 Strict initial catalog
+### 4.2 Remaining initial catalog
 
-The table lists all eligible first-set families; it is not an instruction to run every option as one Cartesian product. All can be specified before E01-E04 outcomes exist. Extra model runs are required only where the comparison actually changes inputs/features/fits; E25 reuses scores.
+These six initial designs remain unrun. The other six are listed under [Phase 1](#51-phase-1). The result review found no unrun family whose defining contrast was already answered. Keep related families available for later prioritization, especially where they change the supervision, input, readout, or evaluation question.
 
 | ID | Initial experiment family | Provenance | A-priori reason |
 |---|---|---|---|
-| E01 | Within-context accessibility and the complete transfer grid | original initial test | Directly measures Q6's accessibility-versus-portability distinction and G9's score relationships. |
-| E02 | Image, caption and combined information sources | original initial test | Basic evidence-source comparison is meaningful with strong, weak or absent language differences. |
-| E03 | Shallow caption predictability reference | original initial test | Shallow caption predictability is a necessary independent reference before interpreting deep category signal. |
-| E04 | Readout position and pooling sensitivity | original initial test | Measurement-site dependence must be known before treating one token as the representation. |
 | E05 | Accessibility under different probe capacities | revised existing card | Readout-family dependence is inherent in a claim about accessible information, before observing failure. |
 | E14 | Shared, context-offset and context-specific category heads | revised existing card | Shared visual gold makes a common decision rule versus context-specific rules an a-priori question. |
-| E19 | Unadapted source confidence as a selective decision policy | revised existing card | G9 requires an operational confidence reference even if discrimination and transfer are strong. |
 | E24 | Modality order at a readout that sees both inputs | new initial test | Modality placement is a distinct input-layout factor; E04 changes location while holding the input fixed. |
-| E25 | Image-level agreement of cross-context errors | new initial test | Aggregate scores cannot reveal whether identical images fail across contexts; no aggregate deficit is assumed. |
 | E26 | Same-input portability across decoder depths | new initial test | Same-input cross-depth application provides a distinct operational portability reference. |
 | E27 | Existing-caption diversity in readout training | new initial test | Available training-caption diversity can be varied at fixed images and fixed test views. |
 | E28 | Category co-occurrence support shift at readout fitting | new initial test | Shared category vectors support a priori readout generalization to held-out co-occurrence cells. |
@@ -202,9 +198,13 @@ This review does not assert that every possible initial experiment has been exha
 
 All prerequisites below mean reusable data, features or fits. They do not require E01-E04 to show a gap. Every initial card admits strong, weak, null or insufficiently resolved outcomes.
 
+### 5.1 Phase 1
+
+The six families below were executed for both checkpoints, with E03's shallow reference shared across them. See [the Phase 1 results review](phase1.md#phase-1-results-review--19-november-2026) for evidence and interpretation limits.
+
 #### E01. Within-context accessibility and the complete transfer grid
 
-**Phase:** initial. **Provenance:** original initial test. **Role:** Anchor.
+**Phase:** initial. **Status:** completed in Phase 1. **Provenance:** original initial test. **Role:** Anchor.
 
 **Execution dependencies:** G0. Shared validity and selection guards always apply.
 
@@ -226,7 +226,7 @@ All prerequisites below mean reusable data, features or fits. They do not requir
 
 #### E02. Image, caption and combined information sources
 
-**Phase:** initial. **Provenance:** original initial test. **Role:** Diagnostic contrast.
+**Phase:** initial. **Status:** completed in Phase 1. **Provenance:** original initial test. **Role:** Diagnostic contrast.
 
 **Execution dependencies:** E01. Shared validity and selection guards always apply.
 
@@ -248,7 +248,7 @@ All prerequisites below mean reusable data, features or fits. They do not requir
 
 #### E03. Shallow caption predictability reference
 
-**Phase:** initial. **Provenance:** original initial test. **Role:** Diagnostic contrast.
+**Phase:** initial. **Status:** completed in Phase 1. **Provenance:** original initial test. **Role:** Diagnostic contrast.
 
 **Execution dependencies:** E01. Shared validity and selection guards always apply.
 
@@ -270,7 +270,9 @@ All prerequisites below mean reusable data, features or fits. They do not requir
 
 #### E04. Readout position and pooling sensitivity
 
-**Phase:** initial. **Provenance:** original initial test. **Role:** Diagnostic contrast.
+**Phase:** initial. **Status:** completed in Phase 1. **Provenance:** original initial test. **Role:** Diagnostic contrast.
+
+Phase 1 compared last-caption and caption-mean pooling. The optional post-caption and decoder visual-token pooling arms were unavailable.
 
 **Execution dependencies:** E01. Shared validity and selection guards always apply.
 
@@ -289,6 +291,52 @@ All prerequisites below mean reusable data, features or fits. They do not requir
 **Interpretation limit:** Many causal decoders' image-prefix states cannot see later captions; inspect the architecture rather than assuming language conditioning. Better pooled decoding does not prove that the model routes or uses that information during answering.
 
 **Method lineage:** S05, S47, S24, S29, T40. See the primary-source index and the corresponding M1/M2 cards. These are bounded methodological adaptations, not necessarily the source paper's original task or evidence that our proposed comparison is novel.
+
+#### E19. Unadapted source confidence as a selective decision policy
+
+**Phase:** initial. **Status:** completed in Phase 1. **Provenance:** revised existing card. **Role:** Decision-use analysis.
+
+**Execution dependencies:** E01. Shared validity and selection guards always apply.
+
+**When to use:** Initial G9 reference after source heads exist; no calibration result, transfer deficit or E17 run is required.
+
+**Question:** Does unadapted source confidence identify reliable target-context category decisions, beyond aggregate category ranking?
+
+**Concrete comparison:** Freeze each E01 source head at the fixed midpoint depth and its 0.5 decisions. For each category, obtain source-DEV-C quantile cutoffs on raw correctness confidence c=max(p,1-p) targeting 50%, 75% and 90% coverage. Apply those identical cutoffs to each target context, with deterministic include-ties handling and actual source/target coverage reported. All policies retain the same underlying binary classifier. Target risk/coverage curves are descriptive evaluations, never a source of policy cutoffs. Recalibrated policies belong only to a later E17 extension.
+
+**Readouts:** Actual coverage and retained error rate; P(retained | y=1), retained-positive sensitivity and overall P(retained and d=1 | y=1); corresponding negative-case results; macro category summaries and prior/always-absent references. Include a score-blind retention reference at matched actual coverage, whose expected risk is the unselected base error rate. Show category AUROC/AP, base error and error prevalence alongside selective results.
+
+**Fitting / supervision boundary:** Cutoffs use only source DEV-C confidence values; no target labels, target score quantiles or target calibrator select them. Decisions are never re-fitted for an easier retained set. All four diagonal-context and twelve cross-context policies are reported; unsupported error subgroups remain unresolved.
+
+**What the result can decide:** Useful discrimination with weak error triage can open a G9 reliability direction immediately. Stable confidence triage can support a portability question even when aggregate scores look similar. Low risk obtained mainly by retaining absent-category cases limits the practical claim.
+
+**Interpretation limit:** This studies diagnostic-head decisions, not natural-language abstention or VLM self-awareness. Coverage changes the population. Positive-temperature-only scaling preserves each category's confidence ordering and 0.5 decisions, so it is not a new ranking method; later calibration comparisons must not imply otherwise.
+
+**Method lineage:** S33, S47, T27. See the primary-source index and the corresponding M1/M2 cards. These are bounded methodological adaptations, not necessarily the source paper's original task or evidence that our proposed comparison is novel.
+
+#### E25. Image-level agreement of cross-context errors
+
+**Phase:** initial. **Status:** completed in Phase 1. **Provenance:** new initial test. **Role:** Paired outcome analysis; reuses predictions.
+
+**Execution dependencies:** E01. Shared validity and selection guards always apply.
+
+**When to use:** Initial paired analysis of E01 scores at the fixed midpoint; no aggregate gap, calibration failure or selected hard-example list is needed.
+
+**Question:** Do caption contexts fail on the same images, or can similar aggregate scores conceal different error sets?
+
+**Concrete comparison:** For each fixed source head, compare its four context-conditioned 0.5 decisions on identical SCREEN image-category cells. For all six unordered language pairs report decision disagreement and common-wrong events. Separately compare the four diagonal heads, clearly labeling that this also changes the fitted head. Define e_t=1[d_t!=y]; within y=0 and y=1 compare observed common-error frequency with the product of marginal error frequencies. A fixed label-stratified permutation of one context's error indicators provides an image-association null while preserving both error prevalences.
+
+**Readouts:** Per-category base errors, disagreement, P(e_s=1,e_t=1 | y), excess over the conditional-independence reference, and P(e_t=1 | e_s=1,y) when its denominator is supported. Use 1,000 fixed-seed within-label permutations and paired image bootstrap intervals. Show constant/prior references and positive/negative strata; high agreement from both predicting absence is not recognition success.
+
+**Fitting / supervision boundary:** No new head, selected direction or semantic correctness judgments are fitted. The fixed source head ensures that the main contrast changes context rather than classifier. Diagonal comparisons are secondary. Masks and common cells match E01. Sparse error-conditionals are reported as unresolved with counts, not zero or evidence of independence.
+
+**What the result can decide:** Shared difficult images can open a common-difficulty question; excess disagreement can open a context-specific accessibility/reliability question even with similar averages. The analysis does not need one language to perform worse and does not select a preferred language or ensemble.
+
+**Interpretation limit:** Error agreement cannot establish the underlying cause. Image difficulty, independent caption content and annotation noise all remain possible. This is a distinct scientific analysis of reused predictions, not an extra independent VLM run or an oracle context-selection experiment.
+
+**Method lineage:** S33, S39, S16, T27. See the primary-source index and the corresponding M1/M2 cards. These are bounded methodological adaptations, not necessarily the source paper's original task or evidence that our proposed comparison is novel.
+
+### 5.2 Remaining initial designs
 
 #### E05. Accessibility under different probe capacities
 
@@ -334,28 +382,6 @@ All prerequisites below mean reusable data, features or fits. They do not requir
 
 **Method lineage:** S39, S34, S44, T23, T47. See the primary-source index and the corresponding M1/M2 cards. These are bounded methodological adaptations, not necessarily the source paper's original task or evidence that our proposed comparison is novel.
 
-#### E19. Unadapted source confidence as a selective decision policy
-
-**Phase:** initial. **Provenance:** revised existing card. **Role:** Decision-use analysis.
-
-**Execution dependencies:** E01. Shared validity and selection guards always apply.
-
-**When to use:** Initial G9 reference after source heads exist; no calibration result, transfer deficit or E17 run is required.
-
-**Question:** Does unadapted source confidence identify reliable target-context category decisions, beyond aggregate category ranking?
-
-**Concrete comparison:** Freeze each E01 source head at the fixed midpoint depth and its 0.5 decisions. For each category, obtain source-DEV-C quantile cutoffs on raw correctness confidence c=max(p,1-p) targeting 50%, 75% and 90% coverage. Apply those identical cutoffs to each target context, with deterministic include-ties handling and actual source/target coverage reported. All policies retain the same underlying binary classifier. Target risk/coverage curves are descriptive evaluations, never a source of policy cutoffs. Recalibrated policies belong only to a later E17 extension.
-
-**Readouts:** Actual coverage and retained error rate; P(retained | y=1), retained-positive sensitivity and overall P(retained and d=1 | y=1); corresponding negative-case results; macro category summaries and prior/always-absent references. Include a score-blind retention reference at matched actual coverage, whose expected risk is the unselected base error rate. Show category AUROC/AP, base error and error prevalence alongside selective results.
-
-**Fitting / supervision boundary:** Cutoffs use only source DEV-C confidence values; no target labels, target score quantiles or target calibrator select them. Decisions are never re-fitted for an easier retained set. All four diagonal-context and twelve cross-context policies are reported; unsupported error subgroups remain unresolved.
-
-**What the result can decide:** Useful discrimination with weak error triage can open a G9 reliability direction immediately. Stable confidence triage can support a portability question even when aggregate scores look similar. Low risk obtained mainly by retaining absent-category cases limits the practical claim.
-
-**Interpretation limit:** This studies diagnostic-head decisions, not natural-language abstention or VLM self-awareness. Coverage changes the population. Positive-temperature-only scaling preserves each category's confidence ordering and 0.5 decisions, so it is not a new ranking method; later calibration comparisons must not imply otherwise.
-
-**Method lineage:** S33, S47, T27. See the primary-source index and the corresponding M1/M2 cards. These are bounded methodological adaptations, not necessarily the source paper's original task or evidence that our proposed comparison is novel.
-
 #### E24. Modality order at a readout that sees both inputs
 
 **Phase:** initial. **Provenance:** new initial test. **Role:** Diagnostic input contrast.
@@ -377,28 +403,6 @@ All prerequisites below mean reusable data, features or fits. They do not requir
 **Interpretation limit:** Order changes positions and attention opportunities together; this is not a pure causal test of language or one attention mechanism. A syntactically valid reordered input can be atypical of training. The contrast establishes operational robustness, not information loss or task use.
 
 **Method lineage:** S05, S06, S24, S47, T40. See the primary-source index and the corresponding M1/M2 cards. These are bounded methodological adaptations, not necessarily the source paper's original task or evidence that our proposed comparison is novel.
-
-#### E25. Image-level agreement of cross-context errors
-
-**Phase:** initial. **Provenance:** new initial test. **Role:** Paired outcome analysis; reuses predictions.
-
-**Execution dependencies:** E01. Shared validity and selection guards always apply.
-
-**When to use:** Initial paired analysis of E01 scores at the fixed midpoint; no aggregate gap, calibration failure or selected hard-example list is needed.
-
-**Question:** Do caption contexts fail on the same images, or can similar aggregate scores conceal different error sets?
-
-**Concrete comparison:** For each fixed source head, compare its four context-conditioned 0.5 decisions on identical SCREEN image-category cells. For all six unordered language pairs report decision disagreement and common-wrong events. Separately compare the four diagonal heads, clearly labeling that this also changes the fitted head. Define e_t=1[d_t!=y]; within y=0 and y=1 compare observed common-error frequency with the product of marginal error frequencies. A fixed label-stratified permutation of one context's error indicators provides an image-association null while preserving both error prevalences.
-
-**Readouts:** Per-category base errors, disagreement, P(e_s=1,e_t=1 | y), excess over the conditional-independence reference, and P(e_t=1 | e_s=1,y) when its denominator is supported. Use 1,000 fixed-seed within-label permutations and paired image bootstrap intervals. Show constant/prior references and positive/negative strata; high agreement from both predicting absence is not recognition success.
-
-**Fitting / supervision boundary:** No new head, selected direction or semantic correctness judgments are fitted. The fixed source head ensures that the main contrast changes context rather than classifier. Diagonal comparisons are secondary. Masks and common cells match E01. Sparse error-conditionals are reported as unresolved with counts, not zero or evidence of independence.
-
-**What the result can decide:** Shared difficult images can open a common-difficulty question; excess disagreement can open a context-specific accessibility/reliability question even with similar averages. The analysis does not need one language to perform worse and does not select a preferred language or ensemble.
-
-**Interpretation limit:** Error agreement cannot establish the underlying cause. Image difficulty, independent caption content and annotation noise all remain possible. This is a distinct scientific analysis of reused predictions, not an extra independent VLM run or an oracle context-selection experiment.
-
-**Method lineage:** S33, S39, S16, T27. See the primary-source index and the corresponding M1/M2 cards. These are bounded methodological adaptations, not necessarily the source paper's original task or evidence that our proposed comparison is novel.
 
 #### E26. Same-input portability across decoder depths
 
@@ -466,7 +470,7 @@ All prerequisites below mean reusable data, features or fits. They do not requir
 
 **Method lineage:** S02, S16, S30, S44, T27, T42. See the primary-source index and the corresponding M1/M2 cards. These are bounded methodological adaptations, not necessarily the source paper's original task or evidence that our proposed comparison is novel.
 
-### 5.1 E28 automatic label-only eligibility check
+### 5.3 E28 automatic label-only eligibility check
 
 The pinned-CSV audit found 72 ordered eligible pairs under E28's fixed support rule. It selected the following three distinct target roots using only category counts, with no model outcomes. `10` means A present/B absent and `11` means both present. Each table row is a case inside E28, not another experiment. Unknown A/B cells are excluded from that pair's cohorts; the selected image lists must be identical across languages.
 
@@ -918,4 +922,69 @@ S references identify the exact M1 paper; T references identify the exact M2 pap
 - **T49:** [Cross-View Language Modeling: Towards Unified Cross-Lingual Cross-Modal Pre-training](https://aclanthology.org/2023.acl-long.315/).
 - **T55:** [Cross-lingual and Multilingual CLIP](https://aclanthology.org/2022.lrec-1.739/).
 
-The numerical support tables and partition rule derive only from the pinned released annotation CSV; no model results exist yet. The separate M1/M2 methodology files, research questions, bibliography and historical analysis are unchanged. The workspace retains the prior prelim.md, original design JSON/generator, reviewed card JSON, phase-review manifest, pinned-CSV audits and exact image-ID partitions. This document records designs and a completed design review, not executed research, guaranteed novelty or permission to introduce human annotation later.
+The numerical support tables and partition rule derive from the pinned released annotation CSV. The separate M1/M2 methodology files, research questions, bibliography and historical analysis are unchanged. The workspace retains the prior prelim.md, original design JSON/generator, reviewed card JSON, phase-review manifest, pinned-CSV audits and exact image-ID partitions. Phase 1 outcome evidence is in [phase1.md](phase1.md#phase-1-results-review--19-november-2026).
+
+## 12. Phase 2
+
+The [Phase 1 review](phase1.md#phase-1-results-review--19-november-2026) supports three open questions. How much of the transfer penalty survives a change in pooling? Does it survive another released caption draw? Can the readout's ranking and probability quality be improved separately? The next round uses [M1](M1.md) for probing controls and measurement, and [M2](M2.md) for transfer comparisons and supervision boundaries. It selects three existing cards (E07, E11 and E17) and adds two distinct pooling contrasts (E29 and E30). These are proposals for preliminary screening, with the timing gates below.
+
+| Order | Experiment | Decision it can change | Readiness and cost |
+|---|---|---|---|
+| Start | **E29. Paired pooling effect on the transfer gap** | Whether to prioritize a pooling-dependent effect, a residual portability effect, or both | CPU. Reuses canonical SCREEN logits and paired image draws. |
+| Start | **E07. Alternate released captions, fixed-head first** | Whether route and pooling patterns survive changes in the original caption view | Automatic availability/support audit first. New VLM forwards only for changed SCREEN views. |
+| Start | **E17. Source versus target calibration** | Whether to keep score calibration as a distinct G9 direction | CPU. Reuse SCREEN scores and score the missing DEV-C routes from cached features under a new authorization. |
+| Conditional | **E30. Swap readout and feature pooling independently** | Whether better-pooled inputs help an unchanged head or the gain depends on matching the head to the pooling | CPU. Open if E29 shows a consequential reduction. Use cached midpoint activations and fitted heads. |
+| Conditional | **E11. FIT-only mean/scale adjustment** | Whether simple feature statistics account for part of the residual transfer penalty | CPU. Open if E29 leaves a supported, practically meaningful residual. Caption-robust claims wait for E07. |
+
+See [phase2.md](phase2.md) for the five-stage execution order, shared work and parallel branches.
+
+### 12.1 Shared analysis and validity rules
+
+- Use both frozen checkpoints, all four caption contexts, fixed midpoints (Qwen 18, Gemma 17), all 12 directed transfers and four receiving-context diagonals. Keep matched image/category cells per contrast and the fixed 14-category primary macro where supported. Apply the known-cell mask, including the unknown plant cell. Preserve all scheduled rows and label low support or undefined outcomes. For a renamed or restricted cohort, show a draw-0 companion on exactly that cohort and keep its summary separate.
+- Use the established split and category support rules. Use source FIT for fitted readouts and any allowed preprocessing, DEV-S for source selection, and DEV-C only for its authorized calibration role. SCREEN is reused exploratory evaluation. CONFIRM stays closed. One image is the unit of resampling regardless of languages, repeated captions or category count.
+- Register exact primary contrasts, decision-relevant effect ranges, support rules, and claim scopes before the next SCREEN analysis. Use AUROC for ranking and Brier/log loss for probability quality. Report AP as a prevalence-sensitive companion. Use the same paired image bootstrap across matched arms. Compute differences and means within each draw, and report actual valid-draw counts. A wide interval leaves an effect unresolved. Parking a specific alternative requires precision relative to the predeclared meaningful effect range or evidence from an explicit discriminating control. Direction counts or the largest observed route do not establish a general effect.
+- Freeze weights/checkpoints, preprocessing, caption bytes and join identities. Preserve the accepted G0 and apply automatic input, split, score-reproduction and support checks to added arms. Use only released labels, images and original captions. No new annotation or caption-equivalence judgments are required. Keep source-only transfer, target-input adaptation, and target-label adaptation separate in the reports. [M1 S02 — probing control tasks](https://aclanthology.org/D19-1275/), [M2 T27 — transfer settings in IGLUE](https://proceedings.mlr.press/v162/bugliarello22a.html).
+
+### 12.2 Experiments to start
+
+#### E29. Does mean pooling reduce the paired transfer gap?
+
+**Why now.** E04 showed general score gains. Phase 1's midpoint AUROC gap estimates changed from 0.110 to 0.030 in Qwen and 0.062 to 0.016 in Gemma. Those were differences of reported point estimates, with no uncertainty for the change in the gap. This new contrast asks whether transferred scores improve relative to their own receiving-context diagonals. It is more specific than another E04 score table.
+
+**Comparison.** For each source s, target t and pooling p, define G(p) = AUROC(t→t, p) − AUROC(s→t, p) on identical target cells. Estimate G(last-caption) − G(caption-mean) within every bootstrap draw. Use the equally weighted 12-route mean per model at the midpoint with image-plus-caption as the primary contrast. Show each route, the residual mean-pooling gap, both absolute arms and the receiving diagonal gain. Repeat the contrast for caption-only as a diagnostic, and present AP plus paired proper-loss results separately. Use the same E01/E04 prediction identities and fit histories in every comparison.
+
+**Decision.** A supported reduction with a useful target diagonal justifies treating pooling as a contributor and testing E30. A remaining consequential gap leaves readout incompatibility open and admits E11. A similar reduction under caption-only weakens an account that requires image input. Imprecise reduction or residual estimates leave the corresponding question open. Independent fits at each pooling are part of this estimand. [M1 S05 — pooled and final-position probes](https://arxiv.org/abs/2606.01679), [M2 T40 — separating transfer and prediction](https://arxiv.org/abs/2101.11109).
+
+#### E07. Does the pattern survive another released caption?
+
+**Why now.** E01 showed directional gaps, and E03 established strong caption-only lexical signal. One original caption draw cannot establish stability to which description of the image was selected.
+
+**Comparison.** Begin with the existing E07 question, using a cheaper frozen-head screen before its full refit. Audit the pinned original-caption inventory and preselect draws 1 and 2 through the established deterministic selector. Record exact repeated text and caption IDs. On supported same-image cohorts compare each draw to draw 0 with the same frozen source and receiving-context heads, separately at each pooling. Count how many views actually changed for every context. Report the paired draw change in the transfer contrast, both absolute diagonal/transfer changes, and the pooling interaction using only matched views. Include a matched draw-0 result for the subset with genuinely changed captions and any restricted macro. If distinct draws or category support are sparse, report the coverage limitation before launching model runs. Reuse draw-0 activations and any byte-identical inputs under the same verified execution policy.
+
+**Decision.** Stable gaps across eligible views support pursuing a portability account. If the gap or ordering depends materially on the selected views, narrow the claim to the view or run the existing E07 refit extension with each draw's FIT and DEV-S counterparts. The frozen screen measures test-view sensitivity given heads trained on draw 0. The refit extension additionally changes the head's training view. An observed draw effect cannot distinguish wording from semantic content. [M2 T27 — explicitly separated settings](https://proceedings.mlr.press/v162/bugliarello22a.html).
+
+#### E17. Does probability calibration transfer?
+
+**Why now.** E01 showed a mismatch between ranking and proper losses. E19's selective-risk support limits leave the reliability question unresolved. A no-GPU probability diagnostic has higher decision value than immediately fitting a correctness head.
+
+**Comparison.** Use the combined last-caption midpoint logits for both checkpoints and the raw-versus-calibrated arms in E17. Keep one selected source head per source context. For each model, reuse the four source DEV-C diagonal score routes and compute the 12 missing source-on-target DEV-C routes once from verified cached target features. The target calibrator must see the **same frozen source head scored on that target's DEV-C inputs**. A target-trained head's diagonal is a separate reference. Fit positive temperature and positive temperature plus intercept under the same fixed category weights and objective on source DEV-C and separately on target DEV-C. Evaluate all arms on common SCREEN cells. Compare paired Brier and log-loss improvements against raw scores and the fixed FIT-prior reference. Verify per-category AUROC/AP invariance up to ties and numerical tolerance, and report 0.5 decision changes separately. Keep the original E19 cutoffs and claims scoped to their raw policy.
+
+**Decision.** If source calibration improves proper losses on supported routes, retain a portable probability correction as a direction. If only target calibration improves them, retain probability-scale transfer under target supervision as the narrower direction. If improvements are small with informative intervals, park these calibrator forms in this setting. Ranking gaps require separate evidence either way. [M1 S33 — decision confidence](https://arxiv.org/abs/2605.31220), [Temperature scaling](https://proceedings.mlr.press/v70/guo17a.html).
+
+### 12.3 Experiments gated by the first results
+
+#### E30. Does a fixed head benefit from different pooling?
+
+When E29 establishes consequential gap reduction, cross the two cached feature poolings with the two corresponding source heads at the combined midpoint. Apply each whole head, including its original scaler, unchanged to last-caption and caption-mean features in the same residual-stream basis. Reuse E01/E04's matched cells. Score the two crossed arms on the exact target rows and assert feature width, hook, checkpoint and input provenance before using either. Use separate source and receiving-context heads in each arm to report both the matched transfer gap and the absolute outcomes. Compute the effect of switching features for each fixed head, and their paired interaction. Retain the original training and regularization identities. The interaction compares two fitted systems and can include their fit differences. Gains for a fixed head support a feature-view contribution without refitting. Gains requiring a matching pooled head support a head–pooling dependency. Crossed-head failure in both directions may reflect an off-distribution feature swap, which limits the mechanism claim. [M1 S05 — readout location](https://arxiv.org/abs/2606.01679), [M2 T40 — separating representations and predictors](https://arxiv.org/abs/2101.11109).
+
+#### E11. Can simple FIT feature statistics narrow the residual gap?
+
+When E29 leaves a supported residual at caption-mean midpoint, test E11 on that fixed representation and all directed routes. Use paired image populations on FIT to estimate source/target feature means and scales from training inputs. Keep the unchanged head and source scaler in every arm. Compare the identity, mean shift and mean-plus-diagonal-scale variants, with a fixed scale floor and the unchanged target-fit diagonal as an accessibility reference. A mean shift is a constant logit offset for a linear head with a fixed affine scaler, so its within-category ranking should stay invariant. Treat that as a control. Separate proper-loss changes from ranking changes under diagonal rescaling, and label both maps as target-input-informed. Material discriminative recovery supports a narrow covariate-scale account. Loss-only recovery belongs with E17's probability story. A precise lack of benefit weakens these simple transformations in this setting and provides a cleaner prerequisite for deciding whether E12 is warranted. [M2 T04 — normalization and mapping constraints](https://aclanthology.org/D16-1250/).
+
+### 12.4 Decision boundary after the round
+
+Report each direction as **retain**, **revise**, **park within tested scope** or **insufficient evidence**. Record the exact comparison, effect, interval, denominators, strongest contrary evidence, and remaining alternative explanation. Several directions can survive independently. Reserve focused competing-explanation work for the supported questions that remain after this round.
+
+The remaining cards stay in the catalog. E05/E06/E15 wait for a specific capacity, sample or rank limitation. E08 can localize a draw or pooling sensitivity to measured surface features, while E09/E18 need adequate stratum support and a specific heterogeneity claim. E10/E12/E13/E14/E22 wait for a residual that calls for geometry, an alignment objective or shared slopes beyond simple controls. E20 needs enough out-of-fold decision errors and a reason to learn a correctness score beyond the calibration checks. E21/E26 can address deeper layer-specific questions after the pooling dependency is understood. E23/E24 require changed visual inputs or a supported common terminal site, so they are candidates if the results leave a specific visual-input question. E27 separates training-view diversity from test-view sensitivity if E07 warrants it. E28 addresses co-occurrence extrapolation and remains separate until a support-shift question earns priority. G7 remains outside this round.
+
+Persist only reusable alternate-view features and verified completed comparison outputs, plus DEV-C score blocks and fitted calibrator or transform parameters reused downstream. Reuse the accepted features, logits and resampling identities where compatible. Intermediate metric arrays and plotting inputs can stay in memory. No experiment in this section has been run, and the designs carry no novelty claim.

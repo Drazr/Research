@@ -386,3 +386,46 @@ The design-review extraction-condition/split and cache-key gaps are addressed by
 
 
 Notebook entry points (user-requested conversion): `scripts/stage1/stage1_cpu.ipynb` runs preparation then validation; `configure_l4.ipynb`, `validate_model.ipynb` and `run_validity_smoke.ipynb` run in that order per MODEL. The five former scripts/stage1 Python entry files are removed. Their shared implementations now live in src/stage1; scientific rules, artifacts and completion gates are unchanged. Notebook syntax and CPU fixture checks do not establish actual Colab/L4/Drive completion.
+
+## Phase 1 results review — 19 November 2026
+
+### Evidence and scope
+
+The accepted Stage 4 release contains 47 analysis units. Stage 5 synthesis aligned 1,120 comparison designs across Qwen2.5-VL-3B-Instruct and Gemma 3 4B IT. The three report manifests matched the synthesis references, and each body matched its manifest checksum. The Stage 3 G0 gate was unflagged (p = 0.362). Formal Stage 5 finalization remains pending.
+
+SCREEN contains 360 independent images, one original caption draw per image in English, Hindi, Bengali and Telugu, and a fixed 14-category primary macro. Category labels are shared by image, and the original captions were independently authored. Context therefore combines language, wording and caption content. This review concerns diagnostic category readouts. CONFIRM stayed closed.
+
+Values below are rounded. Route means are descriptive averages of released primary-macro point estimates. Interval counts refer to individual paired image-bootstrap contrasts, without multiplicity adjustment. No cross-model interval or interval for the route mean was computed.
+
+### E01 — Accessible category information and transfer penalties
+
+In each model, all 48 directed off-diagonal comparisons showed worse AUROC, average precision, Brier score and log loss than the receiving context's own head. The individual paired intervals excluded zero in the unfavorable direction for all four metrics. At midpoint the four diagonal AUROCs ranged from 0.894 to 0.906 for Qwen and 0.894 to 0.909 for Gemma. Strong same-context category information and a systematic transfer penalty coexist under the tested readout.
+
+| Scheduled depth | Qwen depth | Qwen diagonal / transfer AUROC | Qwen mean gap | Gemma depth | Gemma diagonal / transfer AUROC | Gemma mean gap |
+|---|---:|---:|---:|---:|---:|---:|
+| Quarter | 9 | 0.882 / 0.665 | 0.217 | 9 | 0.902 / 0.819 | 0.083 |
+| Midpoint | 18 | 0.901 / 0.791 | 0.110 | 17 | 0.900 / 0.838 | 0.062 |
+| Three-quarter | 27 | 0.895 / 0.771 | 0.124 | 26 | 0.905 / 0.814 | 0.090 |
+| Final | 36 | 0.928 / 0.848 | 0.080 | 34 | 0.924 / 0.881 | 0.042 |
+
+The largest midpoint Qwen AUROC gap was English → Bengali, 0.197 (95% interval 0.175–0.218). Gemma's largest was English → Hindi, 0.131 (0.112–0.151). Hindi → English had the smallest gap in both, 0.040 (0.028–0.053) and 0.020 (0.010–0.030). At both midpoints, all three English → Indic gaps exceeded their reverse routes. Interpret this asymmetry alongside the route-specific diagonals and absolute scores.
+
+Midpoint transferred average precision remained useful (0.612 and 0.694 on average, against the 0.275 prevalence reference). Qwen's transferred Brier score and log loss averaged 0.192 and 0.686, above the source-FIT prevalence reference's 0.183 and 0.546. Gemma averaged 0.148 and 0.543, with some routes worse than prevalence. From midpoint to final depth, the mean AUROC gap narrowed in both models while the mean log-loss penalty grew (0.382 → 0.437 for Qwen, 0.231 → 0.365 for Gemma). Ranking and probability quality should be evaluated separately.
+
+### E02–E04 — Input evidence, shallow predictors and pooling
+
+- **E02, added image input.** Combined input improved midpoint AUROC by 0.062 in Qwen and 0.012 in Gemma on average across the 16 routes. Paired intervals were wholly positive for 15/16 Qwen and 11/16 Gemma routes, with one supported negative Gemma route. The mean midpoint transfer-gap change was −0.027 for Qwen and +0.007 for Gemma. At the final depth, the image narrowed the AUROC gap with wholly negative paired intervals for 11/12 routes in each model.
+- **E02, visual reference.** Image-only encoder / projector AUROC was 0.947 / 0.942 for Qwen and 0.945 / 0.942 for Gemma. Both visual sites exceeded the combined-input midpoint diagonal in all four contexts for each model under the paired AUROC intervals. The comparison uses different input conditions and readout sites, leaving the mechanism unresolved.
+- **E03, caption signal.** Per-language character TF-IDF reached 0.850–0.883 AUROC. The pooled character equal-context AUROC was 0.865 and average precision was 0.762. Length-only AUROC was 0.571–0.595. Both neural caption-only midpoint readouts exceeded length across all four contexts with positive paired AUROC intervals. Against per-language character TF-IDF, Qwen was lower in three contexts and higher in one, with all four intervals excluding zero. Gemma was higher with positive intervals in two contexts, and the other two were unresolved. Character TF-IDF is a substantive reference for native-caption category predictability.
+- **E04, pooling sensitivity.** At midpoint, caption-mean pooling increased combined-input AUROC on all 16 routes with positive paired intervals in both models. Mean gains were 0.093 for Qwen and 0.062 for Gemma. Final-layer gains were smaller and mixed. Computing the diagonal-minus-transfer point contrast from the released caption-mean absolute rows gives mean midpoint gaps of 0.030 and 0.016, down from 0.110 and 0.062 at last-caption. All 12 caption-mean midpoint point gaps remained positive per model. No new paired interval was estimated for this gap comparison. The observed penalty is sensitive to how the caption state is read. Post-caption and decoder visual-token pooling were unavailable.
+
+### E19–E25 — Confidence and shared errors
+
+- **E19, selective confidence.** At nominal 75% coverage, off-diagonal mean SCREEN coverage was 70.1% for Qwen (62.3–76.3%) and 73.2% for Gemma (66.4–78.5%). Mean retained risk was 18.8% and 13.0%, against score-blind risk of 25.2% and 19.3% on those routes. Diagonal retained risk was 6.2% and 6.5%. The retained-risk rows at this policy are all marked descriptive low support. Positive / negative retention was 56.8% / 72.9% for Qwen and 57.5% / 76.9% for Gemma on transferred routes, so lower risk coincides with retaining fewer positive cases. Mean transferred coverage was 48.4% / 50.4% at nominal 50% and 85.7% / 87.7% at nominal 90%.
+- **E25, error overlap.** At threshold 0.5, mean fixed-head disagreement was 23.5% for Qwen and 18.3% for Gemma. The separate diagonal-head comparison gave 10.2% and 10.7%. Mean fixed-head common-error excess over the product of marginal errors was 1.0 and 1.3 percentage points for true negatives and 4.0 and 6.2 points for true positives. Observed common error exceeded the label-stratified permutation upper quantile for Qwen in 22/24 negative and 23/24 positive comparisons and for Gemma in 24/24 for both strata. These stratified rows are descriptive low support, with some directional conditional rates undefined. The overlap suggests that shared hard images and context-specific errors can coexist.
+
+### Uncertainties to carry forward
+
+The clearest pattern for G9–Q6 is strong within-context accessibility combined with directional portability losses that shrink under a different pooling choice. Feature scale, readout compatibility, caption content and measurement site remain plausible contributors. Confidence and shared-error results have stricter support limits than the discrimination contrasts. The 14-category macro and two checkpoints leave category-specific mechanisms and generalization unresolved. Use this evidence with M1, M2 and the designs in prelim.md when narrowing later work. No follow-up experiments were selected or removed in this review.
+
+Production evidence links: [Stage 4 release](https://drive.google.com/file/d/1Go1rvcnX5Rn0nbIHBm4xIpTDB0QHcOEq/view), [Stage 5 synthesis](https://drive.google.com/file/d/1Rb7wOyWuDHp2nRB6Y7YKFUFqaQ9BhsSU/view), [Qwen report](https://drive.google.com/file/d/1nQFdy_9_2Q572jCEtD-WraPiDtuGEd2S/view), [Gemma report](https://drive.google.com/file/d/19UUCwI0EEJZMktIH2fd2Ap8-t8EfWCMB/view), [shared E03 report](https://drive.google.com/file/d/1dGez3P-vFZ0MnV3SxzF76hksXKbEMrHc/view).
