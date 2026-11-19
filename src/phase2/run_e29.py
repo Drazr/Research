@@ -54,7 +54,7 @@ from src.stage4.metrics import (
     support_status,
     targets_for_prediction,
 )
-from src.stage4.plan import SCREEN_MINIMUM, load_bootstrap
+from src.stage4.plan import load_bootstrap
 from src.stage4.predictions import load_prediction_block
 
 LOSS_METRICS = frozenset({"brier", "nll"})
@@ -813,7 +813,7 @@ def run_e29(
             categories=categories,
             primary_indices=primary_indices,
             total_draws=total_draws,
-            minimum=SCREEN_MINIMUM,
+            minimum=int(protocol["minimum_positive_and_negative"]["SCREEN"]),
         )
     compute_s = time.monotonic() - t_comp
     _emit_progress(

@@ -53,6 +53,7 @@ from src.phase2.interfaces import (
     SCHEMA_ANALYSIS,
     SCHEMA_CALIBRATORS,
     SCHEMA_PREDICTION,
+    bind_phase1,
     check,
     contract,
     current_producer,
@@ -65,7 +66,7 @@ from src.phase2.interfaces import (
     require_open_split,
     verify_resume_ref,
 )
-from src.phase2.plan import load_phase2_plan
+from src.phase2.plan import Phase2Plan, load_phase2_plan
 
 E17_RESULTS_NAMESPACE = "phase2/results/e17"
 E17_ARMS = (
@@ -1208,6 +1209,9 @@ def run_e17(
     check(model in MODELS, f"E17 requires MODEL in {MODELS!r}; got {model!r}")
     t_init0 = time.perf_counter()
     plan = load_phase2_plan(phase1_root_dir, protocol, plan_ref)
+    if plan.binding is None:
+        binding = bind_phase1(plan.root, plain(plan.protocol), plain(plan["stage4_release"]))
+        plan = Phase2Plan(plan._body, plan.reference, plan.root, plain(plan.protocol), binding=binding)
     resolved_auth_ref = e17_auth_ref if e17_auth_ref is not None else plan["e17_auth"]
     check(
         resolved_auth_ref is not None,
