@@ -505,8 +505,16 @@ def _summarize_model_experiments(model: str, mdata: Mapping[str, Any]):
             "changed_9_g_last_shift": _extract_stat(fs["changed_targets_only"]["means"]["auroc"]["g_last_shift"]),
             "changed_9_g_res_shift": _extract_stat(fs["changed_targets_only"]["means"]["auroc"]["g_res_shift"]),
             "changed_9_delta_g_shift": _extract_stat(fs["changed_targets_only"]["means"]["auroc"]["delta_g_shift"]),
-            "sign_preserved_12": bool(fs["pooling_reduction_sign_preserved"]["twelve_route_mean"]["sign_preserved"]),
-            "sign_preserved_9": bool(fs["pooling_reduction_sign_preserved"]["changed_targets_only_mean"]["sign_preserved"]),
+            "sign_preserved_12": bool(
+                fs["pooling_reduction_sign_preserved"]["twelve_route_mean"].get(
+                    "preserved", fs["pooling_reduction_sign_preserved"]["twelve_route_mean"].get("sign_preserved")
+                )
+            ),
+            "sign_preserved_9": bool(
+                fs["pooling_reduction_sign_preserved"]["changed_targets_only_mean"].get(
+                    "preserved", fs["pooling_reduction_sign_preserved"]["changed_targets_only_mean"].get("sign_preserved")
+                )
+            ),
             "restricted_g_last_shift": _extract_stat(rc_auroc.get("g_last_shift")),
             "restricted_g_res_shift": _extract_stat(rc_auroc.get("g_res_shift")),
             "restricted_delta_g_shift": _extract_stat(rc_auroc.get("delta_g_shift")),
