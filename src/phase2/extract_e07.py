@@ -19,6 +19,7 @@ import re
 import subprocess
 import sys
 import time
+from types import SimpleNamespace
 from typing import Any, Optional
 
 import numpy as np
@@ -41,12 +42,10 @@ from src.phase2.interfaces import (
     POOLINGS,
     REPO,
     SCHEMA_E07_FEATURES,
-    bind_phase1,
     check,
     contract,
     frozen,
     load_phase2_artifact,
-    midpoint_depth,
     normalize_ref,
     plain,
     publish_phase2,
@@ -241,9 +240,19 @@ def preflight_e07_extraction(
         f"E07 extraction refused: audit verdict is {verdict!r} (must be in {E07_ALLOWED_VERDICTS})",
     )
 
-    binding = bind_phase1(resolved_root, protocol, plan["stage4_release"])
-    depth = midpoint_depth(binding, model)
-    check(depth == int(plan["midpoints"][model]), "Midpoint depth mismatch with phase2_plan")
+    suite_ref = plain(plan["stage2_suite"])
+    suite_path = within(resolved_root, suite_ref["path"])
+    check(file_sha256(suite_path) == suite_ref["sha256"], "Stage 2 suite checksum mismatch")
+    sp, _ = artifact(suite_path, resolved_root, protocol, "stage2_suite_index")
+    suite_body = read_json(sp.parent / "report.json")
+    binding = SimpleNamespace(
+        root=resolved_root,
+        dataset_ref=plain(plan["stage1_dataset"]),
+        dataset_fingerprint=str(plan["dataset_fingerprint"]),
+        protocol_fingerprint=str(plan["protocol_fingerprint"]),
+        model_plan_refs=plain(suite_body["model_plans"]),
+    )
+    depth = int(plan["midpoints"][model])
 
     screen_images = _load_screen_images(resolved_root, binding)
     _validate_extraction_plan(audit_body.get("extraction_plan"), screen_images)
