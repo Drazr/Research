@@ -1,5 +1,9 @@
 # Instructions for all Research chats
 
+## Stage 4 worker integration — 19 November 2026
+
+Follow [the Stage 4 runbook](docs/stage4_runbook.md) for the accepted Stage 3 registry pointer, CPU notebook order, shared prediction handoffs and release validation. The Stage 3 registry carries all 145 ordinary systems and its independent readback. Stage 4 worker implementations and notebooks are integrated. Production readiness evidence, scoring, analyses and final Stage 4 acceptance come from the mounted run.
+
 ## Stage 4 coordinator foundation — 19 November 2026
 
 The worker-facing APIs and file ownership are documented in [docs/stage4_interfaces.md](docs/stage4_interfaces.md). Use the immutable commit first adding that file as the four worker branches' common base. The CPU preparation and validation notebooks are coordinator-owned. Accepted Stage 3 production inputs are required for Stage 4 preparation. A complete accepted Stage 4 release requires integration and actual worker outputs.

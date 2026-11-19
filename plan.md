@@ -1,5 +1,7 @@
 # Phase 1 execution plan: G9-Q6
 
+Stage 4 integration update, 19 November 2026. All four worker implementations are integrated. Stage 3 acceptance was verified on Drive. Use [the Stage 4 runbook](docs/stage4_runbook.md) for the registry pointer, CPU notebook order, checkpoints and release validation. Production Stage 4 execution remains pending.
+
 Stage 4 coordinator update, 19 November 2026. The shared code, CPU preparation and validation notebooks, and fixture tests are implemented. The four worker chats branch from the exact foundation commit first adding [docs/stage4_interfaces.md](docs/stage4_interfaces.md). Stage 4 production awaits the accepted Stage 3 registry and integrated workers.
 
 Stage 4 planning update, 18 November 2026. The detailed Stage 4 plan below covers inputs, scoring, experiments, storage, ownership, acceptance and the Stage 5 handoff. The global G0 gate was verified unflagged (p=0.362 over all 145 groups). Scientific execution opens after acceptance of the final Stage 3 registry.
