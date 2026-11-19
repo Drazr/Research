@@ -234,3 +234,154 @@ All Stage 1 modules (`src/phase2/{__init__,schema,inputs,interfaces,e07_audit,e1
 1. Run `scripts/phase2/prepare_phase2.ipynb` once (`E07_AUDIT_REF = None`, `E17_AUTH_REF = None`) to verify mounted `PHASE1_ROOT`, run `storage_probe`, pre-initialize `PHASE1_ROOT/phase2/`, and publish `phase2_plan`. Call `drive.flush_and_unmount()` and remount if launching separate runtimes.
 2. Run `scripts/phase2/audit_e07.ipynb` and `scripts/phase2/preflight_e17.ipynb` (`MODEL = 'both'`) in parallel on two CPU runtimes (or sequentially). Record the printed `phase2_e07_audit` and `phase2_e17_auth` `{path, sha256}` references.
 3. Run `prepare_phase2.ipynb` with `E07_AUDIT_REF`, `E17_AUTH_REF`, and `RUN_VERIFY_STAGE1_BUNDLE = True` (or run `python -u -m src.phase2.operations verify-stage1-bundle`) to certify Stage 1 completion before launching Stage 2.
+
+---
+
+## Stage 2: finalized specification — 19 November 2026
+
+Planning freeze `phase2-stage2.v1`. This section finalizes **Phase 2 Stage 2 only**: executing **E29 CPU** (paired pooling gap contrast + reusable draw-0 reference + E30/E11 gate publication), **E17 CPU** (off-diagonal DEV-C scoring, source vs target DEV-C calibrator fitting, and SCREEN calibration evaluation), and **E07 L4 GPU** (audited unique changed-view SCREEN midpoint extraction, gated on Stage 1's `phase2_e07_audit` verdict). Conditional Stage 3 (E30, E11), Stage 4 E07 CPU scoring (`score_e07`), and Stage 5 synthesis remain overview-only until finalized in turn.
+
+### 2.1 Entry prerequisites and immutable Stage 1 bindings
+
+Stage 2 workers may start only against a certified Stage 1 bundle (`verify-stage1-bundle` passed on mounted Colab CPU):
+
+- **Required Stage 1 completion references (`{path, sha256}`):**
+  - `phase2_plan` (`KIND_PLAN`, `SCHEMA_PLAN`): binds Phase 1 Stage 4 release (`eb5cad38...`), Stage 4 `(2000, 360)` bootstrap, midpoints (`qwen` depth 18, `gemma` depth 17), `e29_blocks`, `gate_thresholds`, `stage5_decision_ranges`, and `plan_identity`.
+  - `phase2_e17_auth` (`KIND_E17_AUTH`, `SCHEMA_E17_AUTH`): required for **E17**; certifies `permission == "phase2.e17_dev_c_transfer"` and `en→en` DEV-C diagonal reproduction (`atol=0, rtol=0`) for both models.
+  - `phase2_e07_audit` (`KIND_E07_AUDIT`, `SCHEMA_E07_AUDIT`): required for **E07 GPU**; must have `draw0_verified == True`, `confirm_excluded == True`, and `verdict ∈ {"passed_full", "passed_restricted"}` (if `verdict == "blocked"`, E07 GPU is skipped and Stage 2 completes with E29 + E17 only).
+- **Storage & concurrency invariants:**
+  - All Phase 1 paths remain strictly read-only. Every Stage 2 write stays under `PHASE1_ROOT/phase2/` via `src.phase2.interfaces.publish_phase2` (`stage1.v1` `_COMPLETE.json` written last).
+  - Flush and unmount/remount Google Drive after Stage 1 before launching parallel Stage 2 Colab runtimes so pre-initialized `PHASE2_PARENT_DIRS` and Stage 1 manifests are visible across runtimes.
+  - Strictly one producer per `<experiment>/<model>` namespace; every worker CLI and notebook accepts one explicit `MODEL` selector (`"qwen"` or `"gemma"`).
+  - `CONFIRM` remains closed and rejected before any IO via `require_open_split`.
+  - All workers emit streamed JSON-line progress events (`event`, `unit`, `completed`, `total`, `read_hash_s`, `compute_s`, `write_s`, `peak_rss_bytes`) with `flush=True` and surface child stderr/blockers directly.
+
+### 2.2 Frozen Stage 2 wire schemas (cross-worker and Stage 3/4 handoff)
+
+All Stage 2 workers import Stage 1 shared contracts exclusively from `src.phase2.interfaces` (plus `src.phase2.gates`, `src.phase2.e17_auth`, `src.phase2.e07_audit`, and `src.stage4.metrics`). No Stage 2 worker edits Coordinator-owned Stage 1 files or Phase 1 files. Downstream Stage 3/4/5 consumers validate Stage 2 outputs purely through these frozen schemas:
+
+| Artifact & namespace | `kind` / `body["schema"]` | Required top-level `body` keys & arrays |
+|---|---|---|
+| **E29 analysis + draw-0 ref**<br>`phase2/results/e29/<model>/<run_id>/` | `phase2_analysis_block`<br>`phase2.analysis.v1` | `schema`, `experiment` (`"E29"`), `plan`, `plan_identity`, `model`, `midpoint_depth`, `bootstrap` (`shape`, `sha256`), `confirm_excluded` (`True`), `input_blocks` (16 Stage 4 SCREEN refs), `image_caption` (12-route means, 12 per-route rows, 4 receiving diagonals, 25-category & 14-primary macro tables for AUROC, AP, Brier, NLL, 0.5-threshold metrics, paired `ΔG` and `G_res` CIs + `valid_draws`), `caption_only` (identical diagnostic structure), `draw0_reference` (compact reusable draw-0 midpoint point estimates + block refs + target/mask fingerprint for Stage 4 `score_e07`), `gate_ref` (`{path, sha256}` of published `phase2_e29_gate`), `supervision_labels`. |
+| **E29 gate receipt**<br>`phase2/results/e29_gates/<run_id>/` | `phase2_e29_gate`<br>`phase2.e29_gate.v1` | Published via `src.phase2.gates.publish_e29_gate` (frozen Stage 1 schema: `decisions["E30"]`, `decisions["E11"]`, `observed`, `thresholds`). |
+| **E17 DEV-C off-diagonal block**<br>`phase2/predictions/e17_dev_c/<model>/<run_id>/` | `phase2_prediction_block`<br>`phase2.prediction.v1` | `schema`, `experiment` (`"E17"`), `plan`, `plan_identity`, `e17_auth_ref`, `model`, `midpoint_depth`, `condition` (`"image_caption"`), `pooling` (`"last_caption"`), `split` (`"DEV-C"`), `target_language`, `source_languages` (3 sorted `s ≠ t`), `image_ids_sha256`, `n_images` (`180`), `n_categories` (`25`), `category_order`, `diagonal_self_check` (`en→en`, `passed: True`, `max_abs_diff: 0.0`), `routes` (per-source `route_id`, `source_language`, `row_index`, `source_system_ref`, `supervision_label: "source_only_transfer"`), `upstream_feature_ref`, `confirm_excluded` (`True`). Arrays: `logits.npy` (`float64`, shape `(3, 180, 25)`), `estimable.npy` (`bool`, shape `(3, 25)`), `prevalence.npy` (`float64`, shape `(3, 25)`). |
+| **E17 fitted calibrators**<br>`phase2/calibrators/e17/<model>/<run_id>/` | `phase2_e17_calibrators`<br>`phase2.calibrators.v1` | `schema`, `experiment` (`"E17"`), `plan`, `plan_identity`, `e17_auth_ref`, `model`, `midpoint_depth`, `objective` (`"equal_weight_14_primary_macro_bce"`), `optimizer` (`"BFGS"`, `jac: True`, `gtol: 1e-10`, `maxiter: 500`, `init: {"log_T": 0.0, "b": 0.0}`), `source_dev_c` (4 source languages × `{temp, temp_intercept}`: `log_T`, `T`, `b`, `converged`, `nit`, `grad_norm`, `dev_c_loss_raw`, `dev_c_loss_cal`, `dev_c_input_ref`, `supervision_label`), `target_dev_c` (12 off-diagonal `s→t` routes × `{temp, temp_intercept}` with identical fields + `dev_c_block_ref`, `supervision_label: "target_dev_c_supervised_calibration"`), `confirm_excluded` (`True`). |
+| **E17 SCREEN analysis**<br>`phase2/results/e17/<model>/<run_id>/` | `phase2_analysis_block`<br>`phase2.analysis.v1` | `schema`, `experiment` (`"E17"`), `plan`, `plan_identity`, `e17_auth_ref`, `calibrators_ref`, `dev_c_block_refs` (4 target-context refs), `model`, `midpoint_depth`, `bootstrap` (`shape`, `sha256`), `arms` (`raw`, `source_dev_c:temp`, `source_dev_c:temp_intercept`, `target_dev_c:temp`, `target_dev_c:temp_intercept`), `fit_prior_reference`, `summaries` (12-route mean + 4-diagonal mean + 16 per-route rows + 25-category & 14-primary macro tables for Brier, NLL, AUROC, AP, paired gains vs `raw` and vs `fit_prior` with 95% CIs and `valid_draws`), `decision_0p5` (separate 0.5-threshold sensitivity/specificity/F1/balanced accuracy + flip rates), `invariance_checks` (`max_abs_auroc_diff <= 1e-12`, `max_abs_ap_diff <= 1e-12`, `all_T_positive: True`, `temp_only_0p5_flips: 0`), `confirm_excluded` (`True`). |
+| **E07 changed-view chunk**<br>`phase2/features/e07/<model>/<run_id>/chunk_NNNN/` | `phase2_e07_chunk`<br>`phase2.e07_features.v1` | `schema`, `experiment` (`"E07"`), `plan`, `plan_identity`, `e07_audit_ref`, `model`, `midpoint_depth`, `condition` (`"image_caption"`), `poolings` (`["last_caption", "caption_mean"]`), `split` (`"SCREEN"`), `chunk_index`, `total_chunks`, `n_views`, `dimension`, `model_fingerprint`, `execution_fingerprint`, `site_specs`, `evidence_bridge_sha256`, `repeat_check` (`first_index`, `last_index`, `max_abs_diff_last_caption`, `max_abs_diff_caption_mean`, `passed`), `confirm_excluded` (`True`). Arrays: `last_caption.npy` (`float32`, `(n_views, d)`), `caption_mean.npy` (`float32`, `(n_views, d)`). Files: `rows.jsonl`, `token_evidence.jsonl`, `audits.json`. |
+| **E07 feature release**<br>`phase2/features/e07/<model>/releases/<run_id>/` | `phase2_e07_release`<br>`phase2.e07_features.v1` | `schema`, `experiment` (`"E07"`), `plan`, `plan_identity`, `e07_audit_ref`, `e07_verdict`, `model`, `midpoint_depth`, `condition` (`"image_caption"`), `poolings` (`["last_caption", "caption_mean"]`), `split` (`"SCREEN"`), `total_unique_views`, `per_language_counts`, `dimension`, `model_fingerprint`, `execution_fingerprint`, `chunks` (ordered list of `{chunk_index, n_views, ref, rows_sha256}`), `repeat_check_summary`, `confirm_excluded` (`True`). |
+
+### 2.3 Branch A — E29 CPU: paired pooling gap contrast and gate publication
+
+- **Owned files:** `src/phase2/run_e29.py`, `scripts/phase2/run_e29.ipynb`, `tests/test_phase2_e29.py`.
+- **Runtime:** Colab CPU (pinned `requirements-stage2-cpu.txt`, single BLAS/OpenMP thread), one runtime per `MODEL` (`qwen`, `gemma`), ~1–2 minutes each.
+- **Inputs (zero new feature reads or scoring):**
+  - `phase2_plan` ref (validated via `load_phase2_plan`) + `MODEL`.
+  - 16 bound Stage 4 SCREEN midpoint prediction blocks per model (`e29_screen_blocks`: `image_caption` and `caption_only` × `last_caption` and `caption_mean` × 4 target languages).
+  - Frozen Stage 4 `(2000, 360)` `int64` bootstrap draw matrix (`load_bootstrap`) and verified SCREEN targets/unknown-cell mask (`6a20677eee04fd08` `plant.n.02 = null` preserved).
+- **Computation rules:**
+  - Verify identical sorted 360-image `screen_ids` and exact `paired_image_alignment` across all 16 blocks before computing any metric.
+  - Reuse `src.stage4.metrics` (`probabilities`, `binary_metrics`, `bootstrap_counts`, `bootstrap_binary_metrics`, `fixed_macro`, `bootstrap_interval`, `support_status`).
+  - For each condition (`image_caption` primary, `caption_only` diagnostic), compute within **every** draw `b ∈ [0, 1999]`:
+    - Per-category and 14-primary-macro metrics (AUROC, AP, Brier, NLL, 0.5-threshold sensitivity/specificity/F1/balanced accuracy) for all 16 routes at both `last_caption` and `caption_mean`.
+    - Route transfer gap `G(s→t, p, b)` (`M(t→t) - M(s→t)` for rank/0.5 metrics; `M(s→t) - M(t→t)` for Brier/NLL).
+    - Route pooling gap reduction `ΔG(s→t, b) = G(s→t, last_caption, b) - G(s→t, caption_mean, b)`.
+    - Receiving diagonal gain `ΔD(t→t, b) = M(t→t, caption_mean, b) - M(t→t, last_caption, b)` (reversed sign for losses so positive is improvement).
+    - Equal-weight 12-route means `ΔG_mean(b)` and `G_res_mean(b)`.
+  - Take linear 2.5th/97.5th percentiles only after within-draw aggregation; record `valid_draws / 2000` everywhere and preserve undefined draws as `NaN` (`null` in JSON when `valid_draws == 0`). Do NOT persist per-draw bootstrap arrays.
+  - Evaluate frozen gates via `src.phase2.gates.evaluate_e29_gates` on `image_caption` primary AUROC estimands and publish `phase2_e29_gate` via `publish_e29_gate`, then publish `phase2_analysis_block` referencing `gate_ref` and embedding `draw0_reference` for Stage 4 `score_e07`.
+- **Resume:** Accepts explicit `resume_analysis_ref` and/or `resume_gate_ref`, validated via `verify_resume_ref` against `plan_identity`, `model`, and all 16 input block hashes.
+
+### 2.4 Branch B — E17 CPU: off-diagonal DEV-C scoring, calibration fitting, and SCREEN evaluation
+
+- **Owned files:** `src/phase2/run_e17.py`, `scripts/phase2/run_e17.ipynb`, `tests/test_phase2_e17.py`.
+- **Runtime:** Colab CPU (pinned `requirements-stage2-cpu.txt`, single BLAS/OpenMP thread), one runtime per `MODEL` (`qwen`, `gemma`), ~2–4 minutes each. Runs end-to-end on CPU in Stage 2 (DEV-C scoring + calibrator fitting + SCREEN evaluation) so no separate Stage 4 E17 runtime is needed.
+- **Step 1 — Authorization & diagonal reproduction self-check:**
+  - Verify `phase2_plan` and `phase2_e17_auth` (`permission == "phase2.e17_dev_c_transfer"`, matching `lineage_identity`, `confirm_excluded == True`).
+  - Before writing any output, run the in-memory `en→en` DEV-C diagonal self-check for `MODEL` against Stage 4's accepted `en→en` DEV-C logits and assert `max_abs_diff == 0.0` (`atol=0, rtol=0`).
+- **Step 2 — Score and persist the 12 missing off-diagonal DEV-C routes (once per model):**
+  - For each target language `t ∈ ('en', 'hi', 'bn', 'te')`, load verified Stage 2 midpoint `image_caption` / `last_caption` DEV-C features once via `read_verified_midpoint_features` (180 images, `require_open_split("DEV-C")`).
+  - Load the 3 non-diagonal frozen Stage 3 source systems `s ≠ t` via `load_frozen_source_head` (no FIT matrix reload) and compute exact float64 logits `((X.astype(float64) - mean) / scale) @ coef.T + intercept` (matching Stage 4's scorer identically).
+  - Assert finite logits on all estimable columns and exact 180-image DEV-C row alignment. Publish 4 target-context blocks under `phase2/predictions/e17_dev_c/<model>/<run_id>/`. Never duplicate Stage 4 diagonals or SCREEN logits.
+- **Step 3 — Fit global float64 calibrators on DEV-C:**
+  - Forms: `temp` (`z' = z / exp(log_T)`) and `temp_intercept` (`z' = z / exp(log_T) + b`).
+  - Objective on DEV-C known cells across the **14 fixed primary categories**:
+    `L = (1/14) * sum_{k ∈ primary} mean_{i ∈ known(DEV-C, k)} [logaddexp(0, z'_{ik}) - y_{ik} z'_{ik}]` with exact analytic gradient (`jac=True`).
+  - Optimizer: `scipy.optimize.minimize(..., method="BFGS", jac=True, options={"gtol": 1e-10, "maxiter": 500})` initialized at `log_T = 0.0`, `b = 0.0`. Hard-fail publication if `not res.success`, non-finite parameters/loss, or `T = exp(log_T) <= 0`.
+  - Fit **two strictly separated scopes**:
+    - `source_dev_c` (4 fits/form): fit on reused Stage 4 `s→s` DEV-C logits; applied to all 4 targets `s→t` (`supervision_label = "source_dev_c_calibrated"` for `s ≠ t`; `"within_context_source_fit"` noted for `s == t`).
+    - `target_dev_c` (12 fits/form): fit on the newly scored frozen source `s` head on target `t` DEV-C features (`s ≠ t`, `supervision_label = "target_dev_c_supervised_calibration"`). Never use target `t`'s trained head to fit a route calibrator; for `s == t`, source and target DEV-C coincide and are labeled once.
+  - Persist under `phase2/calibrators/e17/<model>/<run_id>/`.
+- **Step 4 — Evaluate all arms on reused Stage 4 SCREEN logits:**
+  - Load the 4 reused Stage 4 midpoint `image_caption` / `last_caption` SCREEN blocks (16 routes) and frozen `(2000, 360)` bootstrap.
+  - Evaluate `raw`, `source_dev_c:temp`, `source_dev_c:temp_intercept`, `target_dev_c:temp`, and `target_dev_c:temp_intercept` on identical SCREEN known cells (preserving unknown `plant.n.02` on `6a20677eee04fd08`).
+  - Compute paired bootstrap Brier and NLL improvements vs `raw` and vs fixed FIT-prior prevalence reference (14-primary macro, 12-route mean, 4-diagonal mean, per-route, and 25-category tables).
+  - **Mandatory automatic checks (hard-fail if violated):**
+    - Per-category SCREEN AUROC and AP for every calibrated arm match `raw` within `<= 1e-12` (up to exact ties under strictly monotonic positive scaling/shift).
+    - Every fitted `T > 0`.
+    - `temp`-only arms produce `0` decision flips at threshold 0.5 relative to `raw` (for non-zero logits; `z == 0` stays at `p == 0.5`).
+  - Report 0.5-threshold sensitivity/specificity/F1/balanced accuracy and `temp_intercept` flip rates in a separate `decision_0p5` section. Keep Stage 4 E19 cutoffs untouched.
+- **Resume:** Supports explicit resume refs at DEV-C block, calibrator, and final analysis granularity via `verify_resume_ref`.
+
+### 2.5 Branch C — E07 L4 GPU: audited unique changed-view midpoint extraction
+
+- **Owned files:** `src/phase2/extract_e07.py`, `scripts/phase2/extract_e07.ipynb`, `tests/test_phase2_e07_extract.py`. *(Stage 4 CPU scoring `score_e07.py` / `score_e07.ipynb` will be finalized in Stage 4 against the frozen `phase2_e07_release` and E29 `draw0_reference` schemas.)*
+- **Runtime:** Colab L4 GPU (pinned `requirements-l4.txt`), one runtime per `MODEL` (`qwen`, `gemma`). `HF_TOKEN` read strictly from Colab Secrets (`google.colab.userdata`) or environment for Gemma and never logged or written to disk.
+- **Mandatory pre-GPU gate:**
+  - Verify `phase2_plan` and `phase2_e07_audit` **before** loading model weights or opening any image.
+  - Hard-refuse if `verdict == "blocked"`, `extraction_plan is None`, `extraction_plan["split"] != "SCREEN"`, or `extraction_plan["confirm_rows"] != 0`.
+  - Run `assert_runtime` matching the bound Stage 2 `model_readiness` execution contract (`bfloat16`, `eager`, CUDA L4).
+- **Extraction contract:**
+  - Instantiate `HFAdapter` strictly from the bound Stage 2 `model_plan` + `models.json` pinned revision (`qwen`: `66285546d2b821cf421d4f5eb2576359d3770cd3`, depth **18**; `gemma`: `093f9f388b31de276ce2de164bdc2081324b9767`, depth **17**). Assert actual `model_fingerprint`, `execution_fingerprint`, `dimension`, and `site_specs` match Stage 2 `model_readiness`.
+  - Extract ONLY the deduplicated unique genuinely-changed SCREEN `image_caption` views in `extraction_plan["chunks"]` (32 views/chunk). Never forward unchanged draw-0 views or `distinct_id_same_text_as_draw0` views.
+  - Construct `ExtractionRequest` (`condition="image_caption"`, batch 1, no truncation, `max_input_tokens=1024`) requesting BOTH `last_caption` and `caption_mean` midpoint sites on the **same single forward** via `src.stage2.evidence.extract_with_evidence`.
+  - Verify pinned SCREEN image SHA-256 against Stage 1 dataset manifest before opening each image; verify caption UTF-8 SHA-256 matches `extraction_plan`.
+  - **Per-chunk repeat determinism check:** Re-extract the first and last view of every chunk (`index 0` and `index n-1`) through `extract_with_evidence` and record `max_abs_diff` for both poolings in `audits.json` (hard-fail if non-finite or exceeds Stage 2's repeat tolerance; `0.0` expected on deterministic L4 `eager`).
+- **Chunk publication, explicit-ref resume, and release:**
+  - Publish each completed 32-view chunk immediately to `phase2/features/e07/<model>/<run_id>/chunk_NNNN/` (`KIND_E07_CHUNK`, `SCHEMA_E07_FEATURES`) with `last_caption.npy`, `caption_mean.npy` (float32), `rows.jsonl`, `token_evidence.jsonl`, and `audits.json`.
+  - Resume accepts an explicit mapping/index of completed `{chunk_index: {path, sha256}}` refs; verifies `plan_identity`, `e07_audit_ref`, `model`, `chunk_index`, expected view hashes, and `.npy` hashes before skipping a chunk.
+  - Once all chunks complete, publish `phase2/features/e07/<model>/releases/<run_id>/` (`KIND_E07_RELEASE`, `SCHEMA_E07_FEATURES`).
+- **Local tests (`tests/test_phase2_e07_extract.py`):** Use an explicit `HFAdapter` fixture subclass (matching Stage 2's `evidence.py` bridge check) to verify blocked-audit refusal, CONFIRM rejection, dual-pooling same-forward extraction, byte-identical exclusion, repeat-check failure detection, chunk resume verification, and release manifest integrity without requiring a GPU.
+
+### 2.6 Stage 2 parallel execution order and expected Colab timing
+
+Once Stage 1's `verify-stage1-bundle` passes and Drive is flushed/remounted, **all 6 Stage 2 runs are mutually independent** and can overlap on separate Colab runtimes:
+
+| Notebook | Runtime | `MODEL` | Dependency | Parallelism | Expected time |
+|---|---|---|---|---|---|
+| `scripts/phase2/run_e29.ipynb` | Colab CPU | `qwen` / `gemma` | Stage 1 `phase2_plan` | Run both models in parallel (or back-to-back) | ~1–2 min / model |
+| `scripts/phase2/run_e17.ipynb` | Colab CPU | `qwen` / `gemma` | Stage 1 `phase2_plan` + `phase2_e17_auth` | Run both models in parallel with E29 & E07 | ~2–4 min / model |
+| `scripts/phase2/extract_e07.ipynb` | Colab L4 GPU | `qwen` / `gemma` (`HF_TOKEN` for Gemma) | Stage 1 `phase2_plan` + `phase2_e07_audit` (`verdict != "blocked"`) | Run both models in parallel on 2 L4s, or sequentially on 1 L4 | Scales with unique changed views (~15–35 min / model for ~1,000–2,000 views at batch 1) |
+
+As soon as either model's `run_e29.ipynb` publishes its `phase2_e29_gate`, Stage 3 planning/execution for any `OPEN` branch (`E30` and/or `E11`) can begin immediately without waiting for E07 or E17.
+
+### 2.7 Stage 2 acceptance criteria
+
+Stage 2 is complete only when **all** items below pass and are recorded with explicit `{path, sha256}` completion references:
+
+- [ ] **Local unit/fixture tests pass:** `tests/test_phase2_e29.py`, `tests/test_phase2_e17.py`, `tests/test_phase2_e07_extract.py`, and `tests/test_phase2_stage2_integration.py` pass (covering paired within-draw arithmetic, unknown-cell mask preservation, E29 gate boundary cases, E17 `en→en` diagonal self-check, BFGS convergence/failure, `<= 1e-12` AUROC/AP invariance, `temp`-only 0.5-decision preservation, target-head misuse rejection, E07 blocked-audit refusal, fake-adapter dual-pooling extraction, repeat-check validation, and explicit-ref resume rejection).
+- [ ] **E29 completed on Colab CPU (Qwen & Gemma):** Both models publish verified `phase2_analysis_block` (with `draw0_reference`) and `phase2_e29_gate` (`OPEN`/`PARK`/`UNRESOLVED` for E30 and E11), with `valid_draws / 2000` recorded.
+- [ ] **E17 completed on Colab CPU (Qwen & Gemma):** Both models pass the `en→en` DEV-C diagonal `atol=0, rtol=0` self-check, publish 4 off-diagonal DEV-C prediction blocks (12 routes/model), publish converged `phase2_e17_calibrators` (`T > 0`, both `source_dev_c` and `target_dev_c` scopes), and publish `phase2_analysis_block` passing per-category AUROC/AP invariance (`<= 1e-12`) and `temp`-only 0.5-decision preservation.
+- [ ] **E07 GPU extraction completed or explicitly gated off (Qwen & Gemma):** If `phase2_e07_audit` verdict is `passed_full` or `passed_restricted`, both models publish verified `phase2_e07_release` artifacts covering 100% of `extraction_plan["chunks"]` with passing repeat checks and zero CONFIRM rows. If `verdict == "blocked"`, record the audit-driven skip explicitly with zero GPU runs.
+- [ ] **Zero Phase 1 mutation & CONFIRM closed:** No writes outside `PHASE1_ROOT/phase2/`, no CONFIRM access, no Stage 4 E19 cutoff edits, and no refitted base heads/scalers.
+
+### 2.8 Stage 2 coding chats: file ownership and ready-to-paste prompts
+
+Because Stage 1's shared interfaces (`src/phase2/interfaces.py`, `gates.py`, `e17_auth.py`, `e07_audit.py`) are already frozen and committed on `phase2`, **Stage 2 Chats A, B, and C** can branch in parallel directly from the commit that adds this Stage 2 specification (`STAGE2_BASE_SHA`), with strictly disjoint file ownership, followed by **Stage 2 Chat D (Integration)**.
+
+| Chat | Branch / base | Owned files (exclusive) | Deliverable |
+|---|---|---|---|
+| **Stage 2 Chat A: E29 worker** | Branch from `STAGE2_BASE_SHA` | `src/phase2/run_e29.py`, `scripts/phase2/run_e29.ipynb`, `tests/test_phase2_e29.py` | CPU paired pooling gap contrast (`image_caption` primary + `caption_only` diagnostic), reusable `draw0_reference`, `phase2_e29_gate` publication, CLI + Colab notebook + tests. |
+| **Stage 2 Chat B: E17 worker** | Branch from `STAGE2_BASE_SHA` | `src/phase2/run_e17.py`, `scripts/phase2/run_e17.ipynb`, `tests/test_phase2_e17.py` | CPU E17 off-diagonal DEV-C scorer (with `en→en` diagonal self-check), float64 BFGS `temp`/`temp_intercept` calibrators (`source_dev_c` & `target_dev_c`), SCREEN evaluator + invariance checks, CLI + Colab notebook + tests. |
+| **Stage 2 Chat C: E07 GPU extractor** | Branch from `STAGE2_BASE_SHA` | `src/phase2/extract_e07.py`, `scripts/phase2/extract_e07.ipynb`, `tests/test_phase2_e07_extract.py` | L4 GPU extractor for audited unique changed SCREEN views (midpoint `image_caption`, both poolings same forward via `extract_with_evidence`, `HF_TOKEN`-safe Gemma, chunk resume, repeat checks), CLI + Colab notebook + fake-adapter tests. |
+| **Stage 2 Chat D: Integration** | Merge A, B, C into `phase2` | Merge commits, `tests/test_phase2_stage2_integration.py`, `phase2.md §2.9` | Cross-worker schema compatibility checks (E29 `draw0_reference`, E17 calibrator/analysis, E07 release), notebook `CODE_REF` check, full Stage 1 + Stage 2 test pass, and Colab run guide. |
+
+#### Ready-to-paste prompts for Stage 2 coding chats
+
+> **Prompt — Stage 2 Chat A (E29 CPU worker)**
+> Branch a clean worktree from `<STAGE2_BASE_SHA>` on `phase2` in `Drazr/Research`. Read `phase2.md` §1.3–1.5, §2.1–2.3 and `docs/phase2_stage1_interfaces.md`. You own ONLY `src/phase2/run_e29.py`, `scripts/phase2/run_e29.ipynb`, and `tests/test_phase2_e29.py`. Do not edit Stage 1 shared modules or Phase 1 files. Implement the CPU E29 worker (`MODEL` selector: `qwen` or `gemma`) consuming the 16 bound Stage 4 SCREEN midpoint blocks per model (`e29_screen_blocks`) and the frozen Stage 4 `(2000, 360)` bootstrap matrix via `src.stage4.metrics`. Compute within-draw paired `G(last_caption) - G(caption_mean)` and residual `G(caption_mean)` across the 14 fixed primary categories and equally weighted 12 off-diagonal routes (plus per-route rows, 4 receiving diagonals, 25-category tables, AP/Brier/NLL/0.5-threshold companions, and the `caption_only` diagnostic on identical draws). Publish `phase2_e29_gate` via `src.phase2.gates.evaluate_e29_gates` + `publish_e29_gate`, and publish `phase2_analysis_block` (including compact reusable `draw0_reference` for Stage 4 `score_e07`) with explicit-ref resume and streamed JSON progress. Add unit/fixture tests covering paired draw arithmetic, unknown-cell mask handling, gate `OPEN`/`PARK`/`UNRESOLVED` cases, and resume rejection. Report branch, commit, owned files, tests passed, and Colab run prerequisites.
+
+> **Prompt — Stage 2 Chat B (E17 CPU worker)**
+> Branch a clean worktree from `<STAGE2_BASE_SHA>` on `phase2` in `Drazr/Research`. Read `phase2.md` §1.3–1.6, §2.1–2.2, §2.4 and `docs/phase2_stage1_interfaces.md`. You own ONLY `src/phase2/run_e17.py`, `scripts/phase2/run_e17.ipynb`, and `tests/test_phase2_e17.py`. Do not edit Stage 1 shared modules or Phase 1 files. Implement the end-to-end CPU E17 worker (`MODEL` selector: `qwen` or `gemma`) that: (1) verifies `phase2_plan` and `phase2_e17_auth` (`phase2.e17_dev_c_transfer`) and asserts exact `en→en` DEV-C diagonal reproduction against Stage 4 (`atol=0, rtol=0`); (2) scores and publishes the 4 target-context off-diagonal DEV-C blocks (12 frozen-source-head `s≠t` routes/model) under `phase2/predictions/e17_dev_c/<model>/<run_id>/` from verified Stage 2 DEV-C features and Stage 3 heads/scalers; (3) fits global float64 `temp` and `temp_intercept` calibrators (equal-weight 14-primary-category macro BCE, analytic-gradient BFGS `gtol=1e-10`, `maxiter=500`, zero init) separately on `source_dev_c` (reused Stage 4 diagonals) and `target_dev_c` (frozen source head on target DEV-C, never target-trained heads), publishing `phase2_e17_calibrators`; and (4) evaluates all 5 arms on reused Stage 4 SCREEN logits vs `raw` and fixed FIT-prior references with paired `(2000, 360)` bootstrap intervals, enforcing per-category AUROC/AP invariance (`<= 1e-12`), `T > 0`, `temp`-only 0.5-decision invariance, and separate `decision_0p5` reporting. Keep CONFIRM closed and E19 cutoffs untouched. Support explicit-ref resume and streamed JSON progress. Add fixture tests and report branch, commit, owned files, tests passed, and Colab prerequisites.
+
+> **Prompt — Stage 2 Chat C (E07 L4 GPU extractor worker)**
+> Branch a clean worktree from `<STAGE2_BASE_SHA>` on `phase2` in `Drazr/Research`. Read `phase2.md` §1.3–1.4, §1.7, §2.1–2.2, §2.5, `src/stage2/evidence.py`, and `docs/phase2_stage1_interfaces.md`. You own ONLY `src/phase2/extract_e07.py`, `scripts/phase2/extract_e07.ipynb`, and `tests/test_phase2_e07_extract.py`. Do not edit Stage 1 shared modules or Phase 1 files. Implement the L4 GPU extractor (`MODEL` selector: `qwen` or `gemma`, secret-safe `HF_TOKEN` for Gemma, `assert_runtime` check) that refuses to run unless `phase2_e07_audit` has `verdict ∈ {"passed_full", "passed_restricted"}` and `confirm_rows == 0`. Extract ONLY the deduplicated unique genuinely-changed SCREEN `image_caption` views in `extraction_plan["chunks"]` at fixed midpoint (`qwen` depth 18, `gemma` depth 17), capturing BOTH `last_caption` and `caption_mean` on the same forward via `src.stage2.evidence.extract_with_evidence` (batch 1, `bfloat16`, `eager`, no truncation, 32-view chunks, pinned image/caption SHA-256 verification, first/last repeat determinism checks). Publish immutable `phase2_e07_chunk` artifacts with explicit-ref chunk resume, then publish `phase2_e07_release`. Stream JSON progress events and keep CONFIRM strictly closed. Add fake-`HFAdapter` unit/fixture tests covering blocked-audit refusal, CONFIRM rejection, dual-pooling same-forward extraction, byte-identical exclusion, repeat-check failure detection, chunk resume, and release manifest integrity. Report branch, commit, owned files, tests passed, and Colab L4 prerequisites separately from local checks.
