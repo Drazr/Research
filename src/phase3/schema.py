@@ -190,12 +190,11 @@ def publish_phase3(
         "storage_scope": producer["storage_scope"],
         "software_versions": plain(producer["software_versions"]),
         "run_id": run,
+        "model_fingerprint": model_fingerprint,
+        "seeds": plain(seeds) if seeds is not None else {},
         "upstream_artifacts": [plain(u) for u in upstream],
+        "phase3_version": PHASE3_CPU_VERSION,
     }
-    if model_fingerprint is not None:
-        meta["model_fingerprint"] = model_fingerprint
-    if seeds is not None:
-        meta["seeds"] = plain(seeds)
 
     folder = publish(root, f"{ns}/{run}", meta, payload)
     marker_path = folder / MARKER
