@@ -222,3 +222,17 @@ Planning freeze `phase3-cpu-stageA2.v1`. All four Stage A2 CPU workers import sh
 | **Chat 2: E41** | Branch from `PHASE3_A2_BASE_SHA` | `src/phase3/run_e41.py`, `scripts/phase3/run_e41.ipynb`, `tests/test_phase3_e41.py` | ~3–5 min / model |
 | **Chat 3: E44** | Branch from `PHASE3_A2_BASE_SHA` | `src/phase3/run_e44.py`, `scripts/phase3/run_e44.ipynb`, `tests/test_phase3_e44.py` | ~2–3 min / model |
 | **Chat 4: E12** | Branch from `PHASE3_A2_BASE_SHA` | `src/phase3/run_e12.py`, `scripts/phase3/run_e12.ipynb`, `tests/test_phase3_e12.py` | ~3–5 min / model |
+
+
+---
+
+## Stage B1: finalized L4 GPU foundation specification (`E39+E31`, `E23`; `E35` dropped) — 20 November 2026
+
+Planning freeze `phase3-gpu-stageB1.v1`. Based on Stage A3 priorities, **`E35` (`G7`) is dropped** (`e35_excluded = True`) so Track B focuses strictly on closing **`G9–Q6`** (`E39+E31` and `E23`).
+
+- **Owned files (Stage B1 Foundation):** `src/phase3/gpu_plan.py`, `scripts/phase3/prepare_phase3_gpu.ipynb`, `tests/test_phase3_gpu_foundation.py` (plus Stage B1 exports in `src/phase3/{schema,interfaces}.py`).
+- **Scope & artifacts (`phase3_gpu_plan`, `KIND_GPU_PLAN = "phase3_gpu_plan"`, `SCHEMA_GPU_PLAN = "phase3.gpu_plan.v1"`):**
+  - Authenticates Phase 1 (`bind_phase1`), optional Stage A1 `phase3_cpu_plan` (`93cbf480...`), and Stage 1 metadata with zero raw image IO and `CONFIRM` strictly closed.
+  - Freezes `E39_SITES` (8 sub-caption token slices + Unicode `P*/Z*/C*` non-punct heuristic in `select_e39_token_indices`), `E31_SITES` (`decoder_visual_mean`, `attention_from_last_caption`, `attention_from_caption_mean`), 12 `SCREEN`-only 32-image chunks (`1,440` views/condition).
+  - Freezes `build_e23_pair_plan`: deterministic label/metadata-only (`G9Q6-E23-pair-v1`) disjoint opposite-label `SCREEN` pairs per category (`6a20677eee04fd08 / plant.n.02 = None` preserved; zero model scores accessed), deduplicated directed swapped-image pairs chunked at 32 pairs, plus 8-row `authentic_parity_sample`.
+  - Freezes `PHASE3_GPU_DECISION_RANGES` for `E39`, `E31`, and `E23`.

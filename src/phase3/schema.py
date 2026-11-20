@@ -17,6 +17,7 @@ from src.common.storage import MARKER, file_sha256, new_run_id, phase1_root, pub
 from src.stage2.schema import REPO, check, contract, frozen, json_bytes, plain
 
 PHASE3_CPU_VERSION = "phase3-cpu-stageA1.v1"
+PHASE3_GPU_VERSION = "phase3-gpu-stageB1.v1"
 PHASE3_NAMESPACE = "phase3"
 
 MODELS = ("qwen", "gemma")
@@ -28,6 +29,7 @@ CLOSED_SPLITS = ("CONFIRM",)
 KIND_PROBE_PAYLOAD = "phase3_storage_probe_payload"
 KIND_PROBE = "phase3_storage_probe"
 KIND_CPU_PLAN = "phase3_cpu_plan"
+KIND_GPU_PLAN = "phase3_gpu_plan"
 KIND_PREDICTION = "phase3_prediction_block"
 KIND_CALIBRATORS = "phase3_e41_calibrators"
 KIND_MAPS = "phase3_e12_maps"
@@ -36,6 +38,7 @@ KIND_RELEASE = "phase3_release"
 
 SCHEMA_PROBE = "phase3.storage_probe.v1"
 SCHEMA_CPU_PLAN = "phase3.cpu_plan.v1"
+SCHEMA_GPU_PLAN = "phase3.gpu_plan.v1"
 SCHEMA_PREDICTION = "phase3.prediction.v1"
 SCHEMA_CALIBRATORS = "phase3.calibrators.v1"
 SCHEMA_MAPS = "phase3.maps.v1"
