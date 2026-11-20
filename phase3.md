@@ -158,3 +158,67 @@ Stage A1 is a single foundation unit (no parallel split needed for A1; it freeze
   - [ ] All local unit/fixture tests in `tests/test_phase3_cpu_foundation.py` pass (namespace guard, `CONFIRM` rejection, two-process `storage_probe`, Phase 2 ref tamper rejection, `phase3_cpu_plan` roundtrip, notebook contract).
   - [ ] `scripts/phase3/prepare_phase3_cpu.ipynb` passes on mounted Colab CPU (`PHASE1_ROOT`), passes `storage_probe` under `phase3/probes/`, pre-initializes all `PHASE3_PARENT_DIRS`, passes `E40`/`E41`/`E12` metadata & `en→en` preflight checks, and publishes immutable `phase3_cpu_plan` `{path, sha256}`.
   - [ ] Zero Phase 1 or Phase 2 mutation; zero `CONFIRM` access.
+
+---
+
+## Stage A2: finalized CPU parallel workers (`E40`, `E41`, `E44`, `E12`) — 20 November 2026
+
+Planning freeze `phase3-cpu-stageA2.v1`. All four Stage A2 CPU workers import shared contracts exclusively from `src.phase3.interfaces` (plus `src.phase2.interfaces`, `src.stage3.{engine,readouts}`, `src.stage4.{plan,predictions,metrics}`) and branch in parallel from `PHASE3_A2_BASE_SHA` on `phase3` with strictly disjoint file ownership.
+
+### A2.1 Shared Stage A2 runtime & contract rules (all 4 workers)
+
+- **Entry binding:** Load `plan = load_phase3_cpu_plan(root, protocol, plan_ref, bind=True)` so `plan.binding` (`Phase1Binding`) is already bound and authenticated.
+- **Protocol keys:** Always read categories from `protocol["category_order"]` (25 ordered categories), primary categories from `protocol["primary_categories"]` (14 categories), and SCREEN minimum support from `int(protocol["minimum_positive_and_negative"]["SCREEN"])` (`20`). Preserve unknown cell `6a20677eee04fd08` (`plant.n.02 = null`).
+- **Bootstrap & metrics:** Reuse frozen Stage 4 `(2000, 360)` bootstrap (`load_bootstrap(plan.binding.stage4_plan)`) and `src.stage4.metrics` (`probabilities`, `binary_metrics`, `bootstrap_counts`, `bootstrap_binary_metrics`, `fixed_macro`, `bootstrap_interval`, `paired_image_alignment`, `support_status`). Compute all differences, macros, and 12-route means **within every bootstrap draw** before taking linear 2.5th/97.5th percentiles.
+- **Colab notebooks:** 4-cell structure (`CODE_REF = 'phase3'`, `PHASE1_ROOT = Path('/content/drive/MyDrive/phase1')`, single `MODEL` selector `'qwen'` or `'gemma'` in Cell 3, `PLAN_REF` in Cell 3, single BLAS/OpenMP thread, pinned `requirements-stage2-cpu.txt`, streaming JSON progress).
+- **Guardrails:** Strictly one producer per `<experiment>/<model>`; writes only under `PHASE1_ROOT/phase3/` via `publish_phase3`; Phase 1 & Phase 2 strictly read-only; `CONFIRM` strictly closed (`require_open_split`); explicit-ref resume via `verify_resume_ref`.
+
+### A2.2 Frozen wire schemas & worker specifications
+
+#### Worker 1 — `E40` (`src/phase3/run_e40.py`, `scripts/phase3/run_e40.ipynb`, `tests/test_phase3_e40.py`)
+- **Scope:** Cross-depth (`qwen`: `[9, 18, 27, 36]`, `gemma`: `[9, 17, 26, 34]`) and `caption_only` E30 2×2 head × pooling swap.
+- **Reuse:** Reuses Phase 2 E30's 8 midpoint `image_caption` crossed blocks (`plan["e40_inventory"][model]["reused_midpoint_crossed_refs"]`) and all 64 Stage 4 matched SCREEN blocks.
+- **New scoring:** Scores the remaining **7 `(depth, condition)` cells** (56 new crossed blocks / 224 routes per model: `head_last_on_mean` and `head_mean_on_last`, including crossed `t→t` diagonals) via `src.stage3.engine.transform` after running in-memory `en→en` matched self-checks (`atol=0, rtol=0`) per `(depth, condition, pooling)` and asserting midpoint `image_caption` parity (`<= 1e-12`) against Phase 2 E30.
+- **Outputs:**
+  - Crossed blocks under `phase3/predictions/e40_crossed/<model>/<run_id>/` (`KIND_PREDICTION`, `SCHEMA_PREDICTION`).
+  - Analysis under `phase3/results/e40/<model>/<run_id>/` (`KIND_ANALYSIS`, `SCHEMA_ANALYSIS`) containing per-`(depth, condition)` 4-arm summaries, paired `feature_gain_fixed_head_last`, `feature_gain_fixed_head_mean`, `interaction`, `off_distribution_collapse`, AND the paired `image_caption − caption_only` swap contrast on identical `(2000, 360)` draws.
+
+#### Worker 2 — `E41` (`src/phase3/run_e41.py`, `scripts/phase3/run_e41.ipynb`, `tests/test_phase3_e41.py`)
+- **Scope:** Unified 7-arm supervision ladder (`raw`, `source_dev_c`, `E11_diag`, `E11_cov`, `E11_diag+source_dev_c`, `target_dev_c`, `E11_diag+target_dev_c`) across **midpoint** and **final depth** (`image_caption`, both `last_caption` and `caption_mean`).
+- **Reuse & new computations:**
+  - Reuses Phase 2 E17's midpoint `last_caption` DEV-C blocks/calibrators and Phase 2 E11's midpoint `caption_mean` diagonal adapted blocks.
+  - Fits `temp` and `temp_intercept` BFGS calibrators (exact analytic gradient, `gtol=1e-10`, `maxiter=500`, L-BFGS-B polish on `status == 2` precision loss matching Phase 2 `run_e17.py`) on `source_dev_c` and `target_dev_c` for the newly covered `(depth, pooling)` cells (explicitly verifying `T > 0` and `<= 1e-12` AUROC/AP invariance).
+  - Computes **`E11_diag`** (`mean_shift` + `mean_scale` from Stage 3 FIT `statistics`, verifying `mean_shift` `<= 1e-12` AUROC/AP invariance) and **`E11_cov`** (regularized full-covariance CORAL whitening in source-FIT PCA subspace `r ∈ {64, 256}` using unlabeled `FIT` features only — **zero target labels** — projecting `H_t` into source-FIT PCA, whitening by shrunk `Sigma_t^{-1/2}`, re-coloring by `Sigma_s^{1/2}`, reconstructing back to raw space, and passing through unchanged source scaler + head).
+  - Evaluates all 7 arms on reused Stage 4 `SCREEN` logits/features vs `raw`, vs `FIT-prior`, and vs `target_dev_c` on `(2000, 360)` bootstrap draws.
+- **Outputs:** `phase3/predictions/e41_cov/<model>/<run_id>/`, `phase3/calibrators/e41/<model>/<run_id>/`, `phase3/results/e41/<model>/<run_id>/`.
+
+#### Worker 3 — `E44` (`src/phase3/run_e44.py`, `scripts/phase3/run_e44.ipynb`, `tests/test_phase3_e44.py`)
+- **Scope:** Selective-confidence coverage and retained risk (`E19` protocol at nominal `50%`, `75%`, `90%` coverage using `c = max(p, 1-p)` with exact tie handling) at midpoint `image_caption` across 5 arms:
+  1. `last_caption:raw` (reproducing Phase 1 E19 to `<= 1e-12`),
+  2. `last_caption:source_dev_c` (Phase 2 E17 `source_dev_c:temp_intercept`),
+  3. `last_caption:target_dev_c` (Phase 2 E17 `target_dev_c:temp_intercept`),
+  4. `caption_mean:raw` (cutoffs fitted on Stage 2 `caption_mean` `DEV-C` source diagonals),
+  5. `caption_mean:e11_mean_scale` (cutoffs fitted on `caption_mean` `DEV-C` diagonals/adapted routes, evaluated on Phase 2 E11 `mean_scale` `SCREEN` logits).
+- **Mandatory reporting:** Actual coverage & `|coverage - nominal|` drift, retained risk vs base error vs score-blind risk at matched coverage, positive vs negative retention rates, explicit support status (`>= 20` per outcome class), and paired differences vs `last_caption:raw` on `(2000, 360)` bootstrap draws (cutoffs held fixed during resampling).
+- **Output:** `phase3/results/e44/<model>/<run_id>/` (`KIND_ANALYSIS`, `SCHEMA_ANALYSIS`).
+
+#### Worker 4 — `E12` (`src/phase3/run_e12.py`, `scripts/phase3/run_e12.ipynb`, `tests/test_phase3_e12.py`)
+- **Scope:** Image-anchored PCA-64 constrained (`orthogonal_procrustes`) vs flexible (`ridge_linear`) feature maps on midpoint `image_caption` / `caption_mean` (`G_res` residual).
+- **Exact recipe:**
+  - Verify exact 2,160 paired `FIT` and 180 paired `DEV-S` image IDs across all 4 languages.
+  - For each source language `s`, fit a source-`FIT` PCA basis `r = min(64, source_rank)` (mean-centered on source `FIT`) and fit the `r=64` source linear category head (`C ∈ {0.01, 0.1, 1.0, 10.0}` selected on source `DEV-S` primary macro AUROC, deterministic tie-break favoring stronger regularization). Report full-space Stage 4 `caption_mean` performance separately as reference.
+  - For each off-diagonal route `s ≠ t` (12 directed routes), project target `t` `FIT`/`DEV-S`/`SCREEN` features into source `s`'s `r=64` basis and compare 3 arms:
+    1. `identity_centered` (target centered by target `FIT` mean, shifted to source `FIT` mean in `r=64` space),
+    2. `orthogonal_procrustes` (SVD orthogonal `Q ∈ O(r)` minimizing `||Z_t Q - Z_s||_F^2` on paired 2,160 `FIT` image anchors — zero target labels),
+    3. `ridge_linear` (`W = (Z_t^T Z_t + alpha I)^{-1} Z_t^T Z_s`, with `alpha ∈ {0.01, 0.1, 1.0, 10.0, 100.0}` selected strictly by paired 180-image `DEV-S` feature reconstruction MSE — **zero target semantic labels!**).
+  - Report paired `SCREEN` `AUROC`/`AP`/`Brier`/`NLL` gap reductions, `ridge − procrustes` constraint contrast, recovered fraction of `r=64` `G_res`, and paired `SCREEN` feature reconstruction MSE alongside functional transfer (`supervision_label = "paired_image_adapted"`).
+- **Outputs:** `phase3/maps/e12/<model>/<run_id>/` (`KIND_MAPS`, `SCHEMA_MAPS`), `phase3/predictions/e12/<model>/<run_id>/` (`KIND_PREDICTION`, `SCHEMA_PREDICTION`), `phase3/results/e12/<model>/<run_id>/` (`KIND_ANALYSIS`, `SCHEMA_ANALYSIS`).
+
+### A2.3 Stage A2 parallel coding ownership
+
+| Chat | Branch / base | Owned files (exclusive) | Est. Colab CPU runtime |
+|---|---|---|---|
+| **Chat 1: E40** | Branch from `PHASE3_A2_BASE_SHA` | `src/phase3/run_e40.py`, `scripts/phase3/run_e40.ipynb`, `tests/test_phase3_e40.py` | ~3–5 min / model |
+| **Chat 2: E41** | Branch from `PHASE3_A2_BASE_SHA` | `src/phase3/run_e41.py`, `scripts/phase3/run_e41.ipynb`, `tests/test_phase3_e41.py` | ~3–5 min / model |
+| **Chat 3: E44** | Branch from `PHASE3_A2_BASE_SHA` | `src/phase3/run_e44.py`, `scripts/phase3/run_e44.ipynb`, `tests/test_phase3_e44.py` | ~2–3 min / model |
+| **Chat 4: E12** | Branch from `PHASE3_A2_BASE_SHA` | `src/phase3/run_e12.py`, `scripts/phase3/run_e12.ipynb`, `tests/test_phase3_e12.py` | ~3–5 min / model |
