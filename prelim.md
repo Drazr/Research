@@ -883,44 +883,62 @@ S references identify the exact M1 paper; T references identify the exact M2 pap
 
 - **S01:** [Understanding intermediate layers using linear classifier probes](https://arxiv.org/abs/1610.01644).
 - **S02:** [Designing and Interpreting Probes with Control Tasks](https://aclanthology.org/D19-1275/).
+- **S04:** [Responses Fall Short of Understanding: Revealing the Gap between Internal Representations and Responses in Visual Document Understanding](https://arxiv.org/abs/2604.04411).
 - **S05:** [Encoded but Not Routed: Explaining the Table-Chart Gap in Scientific Claim Verification](https://arxiv.org/abs/2606.01679).
 - **S06:** [How Multimodal LLMs Solve Image Tasks: A Lens on Visual Grounding, Task Reasoning, and Answer Decoding](https://arxiv.org/abs/2508.20279).
+- **S07:** [Indic-TunedLens: Interpreting Multilingual Models in Indian Languages](https://arxiv.org/abs/2602.15038).
 - **S10:** [Information-Theoretic Probing for Linguistic Structure](https://aclanthology.org/2020.acl-main.420/).
 - **S11:** [Information-Theoretic Probing with Minimum Description Length](https://aclanthology.org/2020.emnlp-main.14/).
 - **S12:** [A Bayesian Framework for Information-Theoretic Probing](https://aclanthology.org/2021.emnlp-main.229/).
 - **S15:** [What you can cram into a single $&!#* vector: Probing sentence embeddings for linguistic properties](https://aclanthology.org/P18-1198/).
 - **S16:** [Probing the Probing Paradigm: Does Probing Accuracy Entail Task Relevance?](https://aclanthology.org/2021.eacl-main.295/).
 - **S17:** [Subspace Chronicles: How Linguistic Information Emerges, Shifts and Interacts during Language Model Training](https://aclanthology.org/2023.findings-emnlp.879/).
+- **S19:** [Eliciting Latent Predictions from Transformers with the Tuned Lens](https://arxiv.org/abs/2303.08112).
 - **S20:** [The Geometry of Truth: Emergent Linear Structure in Large Language Model Representations of True/False Datasets](https://arxiv.org/abs/2310.06824).
+- **S23:** [The First to Know: How Token Distributions Reveal Hidden Knowledge in Large Vision-Language Models?](https://arxiv.org/abs/2403.09037).
 - **S24:** [Response Wide Shut? Surprising Observations in Basic Vision Language Model Capabilities](https://aclanthology.org/2025.acl-long.1241/).
 - **S25:** [Mirage Probes: How Vision Models Fake Visual Understanding](https://arxiv.org/abs/2606.13870).
 - **S29:** [Lingua Franca or Probing Artifact? Rethinking Latent Language in Multilingual LLMs](https://aclanthology.org/2026.findings-emnlp.504/).
 - **S30:** [Probe Generalization as Subspace Selection for OOD Deception Detection](https://arxiv.org/abs/2609.02893).
 - **S31:** [A Shared Geometry of Difficulty in Multilingual Language Models](https://aclanthology.org/2026.acl-short.66/).
+- **S32:** [LLMs Encode Relevance as a Layer-Wise Cross-Lingual Signal](https://arxiv.org/abs/2607.15555).
 - **S33:** [Shared Doubt: Zero-Shot Cross-Lingual Confidence Estimation for Language Models](https://arxiv.org/abs/2605.31220).
 - **S34:** [Examining Cross-lingual Contextual Embeddings with Orthogonal Structural Probes](https://aclanthology.org/2021.emnlp-main.376/).
+- **S38:** [Probing the Emergence of Cross-lingual Alignment during LLM Training](https://aclanthology.org/2024.findings-acl.724/).
 - **S39:** [Cross-Lingual Transfer and Shared Geometry of Deception Probes in LLMs](https://aclanthology.org/2026.mrl-1.33/).
+- **S40:** [Does the Truthfulness Signal Survive Code-Mixing? Probing Hidden States for Hallucination Detection in Hinglish](https://arxiv.org/abs/2609.22138).
+- **S41:** [Same Neurons, Different Languages: Probing Morphosyntax in Multilingual Pre-trained Models](https://aclanthology.org/2022.naacl-main.114/).
 - **S44:** [Pareto Probing: Trading Off Accuracy for Complexity](https://aclanthology.org/2020.emnlp-main.254/).
+- **S45:** [On the Language-specificity of Multilingual BERT and the Impact of Fine-tuning](https://aclanthology.org/2021.blackboxnlp-1.15/).
 - **S46:** [Leaving the English Basin: A Logit-Lens View of Cross-Lingual Emotion Transfer in Multilingual LLMs](https://aclanthology.org/2026.mrl-1.7/).
 - **S47:** [HALP: Detecting Hallucinations in Vision-Language Models without Generating a Single Token](https://aclanthology.org/2026.eacl-long.287/).
+- **S49:** [Can VLMs Actually See and Read? A Survey on Modality Collapse in Vision-Language Models](https://aclanthology.org/2025.findings-acl.1256/).
 - **T02:** [Offline bilingual word vectors, orthogonal transformations and the inverted softmax](https://arxiv.org/abs/1702.03859).
 - **T04:** [Learning principled bilingual mappings of word embeddings while preserving monolingual invariance](https://aclanthology.org/D16-1250/).
+- **T05:** [Word Translation Without Parallel Data](https://arxiv.org/abs/1710.04087).
 - **T06:** [A robust self-learning method for fully unsupervised cross-lingual mappings of word embeddings](https://aclanthology.org/P18-1073/).
 - **T10:** [Cross-Lingual Ability of Multilingual BERT: An Empirical Study](https://arxiv.org/abs/1912.07840).
 - **T11:** [What makes multilingual BERT multilingual?](https://arxiv.org/abs/2010.10938).
 - **T14:** [Cross-lingual Alignment Methods for Multilingual BERT: A Comparative Study](https://aclanthology.org/2020.findings-emnlp.83/).
+- **T15:** [mT5: A Massively Multilingual Pre-trained Text-to-Text Transformer](https://aclanthology.org/2021.naacl-main.41/).
 - **T16:** [When Being Unseen from mBERT is just the Beginning: Handling New Languages With Multilingual Language Models](https://arxiv.org/abs/2010.12858).
 - **T18:** [Making Monolingual Sentence Embeddings Multilingual using Knowledge Distillation](https://aclanthology.org/2020.emnlp-main.365/).
 - **T19:** [Language-agnostic BERT Sentence Embedding](https://aclanthology.org/2022.acl-long.62/).
 - **T21:** [VECO: Variable and Flexible Cross-lingual Pre-training for Language Understanding and Generation](https://aclanthology.org/2021.acl-long.308/).
+- **T22:** [Rethinking embedding coupling in pre-trained language models](https://arxiv.org/abs/2010.12821).
 - **T23:** [Choosing Transfer Languages for Cross-Lingual Learning](https://aclanthology.org/P19-1301/).
 - **T27:** [IGLUE: A Benchmark for Transfer Learning across Modalities, Tasks, and Languages](https://proceedings.mlr.press/v162/bugliarello22a.html).
+- **T31:** [mBLIP: Efficient Bootstrapping of Multilingual Vision-LLMs](https://aclanthology.org/2024.alvr-1.2/).
+- **T38:** [How Multilingual is Multilingual BERT?](https://aclanthology.org/P19-1493/).
 - **T40:** [First Align, then Predict: Understanding the Cross-Lingual Ability of Multilingual BERT](https://arxiv.org/abs/2101.11109).
 - **T42:** [Unsupervised Dense Information Retrieval with Contrastive Learning](https://arxiv.org/abs/2112.09118).
 - **T45:** [Crossmodal-3600: A Massively Multilingual Multimodal Evaluation Dataset](https://aclanthology.org/2022.emnlp-main.45/).
 - **T47:** [MURAL: Multimodal, Multitask Representations Across Languages](https://aclanthology.org/2021.findings-emnlp.293/).
 - **T49:** [Cross-View Language Modeling: Towards Unified Cross-Lingual Cross-Modal Pre-training](https://aclanthology.org/2023.acl-long.315/).
 - **T55:** [Cross-lingual and Multilingual CLIP](https://aclanthology.org/2022.lrec-1.739/).
+- **T59:** [LMCap: Few-shot Multilingual Image Captioning by Retrieval Augmented Language Model Prompting](https://arxiv.org/abs/2305.19821).
+- **T60:** [CONCAP: Seeing Beyond English with Concepts Retrieval-Augmented Captioning](https://arxiv.org/abs/2507.20411).
+- **T62:** [Once Correct, Still Wrong: Counterfactual Hallucination in Multilingual Vision-Language Models](https://arxiv.org/abs/2602.05437).
 
 The numerical support tables and partition rule derive from the pinned released annotation CSV. The separate M1/M2 methodology files, research questions, bibliography and historical analysis are unchanged. The workspace retains the prior prelim.md, original design JSON/generator, reviewed card JSON, phase-review manifest, pinned-CSV audits and exact image-ID partitions. Phase 1 outcome evidence is in [phase1.md](phase1.md#phase-1-results-review--19-november-2026).
 
@@ -988,3 +1006,355 @@ Report each direction as **retain**, **revise**, **park within tested scope** or
 The remaining cards stay in the catalog. E05/E06/E15 wait for a specific capacity, sample or rank limitation. E08 can localize a draw or pooling sensitivity to measured surface features, while E09/E18 need adequate stratum support and a specific heterogeneity claim. E10/E12/E13/E14/E22 wait for a residual that calls for geometry, an alignment objective or shared slopes beyond simple controls. E20 needs enough out-of-fold decision errors and a reason to learn a correctness score beyond the calibration checks. E21/E26 can address deeper layer-specific questions after the pooling dependency is understood. E23/E24 require changed visual inputs or a supported common terminal site, so they are candidates if the results leave a specific visual-input question. E27 separates training-view diversity from test-view sensitivity if E07 warrants it. E28 addresses co-occurrence extrapolation and remains separate until a support-shift question earns priority. G7 remains outside this round.
 
 Persist only reusable alternate-view features and verified completed comparison outputs, plus DEV-C score blocks and fitted calibrator or transform parameters reused downstream. Reuse the accepted features, logits and resampling identities where compatible. Intermediate metric arrays and plotting inputs can stay in memory. No experiment in this section has been run, and the designs carry no novelty claim.
+
+### 12.5 Alternatives that need new inputs or fits
+
+Select for decision value first. Reuse is a way to save time after a comparison earns its place. The five scheduled Phase 2 designs address the observed pooling, caption-selection and probability questions. They leave a separate visual-input question open. Keep the following alternatives visible when deciding what to prioritize after the first results.
+
+| Candidate | New work and distinct decision | When it earns a run |
+|---|---|---|
+| **E23 — Change the image while holding the caption fixed** | New VLM forwards on crossed image–caption pairs. Compare a category score for the same native caption with a released positive image and a released negative image. This tests sensitivity to the image under a fixed text input. E02 changes whether an image is present, and E07 changes the caption for an unchanged image. | **Strongest fresh-input alternative.** Phase 1's strong shallow-caption reference and visual-only probes motivate it already. Prioritize it over E30 or E11 if deciding whether the readout responds to changed visual evidence would change the direction of the focused study more than understanding its pooling or transfer behavior. |
+| **E14 — Shared slopes versus context-specific slopes** | Fit new common and context-adjusted category heads with equal image weight and matched selection rules. This tests whether a single supervised category rule can work across released caption contexts. | Prioritize if the central question is whether a common fitted rule exists. E11 tests what happens when the original source head stays fixed, so it cannot answer this question. |
+| **E24 — Change modality order** | New VLM forwards for both orderings at the same verified terminal site after both modalities. This tests whether input layout changes accessibility or portability. | Consider when input layout becomes the question and both checkpoints' actual serialization and terminal site are verified. Phase 1 did not validate that optional shared site. |
+
+For E23, a useful first implementation pairs disjoint SCREEN images with opposite known labels within each supported category and uses both captions as anchors. Evaluate authentic and crossed image–caption combinations, reuse the same pairs across contexts and keep the head fixed. Pair selection uses only released labels and metadata. Report the paired signed score change in both caption directions and the actual support before interpreting aggregate behavior. The swapped combinations can be off-distribution, and released image labels do not certify what the caption mentions. This supports a bounded claim about readout sensitivity to the image. It cannot establish the cause of a language gap or define a hallucination target.
+
+These alternatives are candidates for selection. The existing Stage 1 specification and five-experiment schedule remain the implementation scope unless a replacement is chosen.
+
+## 13. Post-Phase-1 and post-Phase-2 candidate preliminary experiments (E31–E45)
+
+Added 20 November 2026 from a systematic pass over [M1.md](M1.md), [M2.md](M2.md) and [research.md](research.md), evaluating the [Phase 1 results review](phase1.md#phase-1-results-review--19-november-2026) and the [Phase 2 results review](phase2.md#phase-2-results-review--decision-register--20-november-2026) **individually** and **without restricting candidates to reusing Phase 1 artifacts**. All 15 additions (`E31–E45`) are non-overlapping with `E01–E30`, preserve the shared image-ID partitions (`FIT` / `DEV-S` / `DEV-C` / `SCREEN`; **`CONFIRM` stays closed**), require zero new human annotation, translation, native lexical checking or base-model weight updates, and remain candidate preliminary proposals rather than completed runs or novelty claims.
+
+| ID | Trigger source | Question scope | Artifact / compute mode | Core method lineage |
+|---|---|---|---|---|
+| **E31** | Phase 1 review | G9–Q6 | Fresh GPU extraction (decoder visual tokens + attention) | S05, S47, S24, S49, T31 |
+| **E32** | Phase 1 review | G9–Q6 (`Q11` aspect) | New CPU multi-source fits (can reuse features or fresh sites) | S39, T23, T27, T38, S40 |
+| **E33** | Phase 1 review | G9–Q6 | New CPU language-ID & subspace fits | S29, S45, S17, S46 |
+| **E34** | Phase 1 review | G9–Q6 | Fresh GPU extraction (vocab logits / affine lens) | S23, S29, S07, S19, T22 |
+| **E35** | Phase 1 review | **G7 (Ongoing)** | Fresh GPU structured generation + constrained scoring | S24, S04, S32, S05, T15 |
+| **E36** | Phase 1 review | **G7 (Ongoing)** | Fresh GPU retrieval-augmented / guided generation | T59, T60, T42, S24, S33 |
+| **E37** | Phase 1 review | **G2–Q2 (Standby)** | New CPU fits on released En/Hi mention proxies | S16, S25, T45, `research.md` |
+| **E38** | Phase 1 review | **G14–Q12 (Standby)** | Fresh GPU cue-conflict forwards + generation | S06, S24, S32, T62 |
+| **E39** | Phase 2 review | G9–Q6 | Fresh GPU extraction (fine-grained within-caption positions) | S05, S15, S06, S29, T10 |
+| **E40** | Phase 2 review | G9–Q6 | CPU crossed scoring across all 4 depths + `caption_only` | S05, S31, S16, T40 |
+| **E41** | Phase 2 review | G9–Q6 | CPU label-free covariance whitening + `E11 × E17` ladder | T04, T14, T27, S33, S39 |
+| **E42** | Phase 2 review | G9–Q6 | New CPU L1/ElasticNet sparse fits & coordinate overlap | S38, S41, S30, S44 |
+| **E43** | Phase 2 review | G9–Q6 | CPU nested DEV-C few-shot curves + per-category shrinkage | S33, S12, T27 |
+| **E44** | Phase 2 review | G9–Q6 | CPU E19 selective-risk re-evaluation under Phase 2 arms | S33, S47, T27 |
+| **E45** | Phase 2 review | G9–Q6 | CPU difference-of-means prototypes & CSLS neighbor readouts | S20, T02, T05, T42 |
+
+---
+
+### 13.1 Candidates motivated by the Phase 1 review (evaluated independently of Phase 2)
+
+The Phase 1 review established: (a) strong within-context accessibility (`0.894–0.909` midpoint diagonals; `0.942–0.947` visual-only encoder/projector) alongside universal off-diagonal transfer penalties (`48/48` unfavorable per model); (b) marked directional asymmetry (`En→Indic` gaps exceeded every reverse `Indic→En` route at midpoint, with `Hi→En` smallest in both models); (c) strong shallow caption-only predictability (`char TF-IDF` `0.850–0.883`, beating Qwen caption-only in `3/4` contexts); (d) divergence between ranking and proper loss at final depth (narrower AUROC gap `0.110→0.080` Qwen / `0.062→0.042` Gemma alongside worse log-loss penalty `0.382→0.437` / `0.231→0.365`); and (e) unexamined structured reporting (`G7`) despite `0.90–0.947` internal accessibility.
+
+#### E31. Decoder visual-token accessibility and caption-to-visual attention routing
+
+**Origin:** Phase 1 review. **Question link:** G9–Q6. **Compute mode:** Fresh GPU extraction (decoder visual-token spans + attention summaries; does not require Phase 1 feature reuse).
+
+**Triggered by:** Phase 1 `E02` showed image-only encoder/projector AUROC (`0.947/0.942` Qwen, `0.945/0.942` Gemma) outperformed every combined-input midpoint decoder diagonal (`0.894–0.909`), while decoder visual-token pooling was unavailable in Phase 1 and Gemma's midpoint image gain over caption-only was only `+0.012`.
+
+**Question:** Does visual category information degrade inside the decoder's visual-token stream itself, or does it remain intact on decoder visual tokens while failing to route into caption readout positions across languages?
+
+**Concrete comparison:** For both checkpoints and all four languages (`en/hi/bn/te`) at fixed depths `ceil(L/4), ceil(L/2), ceil(3L/4), L`, extract **decoder visual-token mean states** (pooled strictly over the verified image-token span inside each decoder block) alongside caption-span states, and record layer-wise attention mass from `last_caption` and `caption_mean` tokens onto visual tokens versus caption/role tokens. Fit matched linear category heads on decoder visual-token states (both within-context and cross-context transfer) and pair them against encoder/projector (`E02`) and caption-span (`E01`/`E04`) accessibility.
+
+**Readouts:** Layer-wise visual-token diagonal and transfer AUROC/AP/Brier/NLL, visual-token-minus-caption-token paired accessibility gap, and per-language/per-depth caption-to-visual attention mass paired with `E01` route gaps.
+
+**Fitting / supervision boundary:** Standard FIT/DEV-S/SCREEN partitions (`CONFIRM` closed); `eager` attention mode on batch 1 with verified non-overlapping image/caption/role token masks; no attention editing or intervention.
+
+**What the result can decide:** High decoder visual-token AUROC (`~0.94`) paired with lower caption-token AUROC and language-varying visual attention localizes a multimodal routing bottleneck (`S05`/`S47`); dropping decoder visual-token AUROC across depth points instead to visual-stream attenuation (`S49`).
+
+**Interpretation limit:** Attention weights are observational diagnostics, not causal proof of information routing (`S05`, `M1 §4`). Causal attention masks prevent visual prefix tokens from attending to trailing captions in purely causal layers, so visual-token differences across languages can only emerge where bidirectional/cross-attention exists (document actual visibility per checkpoint).
+
+**Method lineage:** S05, S47, S24, S49, T31.
+
+#### E32. Leave-one-language-out multi-source transfer and source-consensus directions
+
+**Origin:** Phase 1 review. **Question link:** G9–Q6 (`Q11` source-portfolio aspect). **Compute mode:** New CPU multi-source fits (reusable cached features or fresh sites).
+
+**Triggered by:** Phase 1 `E01` showed systematic directional asymmetry (`En→Bn` `0.197` Qwen, `En→Hi` `0.131` Gemma; all three `En→Indic` gaps exceeded their reverse `Indic→En` routes, while `Hi→En` was smallest at `0.040`/`0.020`). Existing `E14` pools all four languages (target-supervised), leaving true zero-shot multi-source transfer untested.
+
+**Question:** Does combining the three non-target languages strictly without target access eliminate the single-source transfer asymmetry observed in Phase 1?
+
+**Concrete comparison:** For each held-out target language `t ∈ {en, hi, bn, te}`, use ONLY the three source languages `s ≠ t` on `FIT`/`DEV-S` to compare: (a) each individual source head `s → t` (`E01`), (b) a **leave-one-language-out (LOLO) 3-source pooled linear head** (each `FIT` image receives total loss weight `1`, i.e., `1/3` per source view), (c) an equal-weight logit ensemble of the 3 source heads, and (d) `S39`'s **source-only SVD consensus direction** (top right singular vector of the 3 unstandardized source category directions in the common raw basis, with scalar slope/intercept fitted only on the 3 sources' `FIT`/`DEV-S`). Contrast `T23`-style source-`DEV-S` single-source selection against a target-`DEV-S` oracle selector (explicitly labeled target-supervised).
+
+**Readouts:** Target-context `AUROC`/`AP`/`Brier`/`NLL` and paired gap reductions vs mean single-source and best source-`DEV-S`-selected single source, separately for `last_caption` and `caption_mean` at midpoint (and final layer).
+
+**Fitting / supervision boundary:** Strictly zero target `t` inputs or labels enter fitting, scaling, SVD consensus, or `C` selection for arms (a)–(d) (`source_only_transfer`); equal total per-image FIT weight preserved.
+
+**What the result can decide:** Substantial LOLO/SVD gains over single-source transfer show that Phase 1's large `En→Indic` deficits reflect single-source overfitting rather than inaccessible target geometry; persistent deficits even under 3-source pooling confirm a target-specific incompatibility.
+
+**Interpretation limit:** Three non-target languages are not a balanced typological sample; improvements from 3-source pooling conflate language diversity with caption-content diversity across 3 independent descriptions of each FIT image (`T23`, `T27`).
+
+**Method lineage:** S39, T23, T27, T38, S40.
+
+#### E33. Auxiliary language-identity decodability and category–language subspace entanglement
+
+**Origin:** Phase 1 review. **Question link:** G9–Q6. **Compute mode:** New CPU language-ID fits and post-extraction linear projections.
+
+**Triggered by:** Phase 1 `E01` gaps peaked early (`L/4`: `0.217` Qwen) and shrank toward final depth (`L`: `0.080` Qwen, `0.042` Gemma), while `E03` showed strong script/lexical signal (`char TF-IDF` `0.850–0.883`).
+
+**Question:** How strongly is caption-language identity linearly entangled with category-head directions across depth and pooling, and does projecting out the FIT-estimated language-ID subspace alter transfer?
+
+**Concrete comparison:** Using existing caption-language metadata (`en/hi/bn/te`), fit a 4-way multinomial L2 linear language-ID probe on `FIT` (selected on `DEV-S`) at every fixed depth (`L/4, L/2, 3L/4, L`) and both poolings (`last_caption`, `caption_mean`) under `image_caption` and `caption_only`. Measure: (1) held-out `SCREEN` language-ID accuracy and NLL; (2) principal angles (`S17`) and fraction of category-direction norm lying inside the 3-dimensional language-ID subspace; and (3) an observational post-extraction projection control (`P_null = I - U_lang U_lang^T` fitted on paired 4-language `FIT` features — labeled `target_fit_input_adapted` — before refitting or evaluating category heads, compared against an equal-rank random-subspace projection).
+
+**Readouts:** Depth/pooling curves of language-ID separability, category-to-language subspace overlap, and paired transfer-gap change after language-subspace projection vs random-rank-3 projection.
+
+**Fitting / supervision boundary:** Purely post-extraction diagnostic linear projection on frozen features; zero base-model erasure, steering or weight edits (`M1 §2`). Estimating `U_lang` across all four languages uses target-language `FIT` inputs (not target category labels) and must be labeled `target_fit_input_adapted`.
+
+**What the result can decide:** High early-layer / `last_caption` entanglement that drops under `caption_mean` or late layers — especially if rank-3 null projection narrows transfer gaps — links portability failures to linear language-ID interference; near-orthogonality or null projection leaving gaps unchanged rules out a simple shared language-subspace interference account.
+
+**Interpretation limit:** Language identity in XM3600 bundles script, tokenization, length, and annotator content; removing a linear language-ID subspace does not prove a causal language-mixing mechanism (`S29`, `S45`).
+
+**Method lineage:** S29, S45, S17, S46.
+
+#### E34. Output-vocabulary logit-vector probing versus residual-stream probing
+
+**Origin:** Phase 1 review. **Question link:** G9–Q6. **Compute mode:** Fresh GPU extraction (full output-vocabulary logits / affine lens; does not reuse Phase 1 hidden-state-only caches).
+
+**Triggered by:** Phase 1 `E01` found that moving from midpoint to final depth narrowed the mean AUROC gap (`0.110→0.080` Qwen, `0.062→0.042` Gemma) while simultaneously **worsening** the mean log-loss penalty (`0.382→0.437` Qwen, `0.231→0.365` Gemma), and `S29`/`T22` warn that unembedding/output-vocabulary spaces behave differently from internal residual states.
+
+**Question:** Does probing the model's output-vocabulary logit distribution (`S23`) — or intermediate states mapped through a FIT-trained affine lens (`S19`/`S07`) — exhibit different portability and probability-calibration behavior than residual-stream probing?
+
+**Concrete comparison:** At the caption boundary (and post-caption generation boundary where valid), extract the full next-token vocabulary logit vector `z_vocab` (plus log-softmax probabilities) on `FIT`/`DEV-S`/`DEV-C`/`SCREEN` for `image_caption` and `caption_only`. Fit matched-capacity linear category readouts on `z_vocab` (compressed via source-FIT top-`r` PCA matching the residual-stream dimension or `r=256` alongside full regularized linear where feasible) and compare directly against matched residual-stream probes at midpoint and final depth. Optionally compare layer-wise unembedding projection vs a FIT-trained affine translator (`S19`/`S07`) from midpoint to final vocabulary logits.
+
+**Readouts:** Within-context and cross-context `AUROC`/`AP`/`Brier`/`NLL` and transfer gaps for vocabulary-logit probes vs residual-stream probes, paired on identical 360 `SCREEN` images.
+
+**Fitting / supervision boundary:** `S23` learned classifier over the full logit distribution — never single-token native category-name probabilities (excluded because native verbalizers are unverified and unequally tokenized, `M1 S23`). Any affine lens trained on target-language states is explicitly labeled target-input-adapted.
+
+**What the result can decide:** If vocabulary-logit probes reproduce or amplify the final-layer NLL blow-up while preserving AUROC, the calibration divergence tracks the unembedding interface (`T22`/`S29`); if logit-space transfer exceeds residual-stream transfer, the unembedding projection acts as a cross-lingual bottleneck/normalizer.
+
+**Interpretation limit:** Vocabulary-space recoverability does not verify native-language word meaning or free-caption factuality (`S29`).
+
+**Method lineage:** S23, S29, S07, S19, T22.
+
+#### E35. Individual versus joint structured category-ID reporting against frozen accessibility *(G7 — Ongoing branch)*
+
+**Origin:** Phase 1 review + `research.md` Ongoing **G7**. **Question link:** **G7** (paired with Phase 1 `E01`/`E02`). **Compute mode:** Fresh GPU generation & constrained log-odds scoring (independent of Phase 1 feature reuse).
+
+**Triggered by:** Phase 1 established strong internal category accessibility across all four languages (`0.894–0.909` midpoint diagonals; `0.942–0.947` visual-only), directly enabling `research.md`'s Ongoing **G7**: testing whether structured category reporting degrades even when internal category information is accessible.
+
+**Question:** Can joint multilabel reporting over the fixed released category-ID space become unreliable across native-caption contexts while single-category queries and frozen internal probes remain accurate?
+
+**Concrete comparison:** On the 360 `SCREEN` images with each of the four original caption contexts (`en/hi/bn/te`) plus an image-only control, prompt each frozen VLM using one fixed explicit category-ID interface (no native category-name translation) in two modes: (1) **individual binary query** (one category ID per forward for each of the 14 primary categories, recording both parsed binary decision and constrained Yes/No first-token log-odds), and (2) **joint multilabel report** (output the complete set of present category IDs from the 14 primary roots in a fixed JSON/CSV format, plus category-multiplicity stratification). Pair both modes against Phase 1's frozen midpoint/final diagonal probes (`E01`) and visual-only probes (`E02`).
+
+**Readouts:** Format-compliance rate (kept strictly separate from semantic error, `M1 §8`), per-category F1/sensitivity/specificity, constrained-logit AUROC/Brier/NLL (individual mode), exact-set accuracy and per-image Hamming/F1 stratified by true category multiplicity (joint mode), and paired probe-minus-reporter gaps.
+
+**Fitting / supervision boundary:** Zero fine-tuning, zero new human annotation, zero silent dropping of unparseable outputs; known-cell mask preserved (`6a20677eee04fd08` excluded from exact-set denominator and logged).
+
+**What the result can decide:** High probe and individual-query accuracy paired with declining joint-report recall/precision as category multiplicity grows establishes an accessibility-versus-joint-reporting discrepancy (`G7`); high format failure or uniform failure across modes localizes an interface/instruction bottleneck instead.
+
+**Interpretation limit:** Uses a shared formal category-ID interface; does not measure native Indic instruction comprehension, natural caption enumeration, or physical object counting (`research.md` G7, `M1 §8`).
+
+**Method lineage:** S24, S04, S32, S05, T15.
+
+#### E36. Retrieval-augmented demonstrations and predicted-category guidance in fixed-ID reporting *(G7 — Ongoing branch)*
+
+**Origin:** Phase 1 review + `research.md` Ongoing **G7** & M2 core pack. **Question link:** **G7** (extension of `E35`). **Compute mode:** Fresh GPU generation with FIT-only retrieval bank.
+
+**Triggered by:** Phase 1's strong visual-only (`0.945`) and combined (`0.90`) diagnostic readouts paired with `M2`'s core reporting-support cards (`T59`, `T60`).
+
+**Question:** When fixed-ID joint category reporting fails (`E35`), do FIT-only retrieval demonstrations (`T59`) or predicted-category guidance (`T60`) improve reporting accuracy, or do they simply transfer an external predictor's errors?
+
+**Concrete comparison:** Using a retrieval index built strictly from `FIT` images (excluding every `SCREEN` image and all of its language captions), compare `E35`'s zero-shot joint report against: (a) **T59-style retrieval-augmented few-shot demonstrations** (`k ∈ {2, 4}` nearest `FIT` images by frozen image-only encoder similarity, formatted with their released `FIT` category-ID vectors), (b) **random `FIT` demonstrations** (format-practice control isolating formatting from visual similarity), and (c) **T60-style predicted-category guidance** supplying the frozen `E01`/`E02` readout's predicted category IDs (strictly predicted, NEVER oracle query gold!) alongside a separate error-inheritance audit measuring how often the reporter copies a wrong predicted cue vs overrides it correctly.
+
+**Readouts:** Format compliance, per-category F1, exact-set accuracy, paired gain over zero-shot and random-demo controls, and predictor-error inheritance rate (`M2 §7.3`).
+
+**Fitting / supervision boundary:** Strict image-ID exclusion between `FIT` bank and `SCREEN` queries; added context and supervision budgets explicitly separated from original-input `E35` (`M2 §8.2`, `§8.5`).
+
+**What the result can decide:** Random-demo gains isolate formatting bottlenecks; similarity-retrieval gains isolate visual/label context support; T60 guidance reveals whether the reporter can integrate an imperfect category cue or blindly echoes it.
+
+**Interpretation limit:** Gains under retrieval or guidance alter the task input budget and do NOT establish that the base VLM previously lacked or suddenly recovered internal knowledge (`M2 §7.3`).
+
+**Method lineage:** T59, T60, T42, S24, S33.
+
+#### E37. Released caption-mention proxy versus shared image-presence targets in English and Hindi *(G2–Q2 — Standby branch)*
+
+**Origin:** Phase 1 review + `research.md` Standby **G2–Q2**. **Question link:** **G2–Q2**. **Compute mode:** New CPU probe fits on released `xm3600_en.json` and `xm3600_hi.json` mention proxies (no GPU needed if reusing midpoint features, or fresh sites).
+
+**Triggered by:** Phase 1 `E02`/`E03` showed native captions alone predict shared image presence strongly (`char TF-IDF` `0.850–0.883`, beating Qwen caption-only in `3/4` contexts), leaving open how much of the apparent `En↔Hi` accessibility and transfer gap reflects caption-mention salience versus visual image presence.
+
+**Question:** How does replacing the shared image-presence target with the repository's released English/Hindi mention-proxy target change apparent within-context accessibility, modality gain (`image_caption` vs `caption_only`), and `En↔Hi` transfer?
+
+**Concrete comparison:** Restricted strictly to **English and Hindi** (excluding Bengali and Telugu per the dataset authors' warning in `research.md`), aggregate the released `xm3600_en.json` and `xm3600_hi.json` synset records to the 25 shared roots via the repository's supplied hierarchy. Run the identical midpoint probing & transfer comparison (`image_caption`, `caption_only`, `image_only`, both `last_caption` and `caption_mean`) under two targets on the exact same `FIT`/`DEV-S`/`SCREEN` images: (a) shared image presence (`xm3600_annotation.csv`) and (b) released mention-proxy presence. Report support tables for both targets before fitting.
+
+**Readouts:** Paired `AUROC`/`AP`/`Brier`/`NLL` differences between presence-targeted and mention-proxy-targeted readouts, `En↔Hi` transfer gap shifts, and `image_caption − caption_only` modality-gain shifts.
+
+**Fitting / supervision boundary:** Pipeline-dependent released targets only; zero new human annotation, zero Bengali/Telugu mention files, zero claims about true human mention accuracy or model hallucination (`research.md` G2/Q2).
+
+**What the result can decide:** Quantifies measurement sensitivity to target definition — specifically whether `caption_only` dominance and `En↔Hi` asymmetry sharpen under mention proxies while visual-only (`image_only`) performance drops, clarifying how much Phase 1's caption-conditioned signal reflects mention salience.
+
+**Interpretation limit:** Released mention files are translation/extraction-pipeline proxies already filtered against image presence; they cannot certify true human assertions or cultural salience (`research.md` G2).
+
+**Method lineage:** S16, S25, T45, `research.md` (G2, Q2).
+
+#### E38. Contradictory structured category-ID cues versus preserved internal accessibility *(G14–Q12 — Standby branch)*
+
+**Origin:** Phase 1 review + `research.md` Standby **G14–Q12**. **Question link:** **G14–Q12**. **Compute mode:** Fresh GPU forwards & structured generation under cue-conflict prompts.
+
+**Triggered by:** Phase 1 established `0.945` visual-only and `0.90` combined internal category accessibility alongside `E25` shared-error structure, motivating a direct test of whether conflicting structured input cues override outputs while internal category signal persists.
+
+**Question:** Under formal contradictory category-ID cues appended across English, Hindi, Bengali and Telugu caption contexts, do structured category answers flip toward the false cue while internal hidden states still linearly encode the true image category?
+
+**Concrete comparison:** On `SCREEN` images with original captions (`en/hi/bn/te`), construct three deterministic formal cue conditions for each of the 14 primary categories (derived programmatically from the released CSV, zero translated prose): (1) `no_cue` neutral baseline, (2) `consistent_cue` (formal ID/value matching the released CSV bit), and (3) `contradictory_cue` (formal ID/value opposite to the released CSV bit). Measure (a) structured decision flip / cue-acceptance rate (`yes/no` constrained output), (b) frozen no-cue midpoint/final linear probe score evaluated on the cue-conditioned pre-answer state, and (c) a `FIT`-trained cue-invariant probe (trained across balanced consistent/contradictory `FIT` cues) to separate probe shift from loss of internal accessibility.
+
+**Readouts:** Conditional cue-acceptance rate given correct `no_cue` baseline (`T62` pattern), format-compliance rate, and paired internal-probe AUROC under `contradictory_cue` vs `no_cue` across all four languages.
+
+**Fitting / supervision boundary:** Formal category-ID/value cues only; zero misleading Indic prose, zero manual response judging; cue truth computed deterministically from `FIT`/`SCREEN` known cells (unknown cell excluded).
+
+**What the result can decide:** High contradictory-cue override in generated outputs paired with intact internal probe AUROC (`~0.90`) demonstrates an output-vs-representation conflict across caption contexts (`G14–Q12`); collapsing internal probe scores instead shows cue contamination of the hidden state itself.
+
+**Interpretation limit:** Measures structured formal-cue susceptibility, not natural-language hallucination or cultural counterfactual reasoning (`research.md` G14/Q12, `M2 T62`).
+
+**Method lineage:** S06, S24, S32, T62.
+
+---
+
+### 13.2 Candidates motivated by the Phase 2 review (evaluated independently of Phase 1)
+
+The Phase 2 review resolved all six directions with narrow intervals (`valid_draws = 2000/2000`, `0` parked, `0` unresolved), exposing five specific empirical mechanisms that each earned a `revise` qualification:
+1. **Asymmetric pooling swap (`E29` + `E30`):** `caption_mean` reduced the midpoint AUROC gap by `+0.0798` (Qwen) / `+0.0460` (Gemma), and `last_caption` heads jumped **`+0.0919` / `+0.0512`** when fed `caption_mean` features **without refitting**, whereas `caption_mean` heads dropped **`−0.1293` / `−0.0884`** diagonal AUROC on `last_caption` features (interactions `+0.0865` / `+0.0453`) — while `caption_only` mirrored `80%` / `66%` of the pooling reduction (`+0.0640` / `+0.0304`).
+2. **Complete ranking-vs-loss dissociation under FIT covariate scaling (`E11`):** `mean_scale` recovered essentially **zero** residual AUROC gap (`+0.0005` Qwen, `+0.0003` Gemma; `<1.7%` of `G_res`) yet delivered huge **label-free** proper-loss gains (`+0.2013` NLL / `+0.0429` Brier in Qwen; `+0.0662` NLL / `+0.0167` Brier in Gemma).
+3. **Model-family calibration divergence & decision flips (`E17`):** `source_dev_c` calibration beat the FIT-prior reference in Gemma (`+0.0556` NLL) but stayed **worse than FIT-prior** in Qwen (`−0.1003` NLL), whereas `target_dev_c:temp_intercept` recovered `+0.2103` NLL in Qwen (beating FIT-prior by `+0.0702`, flipping `7.83%` of 0.5-decisions) and `+0.1274` NLL in Gemma (`3.77%` flips).
+4. **Caption-draw coverage asymmetry & small Qwen draw-2 shift (`E07`):** Bengali (`bn`) had `0` alternate captions in `SCREEN` (`passed_restricted`), while `en/hi/te` gaps were nearly invariant in Gemma (`+0.0009` / `+0.0023` n.s.) and showed a small non-zero draw-2 shift in Qwen (`changed_9` `+0.0086 [+0.0014, +0.0153]`, pooling sign preserved).
+
+#### E39. Within-caption token-position trajectory and terminal-token noise audit
+
+**Origin:** Phase 2 review. **Question link:** G9–Q6. **Compute mode:** Fresh GPU extraction (sub-caption token slices; does not reuse Phase 1/2 two-pooling caches).
+
+**Triggered by:** Phase 2 `E30`'s dramatic asymmetry — a fixed `last_caption` head gained `+0.0919` (Qwen) / `+0.0512` (Gemma) AUROC when evaluated on `caption_mean` features without refitting, while a `caption_mean` head collapsed (`−0.1293` / `−0.0884` diagonal AUROC) on `last_caption` features.
+
+**Question:** Does Phase 2's pooling penalty originate specifically from terminal-token / punctuation / end-of-caption variance at the final caption token, or does it require averaging across the entire caption span?
+
+**Concrete comparison:** On unchanged draw-0 captions (`image_caption` and `caption_only`) at midpoint (and final depth), extract fine-grained caption-span positions in one forward per view using verified Unicode/tokenizer masks: (a) `first_caption`, (b) `middle_caption`, (c) `penultimate_caption`, (d) `last_non_punct_caption` (last caption token whose decoded text is not Unicode punctuation/whitespace `P*`/`Z*`, automatically detected without language-specific NLP), (e) `first_half_mean`, (f) `second_half_mean`, (g) `last_caption`, and (h) `caption_mean`. Score BOTH matched-position heads AND the frozen `last_caption` and `caption_mean` heads across all eight positions. Also compute within-image token-to-token feature variance along the caption span per language.
+
+**Readouts:** Position-by-position diagonal AUROC, 12-route transfer gap, frozen `last_caption` / `caption_mean` head transfer curves, and within-caption feature dispersion per language, paired on the 360 `SCREEN` images.
+
+**Fitting / supervision boundary:** Unchanged original caption bytes; no punctuation stripping from model input (only readout-index selection); standard FIT/DEV-S/SCREEN splits (`CONFIRM` closed).
+
+**What the result can decide:** If `last_non_punct_caption` or `penultimate_caption` already recovers most of the `+0.080`/`+0.046` pooling reduction and prevents `caption_mean`-head collapse, the Phase 2 effect is localized to terminal-token / EOS-boundary noise (`S05`/`S29`); if only multi-token averages (`first_half_mean`, `second_half_mean`, `caption_mean`) recover it, variance reduction across token positions is essential.
+
+**Interpretation limit:** Tokenization granularity differs across Latin, Devanagari, Bengali, and Telugu scripts, so identical relative token indices correspond to different character/word spans (`S15`, `T10`).
+
+**Method lineage:** S05, S15, S06, S29, T10.
+
+#### E40. Cross-depth and `caption_only` E30 head × pooling swap replication
+
+**Origin:** Phase 2 review. **Question link:** G9–Q6. **Compute mode:** CPU crossed scoring across all four fixed depths and `caption_only`.
+
+**Triggered by:** Phase 2 `E29` showed `caption_only` reproduced `80%` of Qwen's (`+0.0640` vs `+0.0798`) and `66%` of Gemma's (`+0.0304` vs `+0.0460`) midpoint pooling gap reduction, while Phase 2 `E30` tested only midpoint `image_caption`.
+
+**Question:** Does `E30`'s asymmetric `head_last_on_mean` gain and `head_mean_on_last` collapse replicate under `caption_only` (without image input) and across quarter, three-quarter, and final decoder depths?
+
+**Concrete comparison:** Execute the exact Phase 2 `E30` 2×2 head × pooling swap (`last_on_last`, `mean_on_mean`, `head_last_on_mean`, `head_mean_on_last`, with identical depth/hook/dimension/row checks and `atol=0` matched self-checks): (1) on `caption_only` at midpoint (directly paired with Phase 2's `image_caption` midpoint `E30` on identical `(2000, 360)` bootstrap draws to compute the paired `image_caption − caption_only` interaction difference), and (2) across all four fixed depths (`L/4, L/2, 3L/4, L`) in both conditions.
+
+**Readouts:** Paired fixed-head feature gains, head × pooling interaction, off-distribution collapse flags, and `image_caption − caption_only` swap contrasts across depth.
+
+**Fitting / supervision boundary:** Strictly reuses frozen matched source heads/scalers; zero refitting; `CONFIRM` closed.
+
+**What the result can decide:** If `caption_only` exhibits the same asymmetric `head_last_on_mean` gain without image input, the E30 mechanism is primarily a language-decoder caption-pooling property rather than a visual-grounding effect (`S16`/`S05`); depth profiles localize whether the asymmetry vanishes at final layer `L` (`T40`/`S31`).
+
+**Interpretation limit:** Comparing `image_caption` and `caption_only` changes the input distribution and cannot causally decompose visual vs textual contributions (`E02` limit, `S16`).
+
+**Method lineage:** S05, S31, S16, T40.
+
+#### E41. Label-free input-covariance alignment versus supervised calibration ladder (`E11 × E17` bridge)
+
+**Origin:** Phase 2 review. **Question link:** G9–Q6. **Compute mode:** CPU feature adaptation, covariance alignment, calibration, and paired evaluation.
+
+**Triggered by:** Phase 2 `E11` achieved `+0.2013` NLL / `+0.0429` Brier gain in Qwen on `caption_mean` with **zero target labels** — nearly matching Phase 2 `E17`'s **180-label target-supervised** `target_dev_c` NLL gain (`+0.2103`) on `last_caption` — while recovering `<1.7%` of the residual AUROC gap (`+0.0005` Qwen, `+0.0003` Gemma).
+
+**Question:** Can label-free FIT input-statistic adaptation (diagonal scaling, full-covariance whitening, and composition with source-DEV-C calibration) match target-supervised probability calibration without target labels, and does second-order cross-coordinate covariance alignment recover any of the `98.3%` residual AUROC gap missed by diagonal scaling?
+
+**Concrete comparison:** On **both** `last_caption` and `caption_mean` at midpoint (and final depth), evaluate a strictly ordered supervision ladder on identical 360 `SCREEN` images: (1) `raw` (`source_only_transfer`); (2) `source_dev_c` E17 `temp_intercept` (`source_dev_c_calibrated`, 0 target inputs/labels); (3) `E11` diagonal `mean_shift` and `mean_scale` (`target_fit_input_adapted`, 0 target labels); (4) **`E11_cov` regularized full-covariance alignment / CORAL whitening** (`H_t` centered and whitened by shrunk `Sigma_t^{-1/2}` and re-colored by `Sigma_s^{1/2}` inside a source-FIT PCA basis `r ∈ {64, 256}`, ridge shrinkage selected on source/target FIT split without target labels — `target_fit_input_adapted`, 0 target labels); (5) **`E11 + source_dev_c` composition** (still **0 target labels**); (6) `target_dev_c` E17 `temp_intercept` (`target_dev_c_supervised_calibration`, 180 target labels); and (7) `E11 + target_dev_c` composition.
+
+**Readouts:** Paired `AUROC`/`AP` gap reduction AND `NLL`/`Brier` gains vs `raw`, vs `FIT-prior`, and vs `target_dev_c`, plus 0.5-decision flip rates, on all 12 directed routes.
+
+**Fitting / supervision boundary:** Every supervision tier explicitly labeled per `M2 §8.2`; `E11_cov` uses only unlabeled target `FIT` inputs (no target labels, no image-pair correspondence required — contrasting directly with `E12`'s image-paired Procrustes map!).
+
+**What the result can decide:** (a) If `E11 + source_dev_c` matches `target_dev_c` in NLL/Brier on both `last_caption` and `caption_mean` (including beating FIT-prior in Qwen where `source_dev_c` alone failed by `−0.1003`!), probability transfer is solvable without target labels; (b) if full-covariance whitening still fails to move AUROC beyond `E11`'s `+0.0005`, the residual `G_res` is definitively non-second-order / rotational (`E12`) or content-driven.
+
+**Interpretation limit:** Unpaired covariance matching aligns marginal feature ellipsoids, which can still mismatch rotated semantic axes (`T04`, `T14`, `M2 §8.3`).
+
+**Method lineage:** T04, T14, T27, S33, S39.
+
+#### E42. Sparse coordinate/neuron-subset overlap and L1-regularized readout portability
+
+**Origin:** Phase 2 review. **Question link:** G9–Q6. **Compute mode:** New CPU L1/ElasticNet sparse fits & coordinate-overlap analysis.
+
+**Triggered by:** Phase 2 `E11` eliminated per-coordinate mean/scale mismatch as a cause of the residual `caption_mean` AUROC gap (`+0.0005` Qwen, `+0.0003` Gemma), leaving open whether dense L2 heads rely on language-specific coordinates that sparser coordinate selection would drop.
+
+**Question:** Do independently fitted category heads across English, Hindi, Bengali and Telugu rely on overlapping or disjoint coordinate subsets, and does L1/ElasticNet sparsity improve or hurt cross-language portability relative to dense L2 heads?
+
+**Concrete comparison:** At midpoint (`last_caption` and `caption_mean`) on `FIT`/`DEV-S`/`SCREEN`, fit matched-budget L1-regularized and ElasticNet (`l1_ratio = 0.5`) binary logistic heads alongside Phase 1's dense L2 heads (same 4-value `C` grid, selected on source `DEV-S`, identical source-FIT scaler). Measure: (1) cross-language Jaccard and signed overlap of active nonzero coordinates across `en/hi/bn/te` normalized against within-language `FIT` split-half stability (`S38`/`S41`), (2) held-out diagonal and 12-route transfer `AUROC`/`AP`/`Brier`/`NLL` vs dense L2 (`S44` accuracy-sparsity Pareto frontier), and (3) a `S30` target-`DEV-S`-guided coordinate-pruning diagnostic (explicitly labeled target-supervised upper bound) testing whether an axis-aligned subset of source-active coordinates closes `G_res`.
+
+**Readouts:** Active-coordinate counts, cross-language vs split-half overlap ratios, Pareto curves of transfer gap vs sparsity, and paired L1-minus-L2 transfer differences.
+
+**Fitting / supervision boundary:** Source-only selection for main L1/ElasticNet arms; any target-`DEV-S` subset pruning (`S30`) strictly labeled target-supervised diagnostic and never evaluated on `DEV-S`.
+
+**What the result can decide:** If L1 sparsity reduces transfer gaps and reveals high cross-language coordinate overlap, `G_res` reflects dense L2 overfitting to language-specific nuisance dimensions (`S38`/`S41`); if sparse heads worsen transfer and show low overlap even below split-half stability, category information is distributed/rotated across coordinates rather than localized to shared neurons.
+
+**Interpretation limit:** Correlated features cause L1 to pick unstable individual coordinates arbitrarily; split-half stability is mandatory before interpreting low overlap (`S41`, `M1 §5`).
+
+**Method lineage:** S38, S41, S30, S44.
+
+#### E43. Few-shot target calibration curves and hierarchical per-category shrinkage
+
+**Origin:** Phase 2 review. **Question link:** G9–Q6. **Compute mode:** CPU nested DEV-C fitting and SCREEN evaluation.
+
+**Triggered by:** Phase 2 `E17` showed a sharp split between `source_dev_c` (`+0.0397` NLL in Qwen, still `−0.1003` worse than FIT-prior) and `target_dev_c:temp_intercept` (`+0.2103` NLL in Qwen, `+0.1274` in Gemma, beating FIT-prior in both models while flipping `7.83%`/`3.77%` of 0.5-decisions) using all 180 target `DEV-C` images and only a global 2-parameter `(T, b)` transform.
+
+**Question:** How many labeled target examples are needed to recover `E17`'s target-calibration gain, and does regularized per-category `(T_k, b_k)` shrinkage improve probability quality beyond global 2-parameter scaling?
+
+**Concrete comparison:** On `last_caption` and `caption_mean` midpoint frozen source heads (`12` off-diagonal routes/model), sample nested deterministic target `DEV-C` subsets of size `n ∈ {15, 30, 60, 120, 180}` (3 fixed hash-ranked draws per size, evaluated on the fixed 360 `SCREEN` images) and compare: (a) global `temp` and `temp_intercept` (`E17`), (b) **hierarchical per-category intercept/temperature shrinkage** (`log T_k = log T_global + delta_k`, `b_k = b_global + beta_k` with L2 penalty `lambda * (||delta||^2 + ||beta||^2)` selected via inner 5-fold image-group CV inside the `n`-image `DEV-C` subset, never touching `SCREEN`), and (c) `source_dev_c` global `(T, b)` as the `n = 0` anchor.
+
+**Readouts:** Learning curves of paired `SCREEN` NLL and Brier gain (vs raw and vs FIT-prior) as a function of `n`, per-category calibration residuals, 0.5-decision flip rates, and strict `<= 1e-12` per-category AUROC/AP invariance checks.
+
+**Fitting / supervision boundary:** Strictly labeled `target_dev_c_supervised_calibration` with explicit `n` target-label budget (`T27`); `SCREEN` never selects shrinkage `lambda` or `(T_k, b_k)`; `CONFIRM` closed.
+
+**What the result can decide:** Rapid saturation at `n = 15–30` shows target-supervised calibration is practically cheap even for Qwen; substantial gains from per-category shrinkage over global `(T, b)` reveal category-specific logit-shift heterogeneity hidden by E17's global 2-parameter model (`S33`, `S12`).
+
+**Interpretation limit:** Small `n` subsets (`15–30`) have sparse positives for rarer primary categories, so hierarchical shrinkage toward global `(T, b)` is essential to avoid variance blow-up; positive scaling/shifts still cannot alter per-category ranking.
+
+**Method lineage:** S33, S12, T27.
+
+#### E44. Effect of pooling, covariate scaling, and calibration on selective-confidence coverage and retained risk (`E19 × Phase 2`)
+
+**Origin:** Phase 2 review (connecting back to Phase 1 `E19`). **Question link:** G9. **Compute mode:** CPU cutoff transfer and selective-risk evaluation.
+
+**Triggered by:** Phase 1 `E19` found that raw `last_caption` source `DEV-C` confidence cutoffs suffered cross-lingual coverage drift (`70.1%` Qwen, range `62.3–76.3%`, at nominal `75%`) and high transferred retained risk (`18.8%` Qwen, `13.0%` Gemma), while Phase 2 showed that `caption_mean` (`E29`), label-free `E11` `mean_scale`, and `E17` calibration each dramatically reduce logit-scale / proper-loss distortion.
+
+**Question:** Do Phase 2's pooling (`caption_mean`), label-free FIT covariate scaling (`E11`), and `DEV-C` calibration (`E17`) fix cross-lingual selective-coverage drift and lower retained risk under `E19`'s confidence-cutoff protocol?
+
+**Concrete comparison:** Apply `E19`'s exact nominal `50%`, `75%`, and `90%` source-`DEV-C` confidence-cutoff policy (`c = max(p, 1-p)`, including exact tie handling) on `SCREEN` across five arms on identical 360 images: (1) `last_caption` raw (Phase 1 `E19` baseline), (2) `last_caption` + `source_dev_c` `E17` `temp_intercept`, (3) `last_caption` + `target_dev_c` `E17` `temp_intercept` (target-supervised), (4) `caption_mean` raw, and (5) `caption_mean` + `E11` label-free `mean_scale` (computing source `DEV-C` cutoffs on the matched representation).
+
+**Readouts:** Actual target coverage vs nominal target (`|coverage - nominal|` drift), retained risk vs base error and score-blind risk at matched coverage, positive vs negative retention rates, and explicit support status flags (`>= 20` retained errors/corrects per stratum).
+
+**Fitting / supervision boundary:** Source-`DEV-C` cutoffs remain frozen at `SCREEN` evaluation; supervision tier of each arm (`source_only_transfer`, `source_dev_c_calibrated`, `target_fit_input_adapted`, `target_dev_c_supervised_calibration`) kept strictly separate; Phase 1 `E19` artifacts untouched.
+
+**What the result can decide:** If `caption_mean + E11` eliminates coverage drift and cuts retained risk without target labels, Phase 1 `E19`'s triage failure was a logit-scale/pooling artifact rather than broken confidence geometry; persistent coverage/risk deficits under calibrated `caption_mean` directly justify running `E20` (learned correctness head).
+
+**Interpretation limit:** Selective-risk strata on 360 `SCREEN` images retain finite-sample support limits (especially at high retention/low error); macro risk improvements must be checked alongside positive-class retention so low risk is not bought solely by discarding positives (`E19` lesson, `S33`, `S47`).
+
+**Method lineage:** S33, S47, T27.
+
+#### E45. Difference-of-means prototypes and CSLS density-corrected neighbor readouts
+
+**Origin:** Phase 2 review. **Question link:** G9–Q6. **Compute mode:** CPU non-parametric / prototype scoring on frozen midpoint features.
+
+**Triggered by:** Phase 2 `E30` (strong hyperplane × pooling asymmetry), `E11` (logit-scale sensitivity of L2 linear heads), and `E07` (small Qwen draw-2 shift `+0.0086` on draw-0-fitted logistic hyperplanes) raise the question of whether parametric L2 logistic boundaries and cross-lingual hubness drive part of the remaining transfer penalty.
+
+**Question:** Do zero-optimization prototype directions (`S20`) or density-corrected nearest-neighbor readouts (`T05` CSLS / `T02` inverted softmax) exhibit smaller cross-language ranking gaps or greater pooling/caption stability than L2 logistic heads?
+
+**Concrete comparison:** On midpoint `last_caption` and `caption_mean` features (`image_caption` and `caption_only`; optionally evaluated across `E07` draws 0, 1, 2), compare Phase 1/2's L2 logistic heads against three alternative readout families built strictly from source `FIT` (with `k`/temperature selected on source `DEV-S`): (1) **S20 difference-of-means prototype** (`w_k = mu_{+,k} - mu_{-,k}` on source-FIT standardized features, zero hyperparameter tuning), (2) **L2-normalized cosine `k`-NN** over the source-`FIT` bank (`k ∈ {10, 25, 50}`), and (3) **T05 CSLS / T02 inverted-softmax density-corrected `k`-NN** (subtracting half the mean top-`m` target-`FIT` neighborhood cosine similarity to counter cross-lingual hubness — explicitly labeled `target_fit_input_adapted`, zero target labels!).
+
+**Readouts:** Within-context diagonal and 12-route transfer `AUROC` and `AP` (primary ranking metrics; similarity/CSLS scores are explicitly NOT treated as calibrated probabilities per `M2 §7.2`), paired gaps relative to L2 logistic heads, and hubness skewness diagnostics (`T02`/`T05`) across `last_caption` vs `caption_mean`.
+
+**Fitting / supervision boundary:** Source-`FIT` reference bank excludes all `SCREEN` images and their captions (`M2 §8.5`); `S20` and cosine `k`-NN are `source_only_transfer`; CSLS using target-`FIT` unlabeled density is `target_fit_input_adapted`. If proper scores are ever reported for prototypes/neighbors, they require a separately labeled `DEV-C` calibration layer.
+
+**What the result can decide:** Smaller transfer gaps under CSLS than cosine `k`-NN or L2 logistic heads implicate cross-lingual hubness (`T02`/`T05`); if `S20` prototypes already preserve `E30`'s asymmetric pooling gain, the pooling advantage is a property of class centroids rather than L2 discriminative margins.
+
+**Interpretation limit:** Non-parametric neighbor/prototype scores are not calibrated probabilities and can be sensitive to category prevalence and co-occurrence (`S20`, `T05`, `M2 §7.2`).
+
+**Method lineage:** S20, T02, T05, T42.
