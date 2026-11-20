@@ -284,3 +284,59 @@ Planning freeze `phase3-gpu-stageB2.v1`. Based on Stage A3 priorities, **`E35` (
 |---|---|---|---|
 | **Chat 1: `extract_e39_e31`** | Branch from `PHASE3_B2_BASE_SHA` | `src/phase3/extract_e39_e31.py`, `scripts/phase3/extract_e39_e31.ipynb`, `tests/test_phase3_extract_e39_e31.py` | ~8–15 min / model |
 | **Chat 2: `extract_e23`** | Branch from `PHASE3_B2_BASE_SHA` | `src/phase3/extract_e23.py`, `scripts/phase3/extract_e23.ipynb`, `tests/test_phase3_extract_e23.py` | ~8–15 min / model |
+
+---
+
+## Stage B3: finalized CPU scoring & analysis workers (`E39+E31`, `E23`; `E35` dropped) — 20 November 2026
+
+Planning freeze `phase3-gpu-stageB3.v1`. **`E35` (`G7`) is dropped** (`e35_excluded = True`), leaving **2 parallel CPU scoring & analysis workers** that branch from `PHASE3_B3_BASE_SHA` on `phase3` with strictly disjoint file ownership.
+
+### B3.1 Authoritative Stage B2 GPU releases (`CERTIFIED_STAGE_B2_RELEASES`)
+
+- `e39_e31/qwen`: `phase3/features/e39_e31/qwen/20261120T074829Z-d93cc9472d3c4351a9d3716d4134fe0b_release/_COMPLETE.json` (`sha256: ac78f75a3eac730c769093c3418e6c518fd198d4d972bcbd7124af871b1ad545`)
+- `e39_e31/gemma`: `phase3/features/e39_e31/gemma/20261120T081027Z-1f61264d896f40d0905ebd1c2f768b93_release/_COMPLETE.json` (`sha256: d35300cdcf761aa803713182510aff3728644a7f12edf3b4278c7ee332bd9bc9`)
+- `e23/qwen`: `phase3/features/e23/qwen/20261120T074434Z-26e5715a45cf438b9d3685c5468f2171_release/_COMPLETE.json` (`sha256: 6897146dd0be6f90df2d3ab02314efc4af01fb016a1ff273f4cebc3d6fa82bfe`)
+- `e23/gemma`: `phase3/features/e23/gemma/20261120T074434Z-08939d4b431e4a89b8a5f552112e4bd9_release/_COMPLETE.json` (`sha256: 2c1a81fbaa3ddd78374eb8593b234f61b3ad60e51b78df24f367bf16f1b0ef99`)
+
+### B3.2 Shared Stage B3 CPU contract rules (both workers)
+
+- **Entry binding:** Authenticate `gpu_plan = load_phase3_gpu_plan(resolved_root, protocol, plan_ref or plain(CERTIFIED_STAGE_B1_GPU_PLAN), bind=True)`, verifying `gpu_plan["confirm_excluded"] is True` and `gpu_plan["e35_excluded"] is True`. Reuse `gpu_plan.binding` (`Phase1Binding`), frozen `(2000, 360)` bootstrap (`load_bootstrap(gpu_plan.binding.stage4_plan)`), `src.stage4.metrics`, and `src.stage3.engine.transform` (`current_producer` from `src.phase3.interfaces` with `requirements-stage2-cpu.txt` on CPU Colab).
+- **Protocol keys & closed splits:** Always use `protocol["category_order"]` (25 ordered categories), `protocol["primary_categories"]` (14 categories), and `int(protocol["minimum_positive_and_negative"]["SCREEN"])` (`20`). Preserve unknown cell `6a20677eee04fd08 / plant.n.02 = None` via `paired_image_alignment` / known-mask logic. `CONFIRM` remains closed; Phase 1 & Phase 2 directories remain strictly read-only.
+- **Colab notebooks:** 4-cell CPU pattern matching `scripts/phase3/run_e40.ipynb` (`CODE_REF = 'phase3'`, `PHASE1_ROOT = Path('/content/drive/MyDrive/phase1')`, single `MODEL` selector `'qwen'` or `'gemma'` in Cell 3, `PLAN_REF` pre-populated with `CERTIFIED_STAGE_B1_GPU_PLAN`, `RELEASE_REF = None` defaulting cleanly to `CERTIFIED_STAGE_B2_RELEASES[...][MODEL]`, `requirements-stage2-cpu.txt`, single BLAS/OpenMP thread, streaming JSON progress).
+
+### B3.3 Frozen worker specifications & disjoint file ownership
+
+#### Worker 1 — `run_e39_e31` (`src/phase3/run_e39_e31.py`, `scripts/phase3/run_e39_e31.ipynb`, `tests/test_phase3_e39_e31.py`)
+- **Authentication & reassembly:** Authenticate `verify_e39_e31_release(root, protocol, release_ref, expected_plan_identity=gpu_plan["plan_identity"], expected_model=model)` from `src.phase3.extract_e39_e31`. Reassemble the 12 chunks into `(360, dim)` `SCREEN` feature matrices (and `(360, 3)` attention matrices) per `(condition, depth, site, language)` in `gpu_plan.binding.stage4_plan["screen_ids"]` order.
+- **Stage 2 draw-0 parity gate (`<= 1e-4`):** Compare reassembled `last_caption` and `caption_mean` `SCREEN` features against verified Stage 2 `SCREEN` features (`src.stage3.data._read_verified_group`) across all `4 depths × 2 conditions × 4 languages`, asserting `max_abs_diff <= 1e-4`, plus in-memory `en->en` matched logit self-checks (`<= 1e-4` against Stage 4 `SCREEN` logits).
+- **`E39` sub-caption scoring & bootstrap analysis:**
+  - Score all **8 `E39_SITES`** across `4 depths × 2 conditions × 16 routes (s -> t)` through **both** frozen Stage 3 source head types (`head_pool = "last_caption"` and `head_pool = "caption_mean"`) via `src.stage3.engine.transform`.
+  - Evaluate on the frozen `(2000, 360)` bootstrap (`AUROC`, `AP`, `Brier`, `NLL`, primary 14-category & all-category macros, 12 off-diagonal route mean & 4 diagonal route mean):
+    - Paired gain vs `last_caption` (`site - last_caption` for AUROC/AP; `last_caption - site` for Brier/NLL),
+    - Paired recovery fraction `(site - last_caption) / (caption_mean - last_caption)` under fixed `last_caption` head, fixed `caption_mean` head, and matched-type head,
+    - Paired `image_caption − caption_only` sub-caption profile difference on identical bootstrap draws,
+    - Token-selection audit (`token_count` distribution, fraction where `last_non_punct_caption != last_caption`, `last_non_punct_fallback_used` count),
+    - Decision summary against `PHASE3_GPU_DECISION_RANGES["E39"]` (`terminal_token_recovery_fraction_min = 0.50`, `auroc_gain_min = 0.015`, `negligible_ci_within = (-0.005, 0.005)`).
+- **`E31` decoder visual-token & attention-mass analysis:**
+  - **Cross-language visual-token invariance:** Across the 360 `SCREEN` images at each depth `d ∈ depths`, measure cosine similarity and `max_abs_diff` of `decoder_visual_mean` between `en` and `hi, bn, te` on the same image.
+  - **Semantic probe on `decoder_visual_mean` (`encoder -> projector -> decoder:d1..d4`):** Deterministic 5-fold cross-validated L2 logistic probe (`fold = image_idx % 5` on `screen_ids`, within-fold FIT standardization + `C = 1.0` via `src.stage3.engine` producing out-of-fold `(360, 25)` logits) on `decoder_visual_mean` at each `d ∈ depths` (`en` and per language) AND on Stage 2 `SCREEN` `encoder:None:visual_mean` and `projector:None:visual_mean` under the exact same 5-fold CV protocol (also reporting Stage 4 `FIT`-trained `encoder`/`projector` `SCREEN` metrics as reference), evaluated on `(2000, 360)` bootstrap draws.
+  - **Attention mass summary & gap correlation:** Summarize `[visual_mass, caption_mass, system_mass]` for `attention_from_last_caption` and `attention_from_caption_mean` (plus paired `caption_mean − last_caption` visual mass shift) across depths and languages on the `(2000, 360)` bootstrap, and compute Pearson `r` and Spearman `rho` between visual attention mass (and visual mass shift) vs `G_last`, `G_mean`, and `G1` pooling gap reduction across routes/depths, evaluating `PHASE3_GPU_DECISION_RANGES["E31"]` (`decoder_visual_auroc_min = 0.90`, `attention_gap_corr_min = 0.30`, `attention_mass_sum_tol = 1e-4`).
+- **Output:** `phase3/results/e39_e31/<model>/<run_id>/_COMPLETE.json` (`KIND_ANALYSIS`, `SCHEMA_ANALYSIS`).
+
+#### Worker 2 — `run_e23` (`src/phase3/run_e23.py`, `scripts/phase3/run_e23.ipynb`, `tests/test_phase3_e23.py`)
+- **Authentication & parity gate:** Authenticate `verify_e23_release(root, protocol, release_ref, expected_plan_identity=gpu_plan["plan_identity"], expected_model=model)` from `src.phase3.extract_e23`. Compare the 8 `authentic_parity_{last_caption,caption_mean}.npy` vectors against Stage 2 midpoint `image_caption` `SCREEN` features (`read_verified_midpoint_features`), asserting `max_abs_diff <= 1e-4`, plus in-memory `en->en` matched logit self-check (`atol=0, rtol=0`) against Stage 4 `SCREEN` logits.
+- **Frozen-head scoring & authentic anchor lookup:** Score all swapped views from `phase3_e23_feature_chunk` across `t ∈ LANGUAGES` and `pool ∈ ("last_caption", "caption_mean")` through the 4 frozen Stage 3 midpoint `image_caption` source heads `s ∈ LANGUAGES` (`src.stage3.engine.transform`), publish `phase3/predictions/e23/<model>/<run_id>/_COMPLETE.json` (`KIND_PREDICTION`, `SCHEMA_PREDICTION`), and load Stage 4 midpoint `image_caption` `SCREEN` authentic anchor probabilities `P_auth`.
+- **Paired opposite-label swap bootstrap analysis (`(2000, 360)` draws):**
+  - For each category `c` with `K_c = n_pairs` disjoint pairs `(pos_id, neg_id)` in `gpu_plan["e23_plan"]["per_category"][c]["pairs"]`, route `s -> t` (`16` routes), and `pool ∈ ("last_caption", "caption_mean")`:
+    - `delta_auth = P_auth(I_pos, C_pos) - P_auth(I_neg, C_neg)`
+    - `shift_neg_caption_to_pos_image = P_swapped(shown=I_pos, owner=I_neg) - P_auth(I_neg, C_neg)`
+    - `shift_pos_caption_to_neg_image = P_auth(I_pos, C_pos) - P_swapped(shown=I_neg, owner=I_pos)` (plus raw `signed_drop_on_neg_image = -shift_pos_caption_to_neg_image`)
+    - `signed_shift_toward_shown_image = 0.5 * (shift_neg_caption_to_pos_image + shift_pos_caption_to_neg_image)`
+    - `visual_grounding_fraction = mean_pairs(signed_shift_toward_shown_image) / mean_pairs(delta_auth)`, `caption_dominance_fraction = 1.0 - visual_grounding_fraction`
+    - Pair bootstrap weight in draw `b` from `(2000, 360)` `counts = bootstrap_counts(draws, 360)`: `w_{b,k} = 0.5 * (counts[b, idx(pos_id)] + counts[b, idx(neg_id)])`.
+  - Aggregate over supported primary categories (`K_c >= 20`, `support_status == "ok"`) and all categories, 12 off-diagonal routes and 4 diagonal routes, compute paired `caption_mean − last_caption` differences on identical bootstrap draws, evaluate `PHASE3_GPU_DECISION_RANGES["E23"]`, and publish `phase3/results/e23/<model>/<run_id>/_COMPLETE.json` (`KIND_ANALYSIS`, `SCHEMA_ANALYSIS`).
+
+| Chat | Branch / base | Owned files (exclusive) | Est. Colab CPU runtime |
+|---|---|---|---|
+| **Chat 1: `run_e39_e31`** | Branch from `PHASE3_B3_BASE_SHA` | `src/phase3/run_e39_e31.py`, `scripts/phase3/run_e39_e31.ipynb`, `tests/test_phase3_e39_e31.py` | ~3–5 min / model |
+| **Chat 2: `run_e23`** | Branch from `PHASE3_B3_BASE_SHA` | `src/phase3/run_e23.py`, `scripts/phase3/run_e23.ipynb`, `tests/test_phase3_e23.py` | ~2–4 min / model |

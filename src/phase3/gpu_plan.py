@@ -60,6 +60,29 @@ CERTIFIED_STAGE_B1_GPU_PLAN = frozen({
     "sha256": "3603f36631ec8165445613e08caf2a3b74bd7626f84f79fdde59fc34f0088b1c",
 })
 
+CERTIFIED_STAGE_B2_RELEASES = frozen({
+    "e39_e31": {
+        "qwen": {
+            "path": "phase3/features/e39_e31/qwen/20261120T074829Z-d93cc9472d3c4351a9d3716d4134fe0b_release/_COMPLETE.json",
+            "sha256": "ac78f75a3eac730c769093c3418e6c518fd198d4d972bcbd7124af871b1ad545",
+        },
+        "gemma": {
+            "path": "phase3/features/e39_e31/gemma/20261120T081027Z-1f61264d896f40d0905ebd1c2f768b93_release/_COMPLETE.json",
+            "sha256": "d35300cdcf761aa803713182510aff3728644a7f12edf3b4278c7ee332bd9bc9",
+        },
+    },
+    "e23": {
+        "qwen": {
+            "path": "phase3/features/e23/qwen/20261120T074434Z-26e5715a45cf438b9d3685c5468f2171_release/_COMPLETE.json",
+            "sha256": "6897146dd0be6f90df2d3ab02314efc4af01fb016a1ff273f4cebc3d6fa82bfe",
+        },
+        "gemma": {
+            "path": "phase3/features/e23/gemma/20261120T074434Z-08939d4b431e4a89b8a5f552112e4bd9_release/_COMPLETE.json",
+            "sha256": "2c1a81fbaa3ddd78374eb8593b234f61b3ad60e51b78df24f367bf16f1b0ef99",
+        },
+    },
+})
+
 E39_SITES = (
     "first_caption",
     "middle_caption",

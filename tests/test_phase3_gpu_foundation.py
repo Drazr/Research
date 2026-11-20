@@ -7,6 +7,7 @@ import unittest
 from src.common.contracts import ContractError, LANGUAGES, ModelInput, TargetRecord
 from src.phase3.interfaces import (
     CERTIFIED_STAGE_B1_GPU_PLAN,
+    CERTIFIED_STAGE_B2_RELEASES,
     E23_CHUNK_SIZE_PAIRS,
     E31_SITES,
     E39_E31_CHUNK_SIZE_IMAGES,
@@ -39,6 +40,11 @@ class Phase3GpuFoundationTests(unittest.TestCase):
             CERTIFIED_STAGE_B1_GPU_PLAN["sha256"],
             "3603f36631ec8165445613e08caf2a3b74bd7626f84f79fdde59fc34f0088b1c",
         )
+        self.assertEqual(set(CERTIFIED_STAGE_B2_RELEASES.keys()), {"e39_e31", "e23"})
+        for exp_key in ("e39_e31", "e23"):
+            self.assertEqual(set(CERTIFIED_STAGE_B2_RELEASES[exp_key].keys()), {"qwen", "gemma"})
+            for m_key in ("qwen", "gemma"):
+                self.assertEqual(len(CERTIFIED_STAGE_B2_RELEASES[exp_key][m_key]["sha256"]), 64)
         self.assertEqual(KIND_E39_E31_CHUNK, "phase3_e39_e31_feature_chunk")
         self.assertEqual(KIND_E39_E31_RELEASE, "phase3_e39_e31_feature_release")
         self.assertEqual(KIND_E23_CHUNK, "phase3_e23_feature_chunk")

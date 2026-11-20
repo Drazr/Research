@@ -9,6 +9,7 @@ from .cpu_plan import (
 )
 from .gpu_plan import (
     CERTIFIED_STAGE_B1_GPU_PLAN,
+    CERTIFIED_STAGE_B2_RELEASES,
     E23_CHUNK_SIZE_PAIRS,
     E31_SITES,
     E39_E31_CHUNK_SIZE_IMAGES,
@@ -73,6 +74,7 @@ from src.phase2.interfaces import current_producer  # reuse Stage 3 pinned CPU p
 __all__ = [
     "ALLOWED_SPLITS",
     "CERTIFIED_STAGE_B1_GPU_PLAN",
+    "CERTIFIED_STAGE_B2_RELEASES",
     "CERTIFIED_PHASE2_FOR_PHASE3_CPU",
     "CLOSED_SPLITS",
     "CONDITIONS",
