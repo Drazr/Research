@@ -34,9 +34,6 @@ from src.phase2.interfaces import (
     read_verified_midpoint_features,
 )
 from src.phase2.plan import load_phase2_plan
-from src.stage4.plan import DEPTHS
-from src.stage4.predictions import load_prediction_block
-from src.stage4.validation import _block_lookup as _s4_unused_check  # noqa: F401
 from .schema import (
     CONDITIONS,
     KIND_CPU_PLAN,
@@ -218,6 +215,8 @@ def _block_lookup_at_depth(binding, model, depth, condition, pooling, split):
 
 
 def _build_e40_inventory(binding, model, e30_body):
+    from src.stage4.plan import DEPTHS
+
     depths = [int(d) for d in DEPTHS[model]]
     fit_groups = binding.stage4_plan.fit["groups"]
     matched_blocks = {}
@@ -277,6 +276,8 @@ def _build_e40_inventory(binding, model, e30_body):
 
 
 def _build_e41_inventory(binding, model, e11_body, e17_body):
+    from src.stage4.plan import DEPTHS
+
     depths = [int(midpoint_depth(binding, model)), int(DEPTHS[model][-1])]
     fit_groups = binding.stage4_plan.fit["groups"]
     by_depth = {}
@@ -356,6 +357,7 @@ def _run_preflight_checks(binding, model):
     import numpy as np
     from src.stage3.engine import transform
     from src.stage3.readouts import expected_rows
+    from src.stage4.predictions import load_prediction_block
 
     fit = binding.stage4_plan.fit
     store = binding.stage4_plan.store
@@ -421,6 +423,7 @@ def prepare_phase3_cpu(
 ):
     """Bind Phase 1 & Phase 2, run storage_probe, pre-init phase3/, and publish `phase3_cpu_plan`."""
     resolved_root = Path(root).resolve()
+    from src.stage4.plan import DEPTHS
     refs = plain(CERTIFIED_PHASE2_FOR_PHASE3_CPU) if phase2_refs is None else plain(phase2_refs)
     t0 = time.monotonic()
     _emit(progress, {"event": "phase3_cpu_prepare_start", "unit": "bind", "completed": 0, "total": 4})
