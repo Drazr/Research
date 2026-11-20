@@ -563,21 +563,18 @@ def _evaluate_full_space_reference(
     aligned_by_lang = {}
     for lang in LANGUAGES:
         blk_info = inv["screen_blocks"][lang]
-        pred = load_prediction_block(
+        block_preds = load_prediction_block(
             binding.stage4_plan, blk_info["prediction_ref"], expected_block=blk_info["block_id"]
         )
-        ids, (aligned,) = paired_image_alignment(binding.stage4_plan, pred)
+        diag_pred = block_preds[blk_info["routes"][lang]]
+        ids, (aligned,) = paired_image_alignment(binding.stage4_plan, diag_pred)
         check(ids == screen_ids, "Full-space Stage 4 SCREEN ID alignment mismatch")
-        blocks[lang] = pred
+        blocks[lang] = block_preds
         aligned_by_lang[lang] = aligned
 
-        diag_idx = list(blk_info["routes"].keys()).index(lang)
-        # Map route_id explicitly using plan["blocks"]
-        route_ids = [r["route_id"] for r in binding.stage4_plan["blocks"][blk_info["block_id"]]["routes"]]
-        diag_idx = route_ids.index(blk_info["routes"][lang])
         ev = _evaluate_logits(
-            pred.logits[diag_idx],
-            pred.estimable[diag_idx],
+            diag_pred.logits,
+            diag_pred.estimable,
             aligned,
             y,
             known,
@@ -589,12 +586,11 @@ def _evaluate_full_space_reference(
 
     for s, t in _off_diagonal_pairs():
         blk_info = inv["screen_blocks"][t]
-        route_ids = [r["route_id"] for r in binding.stage4_plan["blocks"][blk_info["block_id"]]["routes"]]
-        src_idx = route_ids.index(blk_info["routes"][s])
-        pred = blocks[t]
+        src_pred = blocks[t][blk_info["routes"][s]]
+        check(src_pred.rows == blocks[t][blk_info["routes"][t]].rows, "Full-space block row order mismatch")
         ev = _evaluate_logits(
-            pred.logits[src_idx],
-            pred.estimable[src_idx],
+            src_pred.logits,
+            src_pred.estimable,
             aligned_by_lang[t],
             y,
             known,

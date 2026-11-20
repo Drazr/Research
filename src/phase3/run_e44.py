@@ -936,7 +936,7 @@ def run_e44(
     for s in LANGUAGES:
         diag = inv["last_caption_dev_c_diagonals"][s]
         dev_pred = load_prediction_block(stage4_plan, diag["prediction_ref"], expected_block=diag["block_id"])[
-            diag["routes"][s]
+            diag["route_id"]
         ]
         check(dev_pred.split == "DEV-C", "E44 last_caption DEV-C source must be DEV-C")
         cut_raw = _compute_cutoffs_for_logits(dev_pred.logits, dev_pred.estimable, categories, E44_NOMINALS)

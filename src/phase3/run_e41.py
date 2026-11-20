@@ -50,6 +50,7 @@ from src.phase3.interfaces import (
     KIND_PREDICTION,
     MODELS,
     POOLINGS,
+    REPO,
     SCHEMA_ANALYSIS,
     SCHEMA_CALIBRATORS,
     SCHEMA_PREDICTION,
@@ -1500,19 +1501,17 @@ def run_e41(
                 else:
                     src_cal = {}
                     for s_lang in LANGUAGES:
-                        diag_info = cell_inv["dev_c_diagonals"][s_lang]
-                        diag_pred = load_prediction_block(
-                            stage4_plan, diag_info["prediction_ref"], expected_block=diag_info["block_id"]
-                        )[diag_info["route_id"]]
+                        coef_s, int_s, est_s, _, stats_s = heads_by_lang[s_lang]
+                        z_diag = _score_through_source_head(devc_x_by_lang[s_lang], coef_s, int_s, est_s, stats_s)
                         y_d, known_d = targets_devc[s_lang]
                         src_cal[s_lang] = {
                             form: {
                                 **fit_macro_bce_calibrator(
-                                    diag_pred.logits, y_d, known_d, primary_idx, form, estimable=diag_pred.estimable
+                                    z_diag, y_d, known_d, primary_idx, form, estimable=est_s
                                 ),
                                 "source_language": s_lang,
                                 "target_language": s_lang,
-                                "dev_c_input_ref": plain(diag_info["prediction_ref"]),
+                                "dev_c_input_ref": plain(cell_inv["feature_releases"][s_lang]["DEV-C"]),
                             }
                             for form in E41_CALIBRATOR_FORMS
                         }
@@ -1759,7 +1758,7 @@ def _parse_ref_map_arg(value):
 def _cli(argv=None):
     parser = argparse.ArgumentParser(description="Phase 3 Stage A2 CPU E41 worker")
     parser.add_argument("--phase1-root", type=Path, default=None)
-    parser.add_argument("--protocol", type=Path, default=Path("configs/protocol.json"))
+    parser.add_argument("--protocol", type=Path, default=REPO / "configs/protocol.json")
     parser.add_argument("--plan-ref", required=True)
     parser.add_argument("--model", required=True, choices=MODELS)
     parser.add_argument("--storage-scope", default="local-development")

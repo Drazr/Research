@@ -287,7 +287,11 @@ def _build_e41_inventory(binding, model, e11_body, e17_body):
         for pool in POOLINGS:
             gids = _depth_groups(binding, model, depth, "image_caption", pool)
             screen_blocks = _block_lookup_at_depth(binding, model, depth, "image_caption", pool, "SCREEN")
-            dev_c_blocks = _block_lookup_at_depth(binding, model, depth, "image_caption", pool, "DEV-C")
+            dev_c_blocks = (
+                _block_lookup_at_depth(binding, model, depth, "image_caption", pool, "DEV-C")
+                if (depth == depths[0] and pool == "last_caption")
+                else None
+            )
             by_depth[dkey][pool] = {
                 "group_ids": gids,
                 "screen_blocks": screen_blocks,
@@ -388,13 +392,12 @@ def _run_preflight_checks(binding, model):
     logits = np.asarray(transform(X_en, stats) @ coef.T) + intercept
     check(np.isfinite(logits).all(), f"Nonfinite preflight logits for {model}")
     scr_blocks = _block_lookup_at_depth(binding, model, midpoint_depth(binding, model), "image_caption", "caption_mean", "SCREEN")
-    s4_pred = load_prediction_block(
+    s4_preds = load_prediction_block(
         binding.stage4_plan, scr_blocks["en"]["prediction_ref"], expected_block=scr_blocks["en"]["block_id"]
     )
-    en_idx = [r["route_id"] for r in binding.stage4_plan["blocks"][scr_blocks["en"]["block_id"]]["routes"]].index(
-        scr_blocks["en"]["routes"]["en"]
-    )
-    diff = float(np.max(np.abs(logits - s4_pred.logits[en_idx])))
+    en_pred = s4_preds[scr_blocks["en"]["routes"]["en"]]
+    check(plain(rows_en) == plain(en_pred.rows), f"Preflight en->en caption_mean SCREEN row mismatch for {model}")
+    diff = float(np.max(np.abs(logits - en_pred.logits)))
     check(diff == 0.0, f"Preflight en->en caption_mean SCREEN diagonal mismatch for {model}: {diff}")
 
     return {
