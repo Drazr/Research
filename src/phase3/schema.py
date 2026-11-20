@@ -180,11 +180,12 @@ def publish_phase3(
             check("/" not in fname and "\\" not in fname, f"Invalid payload filename: {fname!r}")
             payload[fname] = raw if isinstance(raw, (bytes, bytearray)) else str(raw).encode("utf-8")
 
+    proto_fp = fingerprint(plain(protocol))
     meta = {
         "schema": "stage1.v1",
         "kind": kind,
         "status": "passed",
-        "protocol_fingerprint": fingerprint(protocol),
+        "protocol_fingerprint": proto_fp,
         "dataset_fingerprint": dataset_fingerprint,
         "code_commit": producer["code_commit"],
         "storage_scope": producer["storage_scope"],
@@ -201,7 +202,7 @@ def publish_phase3(
     verify(folder, expected={
         "kind": kind,
         "status": "passed",
-        "protocol_fingerprint": fingerprint(protocol),
+        "protocol_fingerprint": proto_fp,
         "dataset_fingerprint": dataset_fingerprint,
     })
     return frozen({"path": marker_path.relative_to(root).as_posix(), "sha256": file_sha256(marker_path)})
@@ -228,7 +229,7 @@ def load_phase3_artifact(
     expected_meta = {
         "kind": expected_kind,
         "status": "passed",
-        "protocol_fingerprint": fingerprint(protocol),
+        "protocol_fingerprint": fingerprint(plain(protocol)),
     }
     if expected_dataset is not None:
         expected_meta["dataset_fingerprint"] = expected_dataset

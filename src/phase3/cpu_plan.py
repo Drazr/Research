@@ -343,7 +343,7 @@ def _build_e12_inventory(binding, model):
         "condition": "image_caption",
         "pooling": "caption_mean",
         "pca_rank": 64,
-        "group_ids": gids,
+        "group_ids": plain(gids),
         "screen_blocks": screen_blocks,
         "feature_releases": {
             lang: {
@@ -489,7 +489,7 @@ def prepare_phase3_cpu(
 
     _emit(progress, {"event": "phase3_cpu_preflight_ok", "unit": "preflight", "completed": 2, "total": 4})
 
-    core = {
+    core = plain({
         "schema": SCHEMA_CPU_PLAN,
         "phase3_version": PHASE3_CPU_VERSION,
         "lineage_identity": binding.lineage_identity,
@@ -514,7 +514,7 @@ def prepare_phase3_cpu(
         "preflight_checks": preflight,
         "decision_ranges": plain(PHASE3_CPU_DECISION_RANGES),
         "confirm_excluded": True,
-    }
+    })
     plan_id = fingerprint(core)
     body = dict(core, plan_identity=plan_id)
 
@@ -559,7 +559,7 @@ def load_phase3_cpu_plan(root, protocol, reference, *, bind=True):
 
 
 def _default_emit(event):
-    print(json.dumps(event, sort_keys=True), flush=True)
+    print(json.dumps(plain(event), sort_keys=True), flush=True)
 
 
 def main(argv=None):
