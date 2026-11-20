@@ -55,6 +55,11 @@ CERTIFIED_STAGE_A1_CPU_PLAN = frozen({
     "sha256": "93cbf480e9d8c13401aaa98315444f3a4d2b3b57ec769b458a799dc269c40439",
 })
 
+CERTIFIED_STAGE_B1_GPU_PLAN = frozen({
+    "path": "phase3/plans/20261120T060305Z-11b534d878f84475a50b561efbd06650/_COMPLETE.json",
+    "sha256": "3603f36631ec8165445613e08caf2a3b74bd7626f84f79fdde59fc34f0088b1c",
+})
+
 E39_SITES = (
     "first_caption",
     "middle_caption",

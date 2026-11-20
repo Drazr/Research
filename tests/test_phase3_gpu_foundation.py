@@ -6,14 +6,21 @@ import unittest
 
 from src.common.contracts import ContractError, LANGUAGES, ModelInput, TargetRecord
 from src.phase3.interfaces import (
+    CERTIFIED_STAGE_B1_GPU_PLAN,
     E23_CHUNK_SIZE_PAIRS,
     E31_SITES,
     E39_E31_CHUNK_SIZE_IMAGES,
     E39_SITES,
+    KIND_E23_CHUNK,
+    KIND_E23_RELEASE,
+    KIND_E39_E31_CHUNK,
+    KIND_E39_E31_RELEASE,
     KIND_GPU_PLAN,
     PHASE3_GPU_DECISION_RANGES,
     PHASE3_GPU_VERSION,
     REPO,
+    SCHEMA_E23_FEATURES,
+    SCHEMA_E39_E31_FEATURES,
     SCHEMA_GPU_PLAN,
     build_e23_pair_plan,
     select_e39_token_indices,
@@ -28,6 +35,16 @@ class Phase3GpuFoundationTests(unittest.TestCase):
         self.assertEqual(PHASE3_GPU_VERSION, "phase3-gpu-stageB1.v1")
         self.assertEqual(KIND_GPU_PLAN, "phase3_gpu_plan")
         self.assertEqual(SCHEMA_GPU_PLAN, "phase3.gpu_plan.v1")
+        self.assertEqual(
+            CERTIFIED_STAGE_B1_GPU_PLAN["sha256"],
+            "3603f36631ec8165445613e08caf2a3b74bd7626f84f79fdde59fc34f0088b1c",
+        )
+        self.assertEqual(KIND_E39_E31_CHUNK, "phase3_e39_e31_feature_chunk")
+        self.assertEqual(KIND_E39_E31_RELEASE, "phase3_e39_e31_feature_release")
+        self.assertEqual(KIND_E23_CHUNK, "phase3_e23_feature_chunk")
+        self.assertEqual(KIND_E23_RELEASE, "phase3_e23_feature_release")
+        self.assertEqual(SCHEMA_E39_E31_FEATURES, "phase3.e39_e31_features.v1")
+        self.assertEqual(SCHEMA_E23_FEATURES, "phase3.e23_features.v1")
         self.assertEqual(len(E39_SITES), 8)
         self.assertEqual(len(E31_SITES), 3)
         self.assertEqual(set(PHASE3_GPU_DECISION_RANGES.keys()), {"E39", "E31", "E23"})
