@@ -471,6 +471,44 @@ def _summarize_draws(point_val, draw_vals):
     }
 
 
+def _weighted_rank_metrics(y, scores, mass):
+    """Tie-aware AUROC and AP directly on finite float64 scores (avoids expit saturation)."""
+    import numpy as np
+
+    desc = np.argsort(-scores, kind="stable")
+    y = y[desc]
+    scores = scores[desc]
+    mass = mass[:, desc]
+    starts = np.r_[0, np.flatnonzero(np.diff(scores)) + 1]
+    pos_mass, neg_mass = mass * y, mass * ~y
+    pos, neg = pos_mass.sum(axis=1), neg_mass.sum(axis=1)
+    pos_ties = np.add.reduceat(pos_mass, starts, axis=1)
+    neg_ties = np.add.reduceat(neg_mass, starts, axis=1)
+    cumulative_pos = np.cumsum(pos_ties, axis=1)
+    cumulative_neg = np.cumsum(neg_ties, axis=1)
+    denom_auc = pos * neg
+    auc = np.divide(
+        np.sum(pos_ties * (neg[:, None] - cumulative_neg + 0.5 * neg_ties), axis=1),
+        denom_auc,
+        out=np.full(denom_auc.shape, np.nan, dtype=np.float64),
+        where=denom_auc > 0,
+    )
+    denom_prec = cumulative_pos + cumulative_neg
+    precision = np.divide(
+        cumulative_pos,
+        denom_prec,
+        out=np.zeros(denom_prec.shape, dtype=np.float64),
+        where=denom_prec > 0,
+    )
+    ap = np.divide(
+        np.sum(precision * pos_ties, axis=1),
+        pos,
+        out=np.full(pos.shape, np.nan, dtype=np.float64),
+        where=pos > 0,
+    )
+    return {"auroc": auc, "ap": ap}
+
+
 def _run_en_screen_self_check(plan, cell_inv, depth, pooling):
     """In-memory en->en SCREEN diagonal reproduction check (atol=0, rtol=0) against Stage 4."""
     import numpy as np
@@ -575,16 +613,32 @@ def _evaluate_cell(
     max_shift_ap_diff = 0.0
     temp_only_flips = 0
 
-    def _score_metric_arrays(probs_mat):
+    def _score_metric_arrays(probs_mat, rank_scores_mat=None):
         pts = {m: np.full(n_cats, np.nan, dtype=np.float64) for m in METRICS}
         drs = {m: np.full((n_draws, n_cats), np.nan, dtype=np.float64) for m in METRICS}
         for k in range(n_cats):
-            pt = binary_metrics(y_screen[:, k], probs_mat[:, k], known_screen[:, k])["metrics"]
-            dr = bootstrap_binary_metrics(y_screen[:, k], probs_mat[:, k], known_screen[:, k], counts)
+            known_k = known_screen[:, k]
+            pt = binary_metrics(y_screen[:, k], probs_mat[:, k], known_k)["metrics"]
+            dr = bootstrap_binary_metrics(y_screen[:, k], probs_mat[:, k], known_k, counts)
             for m in METRICS:
                 if pt[m] is not None:
                     pts[m][k] = pt[m]
                 drs[m][:, k] = dr[m]
+            if rank_scores_mat is not None:
+                den = int(known_k.sum())
+                if den > 0:
+                    y_k = y_screen[known_k, k]
+                    s_k = np.asarray(rank_scores_mat[known_k, k], dtype=np.float64)
+                    pt_rank = _weighted_rank_metrics(y_k, s_k, np.ones((1, den), dtype=np.int64))
+                    dr_rank = _weighted_rank_metrics(y_k, s_k, counts[:, known_k])
+                    for m in ("auroc", "ap"):
+                        val = pt_rank[m][0]
+                        pts[m][k] = float(val) if np.isfinite(val) else np.nan
+                        drs[m][:, k] = dr_rank[m]
+                else:
+                    for m in ("auroc", "ap"):
+                        pts[m][k] = np.nan
+                        drs[m][:, k] = np.full(n_draws, np.nan, dtype=np.float64)
         return pts, drs
 
     def _arm_logits_and_label(arm, s_lang, t_lang, raw_logits):
@@ -665,7 +719,7 @@ def _evaluate_cell(
                     "known_cells": known_total,
                     "flip_rate": float(flips / known_total) if known_total > 0 else 0.0,
                 }
-                route_metrics[arm][(s_lang, t_lang)] = _score_metric_arrays(arm_probs)
+                route_metrics[arm][(s_lang, t_lang)] = _score_metric_arrays(arm_probs, rank_scores_mat=arm_logits)
 
             # Enforce invariances on this route:
             # 1) Pure calibration arms vs raw must preserve AUROC/AP <= 1e-12.

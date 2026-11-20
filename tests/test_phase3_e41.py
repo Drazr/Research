@@ -229,6 +229,21 @@ class Phase3E41Tests(unittest.TestCase):
         with self.assertRaises(ContractError):
             run_e41._parse_ref_map_arg("/nonexistent/refs.json")
 
+    def test_weighted_rank_metrics_avoids_expit_saturation(self):
+        self.assertTrue(callable(run_e41._weighted_rank_metrics))
+        try:
+            import numpy as np
+        except ImportError:
+            return
+        y = np.array([True, False, True, False], dtype=bool)
+        z_raw = np.array([50.0, 42.0, 38.0, -5.0], dtype=np.float64)
+        z_cal = z_raw / 3.0 - 0.5
+        mass = np.ones((1, 4), dtype=np.int64)
+        m_raw = run_e41._weighted_rank_metrics(y, z_raw, mass)
+        m_cal = run_e41._weighted_rank_metrics(y, z_cal, mass)
+        self.assertEqual(float(m_raw["auroc"][0]), float(m_cal["auroc"][0]))
+        self.assertEqual(float(m_raw["ap"][0]), float(m_cal["ap"][0]))
+
 
 if __name__ == "__main__":
     unittest.main()
